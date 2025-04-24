@@ -15,6 +15,8 @@ from glob import glob
 
 import os, random, cv2, argparse
 from hparams import hparams, get_image_list
+import time #Modification 
+start_time = time.time()
 
 parser = argparse.ArgumentParser(description='Code to train the expert lip-sync discriminator')
 
@@ -71,7 +73,14 @@ class Dataset(object):
             idx = random.randint(0, len(self.all_videos) - 1)
             vidname = self.all_videos[idx]
 
-            img_names = list(glob(join(vidname, '*.jpg')))
+            ### Begin Modification ###
+            vidname_no_ext = os.path.splitext(vidname)[0]
+            vidname_file = os.path.splitext(os.path.basename(vidname))[0]
+            vidname_folder = os.path.basename(os.path.dirname(vidname))
+            img_names = list(glob(join(args.data_root, vidname_folder, vidname_file, '*.jpg')))
+            # img_names = list(glob(join(vidname, '*.jpg')))
+            ### End Modification ###
+
             if len(img_names) <= 3 * syncnet_T:
                 continue
             img_name = random.choice(img_names)
@@ -108,7 +117,10 @@ class Dataset(object):
             if not all_read: continue
 
             try:
-                wavpath = join(vidname, "audio.wav")
+                ### Begin Modification ###
+                # wavpath = join(vidname, "audio.wav")
+                wavpath = vidname_no_ext + ".wav"
+                ### End Modification ###
                 wav = audio.load_wav(wavpath, hparams.sample_rate)
 
                 orig_mel = audio.melspectrogram(wav).T
@@ -139,7 +151,6 @@ def cosine_loss(a, v, y):
 
 def train(device, model, train_data_loader, test_data_loader, optimizer,
           checkpoint_dir=None, checkpoint_interval=None, nepochs=None):
-
     global global_step, global_epoch
     resumed_step = global_step
     
@@ -175,7 +186,7 @@ def train(device, model, train_data_loader, test_data_loader, optimizer,
                     eval_model(test_data_loader, global_step, device, model, checkpoint_dir)
 
             prog_bar.set_description('Loss: {}'.format(running_loss / (step + 1)))
-
+        print(f"Global_epoch: {global_epoch}")
         global_epoch += 1
 
 def eval_model(test_data_loader, global_step, device, model, checkpoint_dir):
@@ -270,9 +281,11 @@ if __name__ == "__main__":
     optimizer = optim.Adam([p for p in model.parameters() if p.requires_grad],
                            lr=hparams.syncnet_lr)
 
+    print("Loading checkpoint path")
     if checkpoint_path is not None:
         load_checkpoint(checkpoint_path, model, optimizer, reset_optimizer=False)
 
+    print("Begining Training")
     train(device, model, train_data_loader, test_data_loader, optimizer,
           checkpoint_dir=checkpoint_dir,
           checkpoint_interval=hparams.syncnet_checkpoint_interval,

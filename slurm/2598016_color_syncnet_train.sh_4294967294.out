@@ -1,0 +1,45 @@
+use_cuda: True
+total trainable params 16435072
+Loading checkpoint path
+Load checkpoint from: checkpoints/checkpoint_step000510000.pth
+Load optimizer state from checkpoints/checkpoint_step000510000.pth
+Begining Training
+Global_epoch: 4511
+Global_epoch: 4512
+Global_epoch: 4513
+Global_epoch: 4514
+Global_epoch: 4515
+Global_epoch: 4516
+Global_epoch: 4517
+Global_epoch: 4518
+Global_epoch: 4519
+Global_epoch: 4520
+Global_epoch: 4521
+Global_epoch: 4522
+Global_epoch: 4523
+Global_epoch: 4524
+Global_epoch: 4525
+Global_epoch: 4526
+Global_epoch: 4527
+Global_epoch: 4528
+Global_epoch: 4529
+Global_epoch: 4530
+Global_epoch: 4531
+Global_epoch: 4532
+Global_epoch: 4533
+Global_epoch: 4534
+Global_epoch: 4535
+Global_epoch: 4536
+Global_epoch: 4537
+Global_epoch: 4538
+Global_epoch: 4539
+Global_epoch: 4540
+Global_epoch: 4541
+Global_epoch: 4542
+Global_epoch: 4543
+Global_epoch: 4544
+Global_epoch: 4545
+Global_epoch: 4546
+Global_epoch: 4547
+Global_epoch: 4548
+Global_epoch: 4549

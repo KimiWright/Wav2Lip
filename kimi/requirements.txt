@@ -1,0 +1,10 @@
+torch>=2.1.1
+torchvision>=0.16.1
+Cython>=3.0.6
+cryptography>=41.0.7
+numpy>=1.23.5
+scikit-learn>=1.2.2
+scikit-image>=0.19.3
+opencv-python>=4.7.0.72
+pandas>=1.5.3
+mediapipe>=0.10.0
