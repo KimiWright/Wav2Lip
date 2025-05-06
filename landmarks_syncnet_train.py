@@ -14,7 +14,7 @@ import numpy as np
 from glob import glob
 
 import os, random, cv2, argparse
-from hparams import hparams
+from hparams import hparams, get_image_list
 
 from collections import defaultdict
 from os import path
@@ -22,6 +22,7 @@ from os import path
 parser = argparse.ArgumentParser(description='Code to train the expert lip-sync discriminator')
 
 parser.add_argument("--data_root", help="Root folder of the preprocessed LRS2 dataset", default='/home/ksw38/groups/grp_landmarks/nobackup/archive/landmarks/main/')
+parser.add_argument('--video_root', help='Root folder of the preprocessed LRS2 dataset', default='/home/ksw38/groups/grp_lip/nobackup/autodelete/datasets/fslgroup/grp_lip/compute/datasets/LRS2/preprocessedRetinaface/lrs2/lrs2_video_seg24s/mvlrs_v1/main/')
 
 parser.add_argument('--checkpoint_dir', help='Save checkpoints to this directory', default='landmarks_checkpoints', type=str)
 parser.add_argument('--checkpoint_path', help='Resumed from this checkpoint', default=None, type=str)
@@ -36,6 +37,11 @@ print('use_cuda: {}'.format(use_cuda))
 
 syncnet_T = 5
 syncnet_mel_step_size = 16
+ID_LEN = 5 #The number of digits in the id in the file name
+# So the stradegy in the color_syncnet_train.py is to use the name of the mp4 files as the id and find the correspoinding mel and image files
+# I flipped the stradegy in the landmarks_syncnet_train.py to use the name of the landmarks files
+# I'm trying to decide if this is a good idea or not
+# Probably not, I want every frame in an mp4 to be in the same batch, but they aren't the way I have it set up now
 
 def get_npy_list(data_root, split):
     filelist = []
@@ -56,25 +62,25 @@ def get_npy_list(data_root, split):
     return groups
 
 class Dataset(object):
-    def __init__(self, split): # So far only edited function
-        print(f"init data from {args.data_root}")
-        print(args.data_root)
-        self.all_videos = get_npy_list(args.data_root, split)
-        print(self.all_videos[0])
+    def __init__(self, split):
+        # self.all_videos = get_npy_list(args.data_root, split)
+        self.all_videos = get_image_list(args.video_root, split)
 
     def get_frame_id(self, frame):
-        print("get_frame_id")
+        # return int(basename(frame).split('.')[0][0:ID_LEN])
         return int(basename(frame).split('.')[0])
 
     def get_window(self, start_frame):
         print("get_window")
-        start_id = self.get_frame_id(start_frame)
+        start_id = basename(start_frame).split('.')[0] # Change the function to use this one
+        start_id = self.get_frame_id(start_frame) # Change the folder stucture to use this one
         vidname = dirname(start_frame)
 
         window_fnames = []
         for frame_id in range(start_id, start_id + syncnet_T):
             frame = join(vidname, '{}.jpg'.format(frame_id))
             if not isfile(frame):
+                print(frame)
                 return None
             window_fnames.append(frame)
         return window_fnames
@@ -91,7 +97,6 @@ class Dataset(object):
 
 
     def __len__(self):
-        print("len")
         return len(self.all_videos)
 
     def __getitem__(self, idx):
@@ -179,6 +184,14 @@ if __name__ == '__main__':
     # print(data)
 
     test_dataset = Dataset('val')
+    test_file = test_dataset.all_videos[20]
+    print(test_file)
+    print(test_dataset.get_frame_id(test_file))
+    print(test_dataset.get_window(test_file)) # Doesn't work partly because it is the wrong file, look at _get_item_
+    # Example output in color_syncnet_train.py Window_fnames:  ['lrs2_preprocessed/6331559613336179781/00019/2.jpg', 'lrs2_preprocessed/6331559613336179781/00019/3.jpg', 'lrs2_preprocessed/6331559613336179781/00019/4.jpg', 'lrs2_preprocessed/6331559613336179781/00019/5.jpg', 'lrs2_preprocessed/6331559613336179781/00019/6.jpg']
+    # Exmample files input: lrs2_preprocessed/6227471510414418277/00043/0.jpg, lrs2_preprocessed/6090505003344967660/00046/34.jpg, lrs2_preprocessed/6131718650523849495/00024/2.jpg
+    
+    #print(test_dataset[0])
 
     # test_data_loader = data_utils.DataLoader(
     #     test_dataset, batch_size=1, #hparams.syncnet_batch_size,
