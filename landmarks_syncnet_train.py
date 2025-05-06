@@ -19,10 +19,12 @@ from hparams import hparams, get_image_list
 from collections import defaultdict
 from os import path
 
+import re
+
 parser = argparse.ArgumentParser(description='Code to train the expert lip-sync discriminator')
 
-parser.add_argument("--data_root", help="Root folder of the preprocessed LRS2 dataset", default='/home/ksw38/groups/grp_landmarks/nobackup/archive/landmarks/main/')
-parser.add_argument('--video_root', help='Root folder of the preprocessed LRS2 dataset', default='/home/ksw38/groups/grp_lip/nobackup/autodelete/datasets/fslgroup/grp_lip/compute/datasets/LRS2/preprocessedRetinaface/lrs2/lrs2_video_seg24s/mvlrs_v1/main/')
+parser.add_argument("--data_root", help="Root folder of the preprocessed landmarks for LRS2 dataset", default='/home/ksw38/groups/grp_landmarks/nobackup/archive/landmarks/main/')
+parser.add_argument('--video_root', help='Root folder of the videos of the LRS2 dataset', default='/home/ksw38/groups/grp_lip/nobackup/autodelete/datasets/fslgroup/grp_lip/compute/datasets/LRS2/preprocessedRetinaface/lrs2/lrs2_video_seg24s/mvlrs_v1/main/')
 
 parser.add_argument('--checkpoint_dir', help='Save checkpoints to this directory', default='landmarks_checkpoints', type=str)
 parser.add_argument('--checkpoint_path', help='Resumed from this checkpoint', default=None, type=str)
@@ -68,21 +70,39 @@ class Dataset(object):
 
     def get_frame_id(self, frame):
         # return int(basename(frame).split('.')[0][0:ID_LEN])
-        return int(basename(frame).split('.')[0])
+        frame_name = basename(frame).split('.')[0]
+        frame_digits = re.sub(r'\D', '', frame_name)
+        return int(frame_digits)
 
     def get_window(self, start_frame):
-        print("get_window")
-        start_id = basename(start_frame).split('.')[0] # Change the function to use this one
-        start_id = self.get_frame_id(start_frame) # Change the folder stucture to use this one
+        # Get a window of frames from the start_frame
+        start_id = self.get_frame_id(start_frame)
         vidname = dirname(start_frame)
 
-        window_fnames = []
+        window_fnames = [] # lmks, roll, pitch, yaw window fnames
+        window_fnames_lmks = []
+        window_fnames_roll = []
+        window_fnames_pitch = []
+        window_fnames_yaw = []
+        # Get the window of frames in the range of start_id to start_id + syncnet_T
         for frame_id in range(start_id, start_id + syncnet_T):
-            frame = join(vidname, '{}.jpg'.format(frame_id))
-            if not isfile(frame):
-                print(frame)
+            frame_id_str = str(frame_id).zfill(ID_LEN)
+            frame_lmks = join(vidname, frame_id_str + '_lmks.npy')
+            frame_roll = join(vidname, frame_id_str + '_roll.npy')
+            frame_pitch = join(vidname, frame_id_str + '_pitch.npy')
+            frame_yaw = join(vidname, frame_id_str + '_yaw.npy')
+            # If the window doesn't contain syncnet_T frames, return None
+            if not isfile(frame_lmks) or not isfile(frame_roll) or not isfile(frame_pitch) or not isfile(frame_yaw):
                 return None
-            window_fnames.append(frame)
+            window_fnames_lmks.append(frame_lmks)
+            window_fnames_roll.append(frame_roll)
+            window_fnames_pitch.append(frame_pitch)
+            window_fnames_yaw.append(frame_yaw)
+        # Combine lmks, roll, pitch, yaw window fnames into a list
+        window_fnames.append(window_fnames_lmks)
+        window_fnames.append(window_fnames_roll)
+        window_fnames.append(window_fnames_pitch)
+        window_fnames.append(window_fnames_yaw)
         return window_fnames
 
     def crop_audio_window(self, spec, start_frame):
@@ -181,13 +201,14 @@ if __name__ == '__main__':
     # load_path = "/home/ksw38/groups/grp_landmarks/nobackup/archive/landmarks/main/5535415699068794046/00001_lmks.npy"
     # data = np.load(load_path)
 
-    # print(data)
-
     test_dataset = Dataset('val')
     test_file = test_dataset.all_videos[20]
-    print(test_file)
-    print(test_dataset.get_frame_id(test_file))
-    print(test_dataset.get_window(test_file)) # Doesn't work partly because it is the wrong file, look at _get_item_
+    # print(test_file)
+    test_npy = "/home/ksw38/groups/grp_landmarks/nobackup/archive/landmarks/main/5535415699068794046/00001_lmks.npy"
+    test_npy = "/home/ksw38/groups/grp_landmarks/nobackup/archive/landmarks/main/5535415699068794046/00002_lmks.npy"
+    test_npy = "/home/ksw38/groups/grp_landmarks/nobackup/archive/landmarks/main/5535496873950688380/00019_lmks.npy"
+
+    print(test_dataset.get_window(test_npy)) # Doesn't work partly because it is the wrong file, look at _get_item_
     # Example output in color_syncnet_train.py Window_fnames:  ['lrs2_preprocessed/6331559613336179781/00019/2.jpg', 'lrs2_preprocessed/6331559613336179781/00019/3.jpg', 'lrs2_preprocessed/6331559613336179781/00019/4.jpg', 'lrs2_preprocessed/6331559613336179781/00019/5.jpg', 'lrs2_preprocessed/6331559613336179781/00019/6.jpg']
     # Exmample files input: lrs2_preprocessed/6227471510414418277/00043/0.jpg, lrs2_preprocessed/6090505003344967660/00046/34.jpg, lrs2_preprocessed/6131718650523849495/00024/2.jpg
     
