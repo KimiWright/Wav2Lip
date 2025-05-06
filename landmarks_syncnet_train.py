@@ -74,7 +74,16 @@ class Dataset(object):
         frame_digits = re.sub(r'\D', '', frame_name)
         return int(frame_digits)
 
+    def get_window_npy(self, data, start_id=0):
+        if start_id + syncnet_T < len(data):
+            return data[start_id : start_id + syncnet_T]
+        else:
+            return None
+
     def get_window(self, start_frame):
+        # In the current iteration of get_item, DON'T USE THIS FUNCTION
+        # This function gets a window of frames from a video, the landmarks, however, are not set up a isolated jpg files, 
+        # but as a numpy file with the landmarks for all frames in the video
         # Get a window of frames from the start_frame
         start_id = self.get_frame_id(start_frame)
         vidname = dirname(start_frame)
@@ -120,33 +129,69 @@ class Dataset(object):
         return len(self.all_videos)
 
     def __getitem__(self, idx):
+        # Syncnet is set up randomly sync or not sync a video, that is part of why they take out 5 frame chunks
         print("getitem")
         while 1:
-            # print(self.all_videos)
+            # choose a random video
             idx = random.randint(0, len(self.all_videos) - 1)
+
+            # find the path to the video at index idx
             vidname = self.all_videos[idx]
+            # keep the path and filename of the video, but remove the extension (for finding the .wav file)
             vidname_no_ext = os.path.splitext(vidname)[0]
 
+            # 5 digit id
             vidname_file = os.path.splitext(os.path.basename(vidname))[0]
+            # video and landmarks folder name (log numberical id)
             vidname_folder = os.path.basename(os.path.dirname(vidname))
-            vidname_loc = join(args.data_root, vidname_folder, vidname_file)
-            img_names = list(glob(join(vidname_loc, '*.jpg')))
-            if len(img_names) <= 3 * syncnet_T:
-                print("len")
-                continue
-            img_name = random.choice(img_names)
-            wrong_img_name = random.choice(img_names)
-            while wrong_img_name == img_name:
-                wrong_img_name = random.choice(img_names)
+            # landmarks file with the 5 digit id, but not the lmks, roll, pitch, yaw endings
+            npy_head = join(args.data_root, vidname_folder, vidname_file)
 
+            # get all of the npy files corresponding to the video
+            npy_files = []
+            endings = ['_lmks.npy', '_roll.npy', '_pitch.npy', '_yaw.npy']
+            for ending in endings:
+                npy_file = npy_head + ending
+                if not isfile(npy_file):
+                    continue
+                npy_files.append(npy_file)
+
+            # retrive the data from the npy files
+            npy_data = []
+            for npy_file in npy_files:
+                npy_data.append(np.load(npy_file))
+
+            num_frames = npy_data[0].shape[0]
+            # for npy_file in npy_files:
+            #     print(self.get_window_npy(npy_file, 60))
+
+            if num_frames <= 3 * syncnet_T:
+                continue
+            
+            # get two random integers from 0 to num_frames - syncnet_T for the start of the true and false windows
+            start_id = random.randint(0, num_frames - syncnet_T)
+            wrong_start_id = random.randint(0, num_frames - syncnet_T)
+            while wrong_start_id == start_id:
+                wrong_start_id = random.randint(0, num_frames - syncnet_T)
+
+            # Choose whether this will be a true or false window
             if random.choice([True, False]):
                 y = torch.ones(1).float()
-                chosen = img_name
+                chosen = start_id
             else:
                 y = torch.zeros(1).float()
-                chosen = wrong_img_name
+                chosen = wrong_start_id
 
-            window_fnames = self.get_window(chosen)
+            window_fnames = []
+            for npy_datum in npy_data:
+                # get the window of npy data from start_id to start_id + syncnet_T
+                window_npy = self.get_window_npy(npy_datum, chosen)
+                if window_npy is None:
+                    print("window_npy is None")
+                    continue
+                window_fnames.append(window_npy)
+
+            return 0
             if window_fnames is None:
                 print("window_fnames is None")
                 continue
@@ -198,8 +243,18 @@ class Dataset(object):
             return x, mel, y
         
 if __name__ == '__main__':
-    # load_path = "/home/ksw38/groups/grp_landmarks/nobackup/archive/landmarks/main/5535415699068794046/00001_lmks.npy"
+    # load_path = "/home/ksw38/groups/grp_landmarks/nobackup/archive/landmarks/main/5535415699068794046/00003_lmks.npy"
     # data = np.load(load_path)
+    # print(data.shape)
+    # load_path = "/home/ksw38/groups/grp_landmarks/nobackup/archive/landmarks/main/5535415699068794046/00003_roll.npy"
+    # data = np.load(load_path)
+    # print(data.shape)
+    # load_path = "/home/ksw38/groups/grp_landmarks/nobackup/archive/landmarks/main/5535415699068794046/00003_pitch.npy"
+    # data = np.load(load_path)
+    # print(data.shape)
+    # load_path = "/home/ksw38/groups/grp_landmarks/nobackup/archive/landmarks/main/5535415699068794046/00003_yaw.npy"
+    # data = np.load(load_path)
+    # print(data.shape)
 
     test_dataset = Dataset('val')
     test_file = test_dataset.all_videos[20]
@@ -208,11 +263,8 @@ if __name__ == '__main__':
     test_npy = "/home/ksw38/groups/grp_landmarks/nobackup/archive/landmarks/main/5535415699068794046/00002_lmks.npy"
     test_npy = "/home/ksw38/groups/grp_landmarks/nobackup/archive/landmarks/main/5535496873950688380/00019_lmks.npy"
 
-    print(test_dataset.get_window(test_npy)) # Doesn't work partly because it is the wrong file, look at _get_item_
-    # Example output in color_syncnet_train.py Window_fnames:  ['lrs2_preprocessed/6331559613336179781/00019/2.jpg', 'lrs2_preprocessed/6331559613336179781/00019/3.jpg', 'lrs2_preprocessed/6331559613336179781/00019/4.jpg', 'lrs2_preprocessed/6331559613336179781/00019/5.jpg', 'lrs2_preprocessed/6331559613336179781/00019/6.jpg']
-    # Exmample files input: lrs2_preprocessed/6227471510414418277/00043/0.jpg, lrs2_preprocessed/6090505003344967660/00046/34.jpg, lrs2_preprocessed/6131718650523849495/00024/2.jpg
     
-    #print(test_dataset[0])
+    print(test_dataset[0])
 
     # test_data_loader = data_utils.DataLoader(
     #     test_dataset, batch_size=1, #hparams.syncnet_batch_size,
