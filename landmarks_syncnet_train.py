@@ -40,10 +40,7 @@ print('use_cuda: {}'.format(use_cuda))
 syncnet_T = 5
 syncnet_mel_step_size = 16
 ID_LEN = 5 #The number of digits in the id in the file name
-# So the stradegy in the color_syncnet_train.py is to use the name of the mp4 files as the id and find the correspoinding mel and image files
-# I flipped the stradegy in the landmarks_syncnet_train.py to use the name of the landmarks files
-# I'm trying to decide if this is a good idea or not
-# Probably not, I want every frame in an mp4 to be in the same batch, but they aren't the way I have it set up now
+# The stradegy in the color_syncnet_train.py is to use the name of the mp4 files as the id and find the correspoinding mel and image files
 
 def get_npy_list(data_root, split):
     filelist = []
@@ -128,7 +125,6 @@ class Dataset(object):
 
     def __getitem__(self, idx):
         # Syncnet is set up randomly sync or not sync a video, that is part of why they take out 5 frame chunks
-        print("getitem")
         while 1:
             # choose a random video
             idx = random.randint(0, len(self.all_videos) - 1)
@@ -160,8 +156,6 @@ class Dataset(object):
                 npy_data.append(np.load(npy_file))
 
             num_frames = npy_data[0].shape[0]
-            # for npy_file in npy_files:
-            #     print(self.get_window_npy(npy_file, 60))
 
             if num_frames <= 3 * syncnet_T:
                 continue
@@ -185,7 +179,6 @@ class Dataset(object):
                 # get the window of npy data from start_id to start_id + syncnet_T
                 window_npy = self.get_window_npy(npy_datum, chosen)
                 if window_npy is None:
-                    print("window_npy is None")
                     continue
                 window_fnames.append(window_npy)
 
@@ -219,39 +212,61 @@ class Dataset(object):
             x = torch.FloatTensor(x)
             mel = torch.FloatTensor(mel.T).unsqueeze(0)
 
-            print("Got Item")
             return x, mel, y
-        
-if __name__ == '__main__':
-    # load_path = "/home/ksw38/groups/grp_landmarks/nobackup/archive/landmarks/main/5535415699068794046/00003_lmks.npy"
-    # data = np.load(load_path)
-    # print(data.shape)
-    # load_path = "/home/ksw38/groups/grp_landmarks/nobackup/archive/landmarks/main/5535415699068794046/00003_roll.npy"
-    # data = np.load(load_path)
-    # print(data.shape)
-    # load_path = "/home/ksw38/groups/grp_landmarks/nobackup/archive/landmarks/main/5535415699068794046/00003_pitch.npy"
-    # data = np.load(load_path)
-    # print(data.shape)
-    # load_path = "/home/ksw38/groups/grp_landmarks/nobackup/archive/landmarks/main/5535415699068794046/00003_yaw.npy"
-    # data = np.load(load_path)
-    # print(data.shape)
 
+# Checkpoint functions should remain the same as in color_syncnet_train.py
+
+def save_checkpoint(model, optimizer, step, checkpoint_dir, epoch):
+
+    checkpoint_path = join(
+        checkpoint_dir, "checkpoint_step{:09d}.pth".format(global_step))
+    optimizer_state = optimizer.state_dict() if hparams.save_optimizer_state else None
+    torch.save({
+        "state_dict": model.state_dict(),
+        "optimizer": optimizer_state,
+        "global_step": step,
+        "global_epoch": epoch,
+    }, checkpoint_path)
+    print("Saved checkpoint:", checkpoint_path)
+
+def _load(checkpoint_path):
+    if use_cuda:
+        checkpoint = torch.load(checkpoint_path)
+    else:
+        checkpoint = torch.load(checkpoint_path,
+                                map_location=lambda storage, loc: storage)
+    return checkpoint
+
+def load_checkpoint(path, model, optimizer, reset_optimizer=False):
+    global global_step
+    global global_epoch
+
+    print("Load checkpoint from: {}".format(path))
+    checkpoint = _load(path)
+    model.load_state_dict(checkpoint["state_dict"])
+    if not reset_optimizer:
+        optimizer_state = checkpoint["optimizer"]
+        if optimizer_state is not None:
+            print("Load optimizer state from {}".format(path))
+            optimizer.load_state_dict(checkpoint["optimizer"])
+    global_step = checkpoint["global_step"]
+    global_epoch = checkpoint["global_epoch"]
+
+    return model
+
+if __name__ == '__main__':
     test_dataset = Dataset('val')
     test_file = test_dataset.all_videos[20]
-    # print(test_file)
-    test_npy = "/home/ksw38/groups/grp_landmarks/nobackup/archive/landmarks/main/5535415699068794046/00001_lmks.npy"
-    test_npy = "/home/ksw38/groups/grp_landmarks/nobackup/archive/landmarks/main/5535415699068794046/00002_lmks.npy"
-    test_npy = "/home/ksw38/groups/grp_landmarks/nobackup/archive/landmarks/main/5535496873950688380/00019_lmks.npy"
 
-    
-    print(test_dataset[0])
+    test_data_loader = data_utils.DataLoader(
+        test_dataset, batch_size=1, #hparams.syncnet_batch_size,
+        num_workers=8)
+    print("Test Dataloader")
 
-    # test_data_loader = data_utils.DataLoader(
-    #     test_dataset, batch_size=1, #hparams.syncnet_batch_size,
-    #     num_workers=8)
-    # print("Test Dataloader")
+    first_batch = next(iter(test_data_loader))
+    print("first_batch")
 
-    # first_batch = next(iter(test_data_loader))
-    # print("first_batch")
-
-    # (x, mel, y) = first_batch
+    (x, mel, y) = first_batch
+    print("x shape: ", x.shape)
+    print("mel shape: ", mel.shape)
+    print("y: ", y)
