@@ -2,7 +2,7 @@ from os.path import dirname, join, basename, isfile
 from tqdm import tqdm
 
 from models import SyncNet_color as SyncNet
-import audio
+import landmarks_audio as audio
 
 import torch
 from torch import nn
@@ -25,7 +25,7 @@ parser = argparse.ArgumentParser(description='Code to train the expert lip-sync 
 
 parser.add_argument("--data_root", help="Root folder of the preprocessed landmarks for LRS2 dataset", default='/home/ksw38/groups/grp_landmarks/nobackup/archive/landmarks/main/')
 parser.add_argument('--video_root', help='Root folder of the videos of the LRS2 dataset', default='/home/ksw38/groups/grp_lip/nobackup/autodelete/datasets/fslgroup/grp_lip/compute/datasets/LRS2/preprocessedRetinaface/lrs2/lrs2_video_seg24s/mvlrs_v1/main/')
-
+#                                                                                                  /home/ksw38/groups/grp_lip/nobackup/autodelete/datasets/fslgroup/grp_lip/compute/datasets/LRS2/preprocessedRetinaface/lrs2/lrs2_video_seg24s/mvlrs_v1/main
 parser.add_argument('--checkpoint_dir', help='Save checkpoints to this directory', default='landmarks_checkpoints', type=str)
 parser.add_argument('--checkpoint_path', help='Resumed from this checkpoint', default=None, type=str)
 
@@ -191,38 +191,31 @@ class Dataset(object):
                     continue
                 window_fnames.append(window_npy)
 
-            return 0
-            if window_fnames is None:
-                print("window_fnames is None")
-                continue
+            # window = []
+            # all_read = True
+            # for fname in window_fnames:
+            #     img = cv2.imread(fname)
+            #     if img is None:
+            #         all_read = False
+            #         break
+            #     try:
+            #         img = cv2.resize(img, (hparams.img_size, hparams.img_size))
+            #     except Exception as e:
+            #         all_read = False
+            #         break
 
-            window = []
-            all_read = True
-            for fname in window_fnames:
-                img = cv2.imread(fname)
-                if img is None:
-                    all_read = False
-                    break
-                try:
-                    img = cv2.resize(img, (hparams.img_size, hparams.img_size))
-                except Exception as e:
-                    all_read = False
-                    break
+            #     window.append(img)
 
-                window.append(img)
-
-            if not all_read: continue
+            # if not all_read: continue
 
             try:
                 wavpath = vidname_no_ext + ".wav"
-                print(wavpath)
-                print(vidname)
-                print()
+                if not isfile(wavpath):
+                    print("wavpath is not file")
+                    return 1           
                 wav = audio.load_wav(wavpath, hparams.sample_rate)
-
                 orig_mel = audio.melspectrogram(wav).T
             except Exception as e:
-                print("exception e")
                 continue
 
             mel = self.crop_audio_window(orig_mel.copy(), img_name)
@@ -230,7 +223,10 @@ class Dataset(object):
             if (mel.shape[0] != syncnet_mel_step_size):
                 print("mel")
                 continue
-
+            
+            for fname in window_fnames:
+                print(fname.shape)
+            return 0
             # H x W x 3 * T
             x = np.concatenate(window, axis=2) / 255.
             x = x.transpose(2, 0, 1)
