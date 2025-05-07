@@ -114,10 +114,8 @@ class Dataset(object):
         window_fnames.append(window_fnames_yaw)
         return window_fnames
 
-    def crop_audio_window(self, spec, start_frame):
-        print("crop_audio_window")
-        # num_frames = (T x hop_size * fps) / sample_rate
-        start_frame_num = self.get_frame_id(start_frame)
+    def crop_audio_window(self, spec, start_frame_num):
+        
         start_idx = int(80. * (start_frame_num / float(hparams.fps)))
 
         end_idx = start_idx + syncnet_mel_step_size
@@ -191,46 +189,32 @@ class Dataset(object):
                     continue
                 window_fnames.append(window_npy)
 
-            # window = []
-            # all_read = True
-            # for fname in window_fnames:
-            #     img = cv2.imread(fname)
-            #     if img is None:
-            #         all_read = False
-            #         break
-            #     try:
-            #         img = cv2.resize(img, (hparams.img_size, hparams.img_size))
-            #     except Exception as e:
-            #         all_read = False
-            #         break
-
-            #     window.append(img)
-
-            # if not all_read: continue
-
+            # Get the mel spectrogram from the wav file
             try:
                 wavpath = vidname_no_ext + ".wav"
                 if not isfile(wavpath):
-                    print("wavpath is not file")
-                    return 1           
+                    continue           
                 wav = audio.load_wav(wavpath, hparams.sample_rate)
                 orig_mel = audio.melspectrogram(wav).T
             except Exception as e:
                 continue
 
-            mel = self.crop_audio_window(orig_mel.copy(), img_name)
+            mel = self.crop_audio_window(orig_mel.copy(), start_id)
 
             if (mel.shape[0] != syncnet_mel_step_size):
-                print("mel")
                 continue
             
-            for fname in window_fnames:
-                print(fname.shape)
-            return 0
-            # H x W x 3 * T
-            x = np.concatenate(window, axis=2) / 255.
-            x = x.transpose(2, 0, 1)
-            x = x[:, x.shape[1]//2:]
+            # Reshape and concatenate the npy data ## May want to look at different ways to concatenate the data to better preserve temporal information
+            x_lmks = window_fnames[0].reshape(syncnet_T, -1)
+            x_roll = window_fnames[1][:, None]
+            x_pitch = window_fnames[2][:, None]
+            x_yaw = window_fnames[3][:, None]
+            x = np.concatenate([x_lmks, x_roll, x_pitch, x_yaw], axis=1)
+
+            # # H x W x 3 * T
+            # x = np.concatenate(window, axis=2) / 255.
+            # x = x.transpose(2, 0, 1)
+            # x = x[:, x.shape[1]//2:]
 
             x = torch.FloatTensor(x)
             mel = torch.FloatTensor(mel.T).unsqueeze(0)
