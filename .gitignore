@@ -16,3 +16,4 @@ evaluation/test_filelists/lr*.txt
 *.mp3
 *.pt
 kimi/=2.1.1
+slurm/*.out
