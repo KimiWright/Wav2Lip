@@ -76,39 +76,39 @@ class Dataset(object):
         else:
             return None
 
-    def get_window(self, start_frame):
-        # In the current iteration of get_item, DON'T USE THIS FUNCTION
-        # This function gets a window of frames from a video, the landmarks, however, are not set up a isolated jpg files, 
-        # but as a numpy file with the landmarks for all frames in the video
-        # Get a window of frames from the start_frame
-        start_id = self.get_frame_id(start_frame)
-        vidname = dirname(start_frame)
+    # def get_window(self, start_frame):
+    #     # In the current iteration of get_item, DON'T USE THIS FUNCTION
+    #     # This function gets a window of frames from a video, the landmarks, however, are not set up a isolated jpg files, 
+    #     # but as a numpy file with the landmarks for all frames in the video
+    #     # Get a window of frames from the start_frame
+    #     start_id = self.get_frame_id(start_frame)
+    #     vidname = dirname(start_frame)
 
-        window_fnames = [] # lmks, roll, pitch, yaw window fnames
-        window_fnames_lmks = []
-        window_fnames_roll = []
-        window_fnames_pitch = []
-        window_fnames_yaw = []
-        # Get the window of frames in the range of start_id to start_id + syncnet_T
-        for frame_id in range(start_id, start_id + syncnet_T):
-            frame_id_str = str(frame_id).zfill(ID_LEN)
-            frame_lmks = join(vidname, frame_id_str + '_lmks.npy')
-            frame_roll = join(vidname, frame_id_str + '_roll.npy')
-            frame_pitch = join(vidname, frame_id_str + '_pitch.npy')
-            frame_yaw = join(vidname, frame_id_str + '_yaw.npy')
-            # If the window doesn't contain syncnet_T frames, return None
-            if not isfile(frame_lmks) or not isfile(frame_roll) or not isfile(frame_pitch) or not isfile(frame_yaw):
-                return None
-            window_fnames_lmks.append(frame_lmks)
-            window_fnames_roll.append(frame_roll)
-            window_fnames_pitch.append(frame_pitch)
-            window_fnames_yaw.append(frame_yaw)
-        # Combine lmks, roll, pitch, yaw window fnames into a list
-        window_fnames.append(window_fnames_lmks)
-        window_fnames.append(window_fnames_roll)
-        window_fnames.append(window_fnames_pitch)
-        window_fnames.append(window_fnames_yaw)
-        return window_fnames
+    #     window_fnames = [] # lmks, roll, pitch, yaw window fnames
+    #     window_fnames_lmks = []
+    #     window_fnames_roll = []
+    #     window_fnames_pitch = []
+    #     window_fnames_yaw = []
+    #     # Get the window of frames in the range of start_id to start_id + syncnet_T
+    #     for frame_id in range(start_id, start_id + syncnet_T):
+    #         frame_id_str = str(frame_id).zfill(ID_LEN)
+    #         frame_lmks = join(vidname, frame_id_str + '_lmks.npy')
+    #         frame_roll = join(vidname, frame_id_str + '_roll.npy')
+    #         frame_pitch = join(vidname, frame_id_str + '_pitch.npy')
+    #         frame_yaw = join(vidname, frame_id_str + '_yaw.npy')
+    #         # If the window doesn't contain syncnet_T frames, return None
+    #         if not isfile(frame_lmks) or not isfile(frame_roll) or not isfile(frame_pitch) or not isfile(frame_yaw):
+    #             return None
+    #         window_fnames_lmks.append(frame_lmks)
+    #         window_fnames_roll.append(frame_roll)
+    #         window_fnames_pitch.append(frame_pitch)
+    #         window_fnames_yaw.append(frame_yaw)
+    #     # Combine lmks, roll, pitch, yaw window fnames into a list
+    #     window_fnames.append(window_fnames_lmks)
+    #     window_fnames.append(window_fnames_roll)
+    #     window_fnames.append(window_fnames_pitch)
+    #     window_fnames.append(window_fnames_yaw)
+    #     return window_fnames
 
     def crop_audio_window(self, spec, start_frame_num):
         
@@ -178,8 +178,10 @@ class Dataset(object):
                 # get the window of npy data from start_id to start_id + syncnet_T
                 window_npy = self.get_window_npy(npy_datum, chosen)
                 if window_npy is None:
-                    continue
+                    break
                 window_fnames.append(window_npy)
+            if len(window_fnames) != 4:
+                continue
 
             # Get the mel spectrogram from the wav file
             try:
@@ -216,6 +218,7 @@ class Dataset(object):
 logloss = nn.BCELoss()
 def cosine_loss(a, v, y):
     d = nn.functional.cosine_similarity(a, v)
+    d = (d + 1) / 2 # Normalize to [0, 1]
     loss = logloss(d.unsqueeze(1), y)
 
     return loss
@@ -364,42 +367,14 @@ if __name__ == '__main__':
           checkpoint_dir=checkpoint_dir,
           checkpoint_interval=hparams.syncnet_checkpoint_interval,
           nepochs=hparams.nepochs)
-    # checkpoint_dir = args.checkpoint_dir
-    # checkpoint_path = args.checkpoint_path
-
-    # test_dataset = Dataset('val')
-    # test_file = test_dataset.all_videos[20]
-
-    # test_data_loader = data_utils.DataLoader(
-    #     test_dataset, batch_size= 1,#hparams.syncnet_batch_size, #1,
-    #     num_workers=8)
-    # print("Test Dataloader")
 
     # first_batch = next(iter(test_data_loader))
     # print("first_batch")
 
     # (x, mel, y) = first_batch
-    # print("x shape: ", x.flatten().shape)
-    # # print("mel shape: ", mel.shape)
-    # # print("y: ", y)
-
-    # device = torch.device("cuda" if use_cuda else "cpu")
-    # # Model
-    # model = SyncNet().to(device)
-    # print('total trainable params {}'.format(sum(p.numel() for p in model.parameters() if p.requires_grad)))
-
-    # optimizer = optim.Adam([p for p in model.parameters() if p.requires_grad],
-    #                        lr=hparams.syncnet_lr)
-
-    # print("Loading checkpoint path")
-    # if checkpoint_path is not None:
-    #     load_checkpoint(checkpoint_path, model, optimizer, reset_optimizer=False)
 
     # model.eval()
     # x = x.to(device)
     # mel = mel.to(device)
     # a, v = model(mel, x)
-    # print("a shape: ", a.shape)
-    # print("v shape: ", v.shape)
     # y = y.to(device)
-    # print(cosine_loss(a, v, y))

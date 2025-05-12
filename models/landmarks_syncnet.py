@@ -37,13 +37,11 @@ class SyncNet_landmarks(nn.Module):
         audio_embedding = self.audio_encoder(audio_sequences)
 
         audio_embedding = audio_embedding.view(audio_embedding.size(0), -1)
+        audio_embedding = self.fc(audio_embedding)
+
         face_embedding = face_embedding.view(face_embedding.size(0), -1)
 
         audio_embedding = F.normalize(audio_embedding, p=2, dim=1)
         face_embedding = F.normalize(face_embedding, p=2, dim=1)
-
-        audio_embedding = self.fc(audio_embedding)
-        print(audio_embedding.shape)
-        print(face_embedding.shape)
 
         return audio_embedding, face_embedding
