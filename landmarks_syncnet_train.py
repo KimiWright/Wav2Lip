@@ -1,7 +1,7 @@
 from os.path import dirname, join, basename, isfile
 from tqdm import tqdm
 
-from models import SyncNet_color as SyncNet
+from models import SyncNet_landmarks as SyncNet
 import landmarks_audio as audio
 
 import torch
@@ -214,6 +214,81 @@ class Dataset(object):
 
             return x, mel, y
 
+logloss = nn.BCELoss()
+def cosine_loss(a, v, y):
+    d = nn.functional.cosine_similarity(a, v)
+    loss = logloss(d.unsqueeze(1), y)
+
+    return loss
+
+def train(device, model, train_data_loader, test_data_loader, optimizer,
+          checkpoint_dir=None, checkpoint_interval=None, nepochs=None):
+    global global_step, global_epoch
+    resumed_step = global_step
+    
+    while global_epoch < nepochs:
+        running_loss = 0.
+        prog_bar = tqdm(enumerate(train_data_loader))
+        for step, (x, mel, y) in prog_bar:
+            model.train()
+            optimizer.zero_grad()
+
+            # Transform data to CUDA device
+            x = x.to(device)
+
+            mel = mel.to(device)
+
+            a, v = model(mel, x)
+            y = y.to(device)
+
+            loss = cosine_loss(a, v, y)
+            loss.backward()
+            optimizer.step()
+
+            global_step += 1
+            cur_session_steps = global_step - resumed_step
+            running_loss += loss.item()
+
+            if global_step == 1 or global_step % checkpoint_interval == 0:
+                save_checkpoint(
+                    model, optimizer, global_step, checkpoint_dir, global_epoch)
+
+            if global_step % hparams.syncnet_eval_interval == 0:
+                with torch.no_grad():
+                    eval_model(test_data_loader, global_step, device, model, checkpoint_dir)
+
+            prog_bar.set_description('Loss: {}'.format(running_loss / (step + 1)))
+        print(f"Global_epoch: {global_epoch}")
+        global_epoch += 1
+
+def eval_model(test_data_loader, global_step, device, model, checkpoint_dir):
+    eval_steps = 1400
+    print('Evaluating for {} steps'.format(eval_steps))
+    losses = []
+    while 1:
+        for step, (x, mel, y) in enumerate(test_data_loader):
+
+            model.eval()
+
+            # Transform data to CUDA device
+            x = x.to(device)
+
+            mel = mel.to(device)
+
+            a, v = model(mel, x)
+            y = y.to(device)
+
+            loss = cosine_loss(a, v, y)
+            losses.append(loss.item())
+
+            if step > eval_steps: break
+
+        averaged_loss = sum(losses) / len(losses)
+        print(averaged_loss)
+
+        return
+
+
 # Checkpoint functions should remain the same as in color_syncnet_train.py
 
 def save_checkpoint(model, optimizer, step, checkpoint_dir, epoch):
@@ -255,18 +330,77 @@ def load_checkpoint(path, model, optimizer, reset_optimizer=False):
     return model
 
 if __name__ == '__main__':
+    checkpoint_dir = args.checkpoint_dir
+    checkpoint_path = args.checkpoint_path
+
+    if not os.path.exists(checkpoint_dir): os.mkdir(checkpoint_dir)
+
+    # Dataset and Dataloader setup
     test_dataset = Dataset('val')
-    test_file = test_dataset.all_videos[20]
+    train_dataset = Dataset('train')
+
+    train_data_loader = data_utils.DataLoader(
+        train_dataset, batch_size=hparams.syncnet_batch_size, shuffle=True,
+        num_workers=hparams.num_workers)
 
     test_data_loader = data_utils.DataLoader(
-        test_dataset, batch_size=1, #hparams.syncnet_batch_size,
+        test_dataset, batch_size=hparams.syncnet_batch_size,
         num_workers=8)
-    print("Test Dataloader")
 
-    first_batch = next(iter(test_data_loader))
-    print("first_batch")
+    device = torch.device("cuda" if use_cuda else "cpu")
 
-    (x, mel, y) = first_batch
-    print("x shape: ", x.shape)
-    print("mel shape: ", mel.shape)
-    print("y: ", y)
+    # Model
+    model = SyncNet().to(device)
+    print('total trainable params {}'.format(sum(p.numel() for p in model.parameters() if p.requires_grad)))
+
+    optimizer = optim.Adam([p for p in model.parameters() if p.requires_grad],
+                           lr=hparams.syncnet_lr)
+
+    print("Loading checkpoint path")
+    if checkpoint_path is not None:
+        load_checkpoint(checkpoint_path, model, optimizer, reset_optimizer=False)
+
+    print("Begining Training")
+    train(device, model, train_data_loader, test_data_loader, optimizer,
+          checkpoint_dir=checkpoint_dir,
+          checkpoint_interval=hparams.syncnet_checkpoint_interval,
+          nepochs=hparams.nepochs)
+    # checkpoint_dir = args.checkpoint_dir
+    # checkpoint_path = args.checkpoint_path
+
+    # test_dataset = Dataset('val')
+    # test_file = test_dataset.all_videos[20]
+
+    # test_data_loader = data_utils.DataLoader(
+    #     test_dataset, batch_size= 1,#hparams.syncnet_batch_size, #1,
+    #     num_workers=8)
+    # print("Test Dataloader")
+
+    # first_batch = next(iter(test_data_loader))
+    # print("first_batch")
+
+    # (x, mel, y) = first_batch
+    # print("x shape: ", x.flatten().shape)
+    # # print("mel shape: ", mel.shape)
+    # # print("y: ", y)
+
+    # device = torch.device("cuda" if use_cuda else "cpu")
+    # # Model
+    # model = SyncNet().to(device)
+    # print('total trainable params {}'.format(sum(p.numel() for p in model.parameters() if p.requires_grad)))
+
+    # optimizer = optim.Adam([p for p in model.parameters() if p.requires_grad],
+    #                        lr=hparams.syncnet_lr)
+
+    # print("Loading checkpoint path")
+    # if checkpoint_path is not None:
+    #     load_checkpoint(checkpoint_path, model, optimizer, reset_optimizer=False)
+
+    # model.eval()
+    # x = x.to(device)
+    # mel = mel.to(device)
+    # a, v = model(mel, x)
+    # print("a shape: ", a.shape)
+    # print("v shape: ", v.shape)
+    # y = y.to(device)
+    # print(cosine_loss(a, v, y))
