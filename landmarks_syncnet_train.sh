@@ -1,6 +1,6 @@
 #!/bin/bash --login
 
-#SBATCH --time=5:00:00   # walltime
+#SBATCH --time=20:00:00   # walltime
 #SBATCH --gpus=8
 #SBATCH --mem=100G   # memory per CPU core
 #SBATCH --mail-user=KimiWright64@gmail.com   # email address
@@ -17,4 +17,4 @@ export OMP_NUM_THREADS=$SLURM_CPUS_ON_NODE
 
 # LOAD MODULES, INSERT CODE, AND RUN YOUR PROGRAMS HERE
 mamba activate vsr
-python /home/ksw38/RVL/color_syncnet/Wav2Lip/landmarks_syncnet_train.py
+python /home/ksw38/RVL/color_syncnet/Wav2Lip/landmarks_syncnet_train.py --checkpoint_path /home/ksw38/RVL/color_syncnet/Wav2Lip/landmarks_checkpoints/checkpoint_step000010000.pth
