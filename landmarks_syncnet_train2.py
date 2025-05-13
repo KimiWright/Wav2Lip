@@ -1,7 +1,7 @@
 from os.path import dirname, join, basename, isfile
 from tqdm import tqdm
 
-from models import SyncNet_landmarks as SyncNet
+from models import SyncNet_landmarks2 as SyncNet
 import landmarks_audio as audio
 
 import torch
@@ -171,11 +171,6 @@ class Dataset(object):
             x_yaw = window_fnames[3][:, None]
             x = np.concatenate([x_lmks, x_roll, x_pitch, x_yaw], axis=1)
 
-            # # H x W x 3 * T
-            # x = np.concatenate(window, axis=2) / 255.
-            # x = x.transpose(2, 0, 1)
-            # x = x[:, x.shape[1]//2:]
-
             x = torch.FloatTensor(x)
             mel = torch.FloatTensor(mel.T).unsqueeze(0)
 
@@ -333,14 +328,3 @@ if __name__ == '__main__':
           checkpoint_dir=checkpoint_dir,
           checkpoint_interval=hparams.syncnet_checkpoint_interval,
           nepochs=hparams.nepochs)
-
-    # first_batch = next(iter(test_data_loader))
-    # print("first_batch")
-
-    # (x, mel, y) = first_batch
-
-    # model.eval()
-    # x = x.to(device)
-    # mel = mel.to(device)
-    # a, v = model(mel, x)
-    # y = y.to(device)
