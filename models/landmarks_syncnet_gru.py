@@ -43,14 +43,12 @@ class SyncNet_landmarks_gru(nn.Module):
     def forward(self, audio_sequences, face_sequences): # audio_sequences := (B, dim, T)
         # print(face_sequences.shape)
         face_embedding, hidden_state = self.face_encoder(face_sequences)
-        print(face_embedding.shape)
         seq_len = face_embedding.size(1)
         audio_embedding = self.audio_encoder(audio_sequences)
         audio_embedding = audio_embedding.squeeze().unsqueeze(1).expand(-1, seq_len, -1)
-        print(audio_embedding.shape)
 
-        # audio_embedding = audio_embedding.view(audio_embedding.size(0), -1)
-        # face_embedding = face_embedding.view(face_embedding.size(0), -1)
+        face_embedding = face_embedding.reshape(face_embedding.size(0), -1)
+        audio_embedding = audio_embedding.reshape(audio_embedding.size(0), -1)
 
         audio_embedding = F.normalize(audio_embedding, p=2, dim=1)
         face_embedding = F.normalize(face_embedding, p=2, dim=1)
