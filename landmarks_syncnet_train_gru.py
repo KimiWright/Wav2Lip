@@ -201,16 +201,20 @@ def train(device, model, train_data_loader, test_data_loader, optimizer,
 
             mel = mel.to(device)
 
-            a, v = model(mel, x)
-            y = y.to(device)
+            try:
+                a, v = model(mel, x)
+                y = y.to(device)
 
-            loss = cosine_loss(a, v, y)
-            loss.backward()
-            optimizer.step()
+                loss = cosine_loss(a, v, y)
+                loss.backward()
+                optimizer.step()
 
-            global_step += 1
-            cur_session_steps = global_step - resumed_step
-            running_loss += loss.item()
+                global_step += 1
+                cur_session_steps = global_step - resumed_step
+                running_loss += loss.item()
+            except Exception as e:
+                print("Error in training step: ", e)
+                continue
 
             if global_step == 1 or global_step % checkpoint_interval == 0:
                 save_checkpoint(
