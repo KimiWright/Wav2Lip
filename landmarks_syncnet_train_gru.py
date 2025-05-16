@@ -234,8 +234,11 @@ def eval_model(test_data_loader, global_step, device, model, checkpoint_dir):
     losses = []
     while 1:
         for step, (x, mel, y) in enumerate(test_data_loader):
-
-            model.eval()
+            try:
+                model.eval()
+            except Exception as e:
+                print("Error in evaluation step: ", e)
+                continue
 
             # Transform data to CUDA device
             x = x.to(device)
