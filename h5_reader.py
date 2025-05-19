@@ -1,7 +1,8 @@
 import os
 import h5py
 
-path = r"C:\Users\Kimi\.cache\kagglehub\datasets\adrianlubitz\vvadlrs3\versions\4"
+# path = r"C:\Users\Kimi\.cache\kagglehub\datasets\adrianlubitz\vvadlrs3\versions\4"
+path = r"/home/ksw38/.cache/kagglehub/datasets/adrianlubitz/vvadlrs3/versions/4"
 files = os.listdir(path)
 
 face_img_h5_path = os.path.join(path, files[1])
