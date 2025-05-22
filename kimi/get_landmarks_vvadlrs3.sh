@@ -17,4 +17,4 @@ export OMP_NUM_THREADS=$SLURM_CPUS_ON_NODE
 
 # LOAD MODULES, INSERT CODE, AND RUN YOUR PROGRAMS HERE
 mamba activate vsr
-python /home/ksw38/RVL/color_syncnet/Wav2Lip/kimi/get_landmarks.py
+python /home/ksw38/RVL/color_syncnet/Wav2Lip/kimi/get_landmarks_vvadlrs3.py

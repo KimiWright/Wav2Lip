@@ -1,0 +1,5453 @@
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+I0000 00:00:1747941622.929731  997185 gl_context_egl.cc:85] Successfully initialized EGL. Major : 1 Minor: 5
+I0000 00:00:1747941623.040605  997534 gl_context.cc:369] GL version: 3.2 (OpenGL ES 3.2 NVIDIA 570.133.20), renderer: Tesla P100-PCIE-16GB/PCIe/SSE2
+W0000 00:00:1747941623.071796  997185 face_landmarker_graph.cc:174] Sets FaceBlendshapesGraph acceleration to xnnpack by default.
+INFO: Created TensorFlow Lite XNNPACK delegate for CPU.
+W0000 00:00:1747941623.187185  997542 inference_feedback_manager.cc:114] Feedback manager requires a model with a single signature inference. Disabling support for feedback tensors.
+W0000 00:00:1747941623.303108  997544 inference_feedback_manager.cc:114] Feedback manager requires a model with a single signature inference. Disabling support for feedback tensors.
+/home/ksw38/RVL/color_syncnet/Wav2Lip/kimi/get_landmarks.py:40: DeprecationWarning: Please import `Rotation` from the `scipy.spatial.transform` namespace; the `scipy.spatial.transform.rotation` namespace is deprecated and will be removed in SciPy 2.0.0.
+  from facetools import genMediapipeInfo,norm_lmks
+I0000 00:00:1747941627.334740  997185 gl_context_egl.cc:85] Successfully initialized EGL. Major : 1 Minor: 5
+I0000 00:00:1747941627.348016  997574 gl_context.cc:369] GL version: 3.2 (OpenGL ES 3.2 NVIDIA 570.133.20), renderer: Tesla P100-PCIE-16GB/PCIe/SSE2
+W0000 00:00:1747941627.361615  997582 inference_feedback_manager.cc:114] Feedback manager requires a model with a single signature inference. Disabling support for feedback tensors.
+/home/ksw38/.conda/envs/vsr/lib/python3.10/site-packages/numpy/_core/fromnumeric.py:3904: RuntimeWarning: Mean of empty slice.
+  return _methods._mean(a, axis=axis, dtype=dtype,
+/home/ksw38/.conda/envs/vsr/lib/python3.10/site-packages/numpy/_core/_methods.py:147: RuntimeWarning: invalid value encountered in scalar divide
+  ret = ret.dtype.type(ret / rcount)
+Processing 00002...
+Imported cv2 and read video frames
+NOTE: DECRYPTION UNSUCESSFUL. PLEASE INCLUDE NESSESARY MODELS IN DATA DIRECTORY.
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00002...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00009...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00002...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00008...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00005...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00005...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00003...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00002...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00003...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00002...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00002...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00005...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00003...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00002...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00002...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00002...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00003...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00005...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00002...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00003...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00002...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00002...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00005...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00003...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00002...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00004...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00004...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00002...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00004...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00003...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00003...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00002...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00003...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00003...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00002...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00003...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00002...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00003...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00002...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00003...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00002...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00003...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00004...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00002...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00003...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00003...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00002...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00002...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00002...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00004...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00004...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00002...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00002...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00002...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00003...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00002...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00003...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00002...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00003...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00002...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00002...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00002...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00007...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00003...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00002...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00003...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00002...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00002...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00002...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00002...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00002...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00007...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00002...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00003...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00002...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00002...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00002...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00010...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00003...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00002...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00007...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00005...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00002...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00006...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00005...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00002...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00004...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00002...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00002...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00003...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00003...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00002...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00002...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00003...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00003...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00002...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00002...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00004...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00002...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00003...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00003...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00005...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00002...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00002...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00005...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00007...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00002...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00002...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00002...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00006...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00003...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00004...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00004...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00002...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00002...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00002...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00003...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00003...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00002...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00002...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00003...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00007...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00003...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00002...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00010...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00002...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00005...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00002...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00003...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00003...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00004...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00004...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00006...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00002...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00003...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00002...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00002...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00004...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00002...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00002...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00002...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00002...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00009...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00005...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00008...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00002...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00003...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00004...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00003...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00006...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00002...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00002...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00005...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00002...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00002...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00002...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00002...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00002...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00004...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00002...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00002...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00003...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00002...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00002...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00002...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00002...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00010...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00005...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00014...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00003...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00002...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00002...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00003...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00003...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00002...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00003...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00003...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00006...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00002...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00008...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00005...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00002...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00002...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00002...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00003...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00002...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00002...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00007...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00009...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00003...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00003...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00002...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00005...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00003...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00009...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00002...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00002...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00004...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00002...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00002...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00010...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00002...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00003...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00002...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00004...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00004...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00002...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00007...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00003...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00004...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00003...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00003...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00002...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00003...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00014...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00002...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00002...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00004...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00003...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00003...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00002...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00004...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00002...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00004...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00003...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00002...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00002...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00002...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00002...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00003...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00005...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00006...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00003...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00005...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00002...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00002...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00002...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00002...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00003...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00005...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00002...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00002...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00002...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00002...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00002...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00002...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00003...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00002...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00002...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00002...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00002...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00003...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00002...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00003...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00004...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00003...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00004...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00003...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00006...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00004...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00002...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00003...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00002...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00002...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00002...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00002...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00002...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00004...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00003...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00002...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00004...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00002...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00002...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00002...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00002...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00002...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00004...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00002...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00011...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00002...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00002...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00002...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00002...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00002...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00004...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00008...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00003...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00002...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00002...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00002...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00003...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00002...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00002...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00004...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00002...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00003...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00007...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00002...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00002...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00008...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00006...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00006...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00002...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00002...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00002...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00002...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00006...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00003...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00009...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00003...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00002...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00002...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00003...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00006...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00002...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00002...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00003...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00002...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00002...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00003...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00002...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00005...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00002...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00002...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00003...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00002...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00002...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00003...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00005...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00003...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00002...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00003...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00003...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00002...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00005...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00003...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00003...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00002...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00002...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00003...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00005...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00007...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00002...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00003...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00002...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00003...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00003...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00002...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00003...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00002...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00004...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00005...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00003...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00005...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00009...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00002...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00002...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00007...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00011...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00004...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00002...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00002...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00002...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00004...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00005...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00002...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00003...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00002...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00002...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00002...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00006...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00011...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00003...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00005...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00003...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00003...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00003...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00002...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00002...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00002...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00003...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00002...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00003...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00002...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00007...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00002...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00003...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00003...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00003...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00003...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00002...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00002...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00002...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00003...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00005...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00005...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00002...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00002...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00005...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00006...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00002...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00003...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00002...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00002...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00002...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00005...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00002...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00002...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00003...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00004...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00003...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00002...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00002...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00004...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00002...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00002...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00002...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00003...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00005...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00004...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00002...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00003...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00002...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00004...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00003...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00007...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00002...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00005...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00002...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00002...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00004...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00002...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00004...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00002...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00003...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00058...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00022...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00002...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00005...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00002...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00004...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00004...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00002...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00006...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00004...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00004...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00003...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00002...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00002...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00002...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00003...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00003...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00002...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00002...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00009...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00002...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00006...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00003...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00002...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00005...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00002...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00002...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00002...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00006...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00005...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00002...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00005...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00003...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00003...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00005...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00003...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00005...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00004...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00003...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00003...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00009...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00002...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00003...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00006...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00002...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00003...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00002...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00003...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00002...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00011...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00019...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00011...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00015...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00011...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00009...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00012...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00003...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00004...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00002...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00004...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00004...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00011...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00002...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00003...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00006...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00004...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00038...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00029...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00008...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00015...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00002...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00003...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00016...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00020...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00002...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00006...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00008...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00014...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00009...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00015...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00022...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00006...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00007...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00025...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00016...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00010...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00002...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00019...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00002...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00006...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00006...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00014...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00037...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00011...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00007...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00006...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00014...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00010...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00003...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00011...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00005...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00006...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00010...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00004...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00011...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00021...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00004...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00003...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00002...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00009...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00007...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00008...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00006...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00007...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00016...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00012...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00002...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00008...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00007...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00018...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00016...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00008...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00007...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00015...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00008...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00013...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00027...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00007...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00013...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00003...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00002...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00029...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00006...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00004...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00027...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00018...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00002...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00002...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00008...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00003...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00010...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00012...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00005...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00013...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00005...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00003...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00007...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00008...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00006...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00013...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00004...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00019...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00007...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00005...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00027...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00006...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00008...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00013...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00004...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00002...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00010...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00003...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00004...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00014...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00006...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00007...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00017...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00012...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00023...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00027...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00002...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00018...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00004...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00003...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00007...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00005...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00002...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00008...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00008...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00002...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00011...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00002...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00022...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00004...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00003...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00005...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00006...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00023...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00009...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00018...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00035...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00004...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00003...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00007...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00015...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00004...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00013...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00007...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00008...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00002...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00011...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00005...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00006...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00007...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00006...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00025...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00018...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00003...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00006...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00002...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00014...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00002...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00003...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00013...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00003...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00002...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00011...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00005...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00005...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00012...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00004...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00003...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00006...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00010...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00016...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00005...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00025...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00020...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00017...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00004...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00005...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00008...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00012...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00013...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00005...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00012...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00003...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00005...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00016...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00005...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00006...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00014...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00008...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00011...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00003...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00002...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00004...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00008...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00003...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00007...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00017...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00028...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00007...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00003...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00011...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00010...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00011...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00006...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00002...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00003...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00003...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00006...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00008...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00005...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00011...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00004...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00011...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00012...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00015...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00019...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00002...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00011...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00019...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00005...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00002...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00007...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00004...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00010...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00010...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00011...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00005...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00002...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00031...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00004...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00005...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00013...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00004...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00006...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00002...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00007...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00004...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00006...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00012...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00003...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00004...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00004...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00024...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00008...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00017...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00008...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00015...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00018...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00007...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00011...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00002...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00005...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00005...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00007...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00019...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00010...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00006...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00009...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00016...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00009...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00003...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00003...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00003...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00008...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00005...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00010...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00004...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00008...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00003...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00007...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00010...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00002...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00003...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00002...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00004...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00003...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00005...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00009...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00006...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00008...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00003...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00008...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00008...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00004...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00008...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00016...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00016...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00007...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00015...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00002...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00013...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00003...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00015...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00017...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00002...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00029...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00003...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00005...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00005...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00002...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00009...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00012...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00002...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00003...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00001...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00003...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00003...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
+Processing 00006...
+Imported cv2 and read video frames
+Imported genMediapipeInfo and norm_lmks
+Generated landmarks
