@@ -118,7 +118,13 @@ class Dataset(object):
             # retrive the data from the npy files
             npy_data = []
             for npy_file in npy_files:
-                npy_data.append(np.load(npy_file))
+                try:
+                    npy_data.append(np.load(npy_file))
+                except Exception as e:
+                    print(f"Error loading npy file {npy_file}: {e}")
+                    break
+            if len(npy_data) != 4:
+                continue
 
             num_frames = npy_data[0].shape[0]
 

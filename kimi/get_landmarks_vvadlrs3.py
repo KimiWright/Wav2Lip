@@ -50,7 +50,10 @@ with h5py.File(source_main_path, 'r') as f:
     # save_landmarks(x_train, "x_train")
 
     # Save the ground truth labels
-    # np.save(os.path.join(out_main_path, "y_test"), y_test)
+    print("Saving ground truth labels...")
+    np.save(os.path.join(out_main_path, "y_test"), y_test)
+    print("Saved ground truth labels.")
+    print(os.path.join(out_main_path, "y_test"))
     # np.save(os.path.join(out_main_path, "y_train"), y_train)
     
 
