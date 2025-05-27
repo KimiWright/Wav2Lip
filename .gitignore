@@ -18,3 +18,4 @@ evaluation/test_filelists/lr*.txt
 kimi/=2.1.1
 slurm/*.out
 core.2533585
+tmp
