@@ -263,6 +263,19 @@ def computeDist(feat1,feat2, vshift=15):
         dists_npy = np.array([ dist.numpy() for dist in dists ])
         return offset.numpy(), conf.numpy(), dists_npy, fconfm
 
+def test_accuracy(y, blankTheshold, print_results=True):
+    true_positive_rate = sum(fconfm[y == 1] < blankThreshold) / sum(y == 1)
+    false_positive_rate = sum(fconfm[y == 0] < blankThreshold) / sum(y == 0)
+    true_negative_rate = sum(fconfm[y == 0] >= blankThreshold) / sum(y == 0)
+    false_negative_rate = sum(fconfm[y == 1] >= blankThreshold) / sum(y == 1)
+    accuracy = ((true_positive_rate * sum(y == 1)) + (true_negative_rate * sum(y == 0))) / len(y)
+    if print_results:
+        print(f"Blank Threshold: {blankThreshold:.3f}, Accuracy: {accuracy:.3f}")
+        print(f"True Positive Rate: {true_positive_rate:.3f}, False Positive Rate: {false_positive_rate:.3f}")
+        print(f"True Negative Rate: {true_negative_rate:.3f}, False Negative Rate: {false_negative_rate:.3f}")
+        print()
+    return accuracy
+
 if __name__ == '__main__':
     # Dataset and Dataloader setup
     test_dataset = Dataset(args.data_root, args.ground_truth)
@@ -305,22 +318,61 @@ if __name__ == '__main__':
     optimizer = optim.Adam([p for p in model.parameters() if p.requires_grad],
                            lr=hparams.syncnet_lr)
 
-    with torch.no_grad():
-        ## Temporary fix, only use the first 5 frames so things can be evaluated
-        ## This is how SyncNet is set up, it takes 5 frames at a time, anyway
-        x_video = stacker(x_video, device)
-        x_still = stacker(x_still, device)
+    best_accuracies = []
+    best_blankThresholds = []
+    for step, (x_video, x_still, y) in enumerate(test_data_loader):
+        with torch.no_grad():
+            ## Temporary fix, only use the first 5 frames so things can be evaluated
+            ## This is how SyncNet is set up, it takes 5 frames at a time, anyway
+            x_video = stacker(x_video, device)
+            x_still = stacker(x_still, device)
+            
+            y = y.to(device)
+
+            model.eval()
+            feat_video = model(x_video)
+            # print("Model output shape:", feat_video.shape)
+            feat_still = model(x_still)
+            # print("Model still output shape:", feat_still.shape)
+
+            offset, conf, dists_npy, fconfm = computeDist(feat_video, feat_still, vshift=15)
+
+            accuracies = []
+            max_accuracy = 0
+            best_blankThreshold = -1
+            for i in np.arange(-1, 1, 0.01):
+                blankThreshold = i
+                acc = test_accuracy(y, blankThreshold, False)
+                accuracies.append(acc)
+                if acc > max_accuracy:
+                    max_accuracy = acc
+                    best_blankThreshold = blankThreshold
+            print(f"Best accuracy: {max_accuracy:.3f} at threshold {best_blankThreshold:.3f}")
+            best_accuracies.append(max_accuracy)
+            best_blankThresholds.append(best_blankThreshold)
+    print(best_accuracies)
+    print(best_blankThresholds)
         
-        y = y.to(device)
 
-        model.eval()
-        feat_video = model(x_video)
-        print("Model output shape:", feat_video.shape)
-        feat_still = model(x_still)
-        print("Model still output shape:", feat_still.shape)
+                # blankThreshold = -1
+        # blankLabels = fconfm < blankThreshold
 
-        dist = computeDist(feat_video, feat_still, vshift=15)
-        print("Distance:", dist)
+        # for i in range(len(fconfm)):
+        #     print(f"Truth: {y[i].item()}, fconfm: {fconfm[i]:.3f}, Label: {blankLabels[i].item()}")
+
+        # true_labels = []
+        # false_labels = []
+        # for i in range(len(fconfm)):
+        #     if y[i].item() == 1:
+        #         true_labels.append(fconfm[i])
+        #     else:
+        #         false_labels.append(fconfm[i])
+        # print(f"True labels: {len(true_labels)}, False labels: {len(false_labels)}")
+
+        # print(max(true_labels), min(true_labels), np.mean(true_labels))
+        # print(true_labels)
+        # print(max(false_labels), min(false_labels), np.mean(false_labels))
+        # print(false_labels)
             
     # s = SyncNetInstance()
     # s.loadParameters(checkpoint_path, use_cuda=use_cuda)
