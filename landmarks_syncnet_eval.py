@@ -2,6 +2,7 @@ from os.path import dirname, join, basename, isfile
 from tqdm import tqdm
 
 from models import SyncNet_landmarks_gru2 as SyncNet
+from models import lmks_only as lmks_only
 import landmarks_audio as audio
 
 import torch
@@ -21,6 +22,10 @@ from os import path
 
 import re
 
+from scipy import signal
+
+# from lmks_activeFrameDetector import SyncNetInstance
+
 parser = argparse.ArgumentParser(description='Code to train the expert lip-sync discriminator')
 
 parser.add_argument("--data_root", help="Root folder of the preprocessed landmarks for LRS3 VVAD dataset", default='/home/ksw38/groups/grp_landmarks/nobackup/archive/landmarks_vvadlrs3/main/x_test/')
@@ -33,7 +38,7 @@ args = parser.parse_args()
 
 global_step = 0
 global_epoch = 0
-use_cuda = torch.cuda.is_available()
+use_cuda = False#torch.cuda.is_available()
 print('use_cuda: {}'.format(use_cuda))
 
 syncnet_T = 5
@@ -224,13 +229,41 @@ def collate_variable_length(batch):
     
     return x_v_batch, x_s_batch, y_batch
 
+def stacker(batch, device):
+    ## Temporary fix, only use the first 5 frames so things can be evaluated
+    ## This is how SyncNet is set up, it takes 5 frames at a time, anyway
+    first_5_frames = [t[:5] for t in batch]  # each is now (5, 187)
+    stacked = torch.Tensor(np.stack(first_5_frames)) 
+    stacked_batch = stacked.to(device)  # (B, 5, 187)
+    return stacked_batch
+
+def calc_pdist(feat1, feat2, vshift=10):
+    win_size = vshift*2+1
+    feat2p = torch.nn.functional.pad(feat2,(0,0,vshift,vshift))
+    dists = []
+    for i in range(0,len(feat1)):
+        dists.append(torch.nn.functional.pairwise_distance(feat1[[i],:].repeat(win_size, 1), feat2p[i:i+win_size,:]))
+    return dists
+
+def computeDist(feat1,feat2, vshift=15):
+        dists = calc_pdist(feat1,feat2,vshift=vshift)
+        mdist = torch.mean(torch.stack(dists,1),1)
+        
+        minval, minidx = torch.min(mdist,0)
+        offset = vshift-minidx
+        conf   = torch.median(mdist) - minval
+
+        fdist   = np.stack([dist[minidx].numpy() for dist in dists])
+        # fdist   = numpy.pad(fdist, (3,3), 'constant', constant_values=15)
+        fconf   = torch.median(mdist).numpy() - fdist
+        fconfm  = signal.medfilt(fconf,kernel_size=9)
+        
+        np.set_printoptions(formatter={'float': '{: 0.3f}'.format})
+
+        dists_npy = np.array([ dist.numpy() for dist in dists ])
+        return offset.numpy(), conf.numpy(), dists_npy, fconfm
 
 if __name__ == '__main__':
-    # checkpoint_dir = args.checkpoint_dir
-    # checkpoint_path = args.checkpoint_path
-
-    # if not os.path.exists(checkpoint_dir): os.mkdir(checkpoint_dir)
-
     # Dataset and Dataloader setup
     test_dataset = Dataset(args.data_root, args.ground_truth)
 
@@ -239,30 +272,68 @@ if __name__ == '__main__':
     num_workers=8, collate_fn=collate_variable_length)
 
     device = torch.device("cuda" if use_cuda else "cpu")
-    model = SyncNet().to(device)
-    print('total trainable params {}'.format(sum(p.numel() for p in model.parameters() if p.requires_grad)))
-
-    optimizer = optim.Adam([p for p in model.parameters() if p.requires_grad],
-                           lr=hparams.syncnet_lr)
+    # model = SyncNet().to(device)
+    # print('total trainable params {}'.format(sum(p.numel() for p in model.parameters() if p.requires_grad)))
 
     checkpoint_dir = args.checkpoint_dir
     checkpoint_path = args.checkpoint_path
-
-    # print("Loading checkpoint path")
-    if checkpoint_path is not None:
-        load_checkpoint(checkpoint_path, model, optimizer, reset_optimizer=False)
-    else:
-        checkpoint_path = os.listdir(checkpoint_dir)[-1]
-        checkpoint_path = os.path.join(checkpoint_dir, checkpoint_path)
-        load_checkpoint(checkpoint_path, model, optimizer, reset_optimizer=False)
-    print("Loaded checkpoint path: ", checkpoint_path)
 
     print("Evaluating model")
     first_batch = next(iter(test_data_loader))
     x_video, x_still, y = first_batch
     print(x_video[0].shape)
     print(x_still[0].shape)
-    print(y)
+    print(y.shape)
 
-    ## Waaaaaiiit..... This is set up for the mel spectrograms, not the landmarks
+    if checkpoint_path is None:
+        checkpoint_path = os.listdir(checkpoint_dir)[-1]
+        checkpoint_path = os.path.join(checkpoint_dir, checkpoint_path)
+
+    checkpoint = torch.load(checkpoint_path, map_location='cpu')
+    full_state_dict = checkpoint['state_dict']
+
+    face_state_dict = {k: v for k, v in full_state_dict.items() if k.startswith('face')}
+
+    model = lmks_only().to(device)
+    missing, unexpected = model.load_state_dict(face_state_dict, strict=False)
+    if missing:
+        print("Missing keys in the state_dict:", missing)
+    if unexpected:
+        print("Unexpected keys in the state_dict:", unexpected)
+    print('total trainable params {}'.format(sum(p.numel() for p in model.parameters() if p.requires_grad)))
+
+    optimizer = optim.Adam([p for p in model.parameters() if p.requires_grad],
+                           lr=hparams.syncnet_lr)
+
+    with torch.no_grad():
+        ## Temporary fix, only use the first 5 frames so things can be evaluated
+        ## This is how SyncNet is set up, it takes 5 frames at a time, anyway
+        x_video = stacker(x_video, device)
+        x_still = stacker(x_still, device)
+        
+        y = y.to(device)
+
+        model.eval()
+        feat_video = model(x_video)
+        print("Model output shape:", feat_video.shape)
+        feat_still = model(x_still)
+        print("Model still output shape:", feat_still.shape)
+
+        dist = computeDist(feat_video, feat_still, vshift=15)
+        print("Distance:", dist)
+            
+    # s = SyncNetInstance()
+    # s.loadParameters(checkpoint_path, use_cuda=use_cuda)
+    # s.eval()
+
+    # # print("Loading checkpoint path")
+    # if checkpoint_path is not None:
+    #     load_checkpoint(checkpoint_path, model, optimizer, reset_optimizer=False)
+    # else:
+    #     checkpoint_path = os.listdir(checkpoint_dir)[-1]
+    #     checkpoint_path = os.path.join(checkpoint_dir, checkpoint_path)
+    #     load_checkpoint(checkpoint_path, model, optimizer, reset_optimizer=False)
+    # print("Loaded checkpoint path: ", checkpoint_path)
+
+    
     
