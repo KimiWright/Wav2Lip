@@ -154,32 +154,42 @@ def cosine_loss(a, v, y):
 
     return loss
 
-def eval_model(test_data_loader, global_step, device, model, checkpoint_dir):
+def eval_model(test_data_loader, device, model):
     eval_steps = 1400
     print('Evaluating for {} steps'.format(eval_steps))
-    losses = []
-    while 1:
-        for step, (x, mel, y) in enumerate(test_data_loader):
-
-            model.eval()
-
-            # Transform data to CUDA device
-            x = x.to(device)
-
-            mel = mel.to(device)
-
-            a, v = model(mel, x)
+    best_accuracies = []
+    best_blankThresholds = []
+    for step, (x_video, x_still, y) in enumerate(test_data_loader):
+        with torch.no_grad():
+            x_video = stacker(x_video, device)
+            x_still = stacker(x_still, device)
+           
             y = y.to(device)
 
-            loss = cosine_loss(a, v, y)
-            losses.append(loss.item())
+            feat_video = model(x_video)
+            # print("Model output shape:", feat_video.shape)
+            feat_still = model(x_still)
+            # print("Model still output shape:", feat_still.shape)
 
-            if step > eval_steps: break
+            offset, conf, dists_npy, fconfm = computeDist(feat_video, feat_still, vshift=15)
+            accuracies = []
+            max_accuracy = 0
+            best_blankThreshold = -1
+            for i in np.arange(-1, 1, 0.01):
+                blankThreshold = i
+                acc = test_accuracy(y, blankThreshold, fconfm, False)
+                accuracies.append(acc)
+                if acc > max_accuracy:
+                    max_accuracy = acc
+                    best_blankThreshold = blankThreshold
+            print(f"Best accuracy: {max_accuracy:.3f} at threshold {best_blankThreshold:.3f}")
+            best_accuracies.append(max_accuracy)
+            best_blankThresholds.append(best_blankThreshold)
 
-        averaged_loss = sum(losses) / len(losses)
-        print(averaged_loss)
-
-        return
+    print("Accurracy", np.average(best_accuracies))
+    print("blankThreshold", np.average(best_blankThresholds))
+    print("Best accuracies:", best_accuracies)
+    print("Best blank thresholds:", best_blankThresholds)
 
 
 # Checkpoint functions should remain the same as in color_syncnet_train.py
@@ -263,7 +273,7 @@ def computeDist(feat1,feat2, vshift=15):
         dists_npy = np.array([ dist.numpy() for dist in dists ])
         return offset.numpy(), conf.numpy(), dists_npy, fconfm
 
-def test_accuracy(y, blankTheshold, print_results=True):
+def test_accuracy(y, blankThreshold, fconfm, print_results=True):
     true_positive_rate = sum(fconfm[y == 1] < blankThreshold) / sum(y == 1)
     false_positive_rate = sum(fconfm[y == 0] < blankThreshold) / sum(y == 0)
     true_negative_rate = sum(fconfm[y == 0] >= blankThreshold) / sum(y == 0)
@@ -275,6 +285,21 @@ def test_accuracy(y, blankTheshold, print_results=True):
         print(f"True Negative Rate: {true_negative_rate:.3f}, False Negative Rate: {false_negative_rate:.3f}")
         print()
     return accuracy
+
+def load_face_model(checkpoint_path, device, startswith='face'):
+    checkpoint = torch.load(checkpoint_path, map_location='cpu')
+    full_state_dict = checkpoint['state_dict']
+
+    face_state_dict = {k: v for k, v in full_state_dict.items() if k.startswith("face")}
+
+    model = lmks_only().to(device)
+    missing, unexpected = model.load_state_dict(face_state_dict, strict=False)
+    if missing:
+        print("Missing keys in the state_dict:", missing)
+    if unexpected:
+        print("Unexpected keys in the state_dict:", unexpected)
+    print('total trainable params {}'.format(sum(p.numel() for p in model.parameters() if p.requires_grad)))
+    return model
 
 if __name__ == '__main__':
     # Dataset and Dataloader setup
@@ -291,67 +316,18 @@ if __name__ == '__main__':
     checkpoint_dir = args.checkpoint_dir
     checkpoint_path = args.checkpoint_path
 
-    print("Evaluating model")
-    first_batch = next(iter(test_data_loader))
-    x_video, x_still, y = first_batch
-    print(x_video[0].shape)
-    print(x_still[0].shape)
-    print(y.shape)
-
+    # If no checkpoint path is provided, load the latest checkpoint from the directory
     if checkpoint_path is None:
         checkpoint_path = os.listdir(checkpoint_dir)[-1]
         checkpoint_path = os.path.join(checkpoint_dir, checkpoint_path)
 
-    checkpoint = torch.load(checkpoint_path, map_location='cpu')
-    full_state_dict = checkpoint['state_dict']
-
-    face_state_dict = {k: v for k, v in full_state_dict.items() if k.startswith('face')}
-
-    model = lmks_only().to(device)
-    missing, unexpected = model.load_state_dict(face_state_dict, strict=False)
-    if missing:
-        print("Missing keys in the state_dict:", missing)
-    if unexpected:
-        print("Unexpected keys in the state_dict:", unexpected)
-    print('total trainable params {}'.format(sum(p.numel() for p in model.parameters() if p.requires_grad)))
+    model = load_face_model(checkpoint_path, device)
 
     optimizer = optim.Adam([p for p in model.parameters() if p.requires_grad],
                            lr=hparams.syncnet_lr)
+    
 
-    best_accuracies = []
-    best_blankThresholds = []
-    for step, (x_video, x_still, y) in enumerate(test_data_loader):
-        with torch.no_grad():
-            ## Temporary fix, only use the first 5 frames so things can be evaluated
-            ## This is how SyncNet is set up, it takes 5 frames at a time, anyway
-            x_video = stacker(x_video, device)
-            x_still = stacker(x_still, device)
-            
-            y = y.to(device)
-
-            model.eval()
-            feat_video = model(x_video)
-            # print("Model output shape:", feat_video.shape)
-            feat_still = model(x_still)
-            # print("Model still output shape:", feat_still.shape)
-
-            offset, conf, dists_npy, fconfm = computeDist(feat_video, feat_still, vshift=15)
-
-            accuracies = []
-            max_accuracy = 0
-            best_blankThreshold = -1
-            for i in np.arange(-1, 1, 0.01):
-                blankThreshold = i
-                acc = test_accuracy(y, blankThreshold, False)
-                accuracies.append(acc)
-                if acc > max_accuracy:
-                    max_accuracy = acc
-                    best_blankThreshold = blankThreshold
-            print(f"Best accuracy: {max_accuracy:.3f} at threshold {best_blankThreshold:.3f}")
-            best_accuracies.append(max_accuracy)
-            best_blankThresholds.append(best_blankThreshold)
-    print(best_accuracies)
-    print(best_blankThresholds)
+    eval_model(test_data_loader, device, model)
         
 
                 # blankThreshold = -1
