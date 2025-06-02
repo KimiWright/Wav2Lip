@@ -171,7 +171,7 @@ def eval_model(test_data_loader, device, model):
             feat_still = model(x_still)
             # print("Model still output shape:", feat_still.shape)
 
-            offset, conf, dists_npy, fconfm = computeDist(feat_video, feat_still, vshift=15)
+            fconfm = computeDist(feat_video, feat_still, vshift=15)
             accuracies = []
             max_accuracy = 0
             best_blankThreshold = -1
@@ -186,11 +186,56 @@ def eval_model(test_data_loader, device, model):
             best_accuracies.append(max_accuracy)
             best_blankThresholds.append(best_blankThreshold)
 
-    print("Accurracy", np.average(best_accuracies))
-    print("blankThreshold", np.average(best_blankThresholds))
+    print("Average Accurracy", np.average(best_accuracies))
+    print("Average blankThreshold", np.average(best_blankThresholds))
     print("Best accuracies:", best_accuracies)
     print("Best blank thresholds:", best_blankThresholds)
 
+def eval_model_batch_size_1(test_data_loader, device, model):
+    print("Evaluating model with batch size 1")
+    accuracies = []
+    blankThresholds = []
+    true_positives = []
+    true_negatives = []
+    false_positives = []
+    false_negatives = []
+    ys = []
+    best_accuracy = 0
+    best_blankThreshold = -1
+    with torch.no_grad():
+        for i in np.arange(-1, 1, 0.01):
+            for step, (x_video, x_still, y) in enumerate(test_data_loader):
+                x_video = x_video.to(torch.float32).to(device)
+                x_still = x_still.to(torch.float32).to(device)
+                y = y.to(device)
+                feat_video = model(x_video)
+                feat_still = model(x_still)
+
+                # offset, conf, dists_npy, fconfm = computeDist(feat_video, feat_still, vshift=15)
+                fconfm = computeDist(feat_video, feat_still, vshift=15)
+                blankThreshold = i
+                result = fconfm.item() > blankThreshold
+                if result and y.item() == 1:
+                    true_positives.append(fconfm.item())
+                elif result and y.item() == 0:
+                    false_positives.append(fconfm.item())
+                elif not result and y.item() == 1:
+                    false_negatives.append(fconfm.item())
+                elif not result and y.item() == 0:
+                    true_negatives.append(fconfm.item())
+                ys.append(y.item())
+            ys_array = np.array(ys)
+            true_positive_rate = len(true_positives) / sum(ys_array == 1)
+            false_positive_rate = len(false_positives) / sum(ys_array == 0)
+            true_negative_rate = len(true_negatives) / sum(ys_array == 0)
+            false_negative_rate = len(false_negatives) / sum(ys_array == 1)
+            accuracy = ((true_positive_rate * sum(ys_array == 1)) + (true_negative_rate * sum(ys_array == 0))) / len(ys_array)
+            accuracies.append(accuracy)
+            blankThresholds.append(blankThreshold)
+            if accuracy > best_accuracy:
+                best_accuracy = accuracy
+                best_blankThreshold = blankThreshold
+    print(f"Best accuracy: {best_accuracy:.3f} at threshold {best_blankThreshold:.3f}")
 
 # Checkpoint functions should remain the same as in color_syncnet_train.py
 
@@ -255,23 +300,25 @@ def calc_pdist(feat1, feat2, vshift=10):
         dists.append(torch.nn.functional.pairwise_distance(feat1[[i],:].repeat(win_size, 1), feat2p[i:i+win_size,:]))
     return dists
 
-def computeDist(feat1,feat2, vshift=15):
-        dists = calc_pdist(feat1,feat2,vshift=vshift)
-        mdist = torch.mean(torch.stack(dists,1),1)
-        
-        minval, minidx = torch.min(mdist,0)
-        offset = vshift-minidx
-        conf   = torch.median(mdist) - minval
+def computeDist(feat1, feat2, vshift=15):
+    dists = calc_pdist(feat1, feat2, vshift=vshift)
+    mdist = torch.mean(torch.stack(dists, 1), 1)
+    minval, minidx = torch.min(mdist, 0)
 
-        fdist   = np.stack([dist[minidx].numpy() for dist in dists])
-        # fdist   = numpy.pad(fdist, (3,3), 'constant', constant_values=15)
-        fconf   = torch.median(mdist).numpy() - fdist
-        fconfm  = signal.medfilt(fconf,kernel_size=9)
-        
-        np.set_printoptions(formatter={'float': '{: 0.3f}'.format})
+    mdist = mdist.detach().cpu()
+    minidx = minidx.item()
 
-        dists_npy = np.array([ dist.numpy() for dist in dists ])
-        return offset.numpy(), conf.numpy(), dists_npy, fconfm
+    fdist = np.stack([dist[minidx].detach().cpu().numpy() for dist in dists])
+    fconf = torch.median(mdist).item() - fdist
+    if fconf.shape[0] < 9:
+        kernel = fconf.shape[0] // 2 * 2 + 1  # Next odd number below size
+    else:
+        kernel = 9
+    fconfm = signal.medfilt(fconf, kernel_size=kernel)
+
+
+    np.set_printoptions(formatter={'float': '{: 0.3f}'.format})
+    return fconfm
 
 def test_accuracy(y, blankThreshold, fconfm, print_results=True):
     true_positive_rate = sum(fconfm[y == 1] < blankThreshold) / sum(y == 1)
@@ -301,13 +348,10 @@ def load_face_model(checkpoint_path, device, startswith='face'):
     print('total trainable params {}'.format(sum(p.numel() for p in model.parameters() if p.requires_grad)))
     return model
 
+#  python landmarks_syncnet_eval.py --checkpoint_path "/home/ksw38/RVL/color_syncnet/Wav2Lip/pre_loaded_audio_checkpoints/checkpoint_step000960000.pth"
 if __name__ == '__main__':
     # Dataset and Dataloader setup
     test_dataset = Dataset(args.data_root, args.ground_truth)
-
-    test_data_loader = data_utils.DataLoader(
-    test_dataset, batch_size=hparams.syncnet_batch_size,
-    num_workers=8, collate_fn=collate_variable_length)
 
     device = torch.device("cuda" if use_cuda else "cpu")
     # model = SyncNet().to(device)
@@ -326,42 +370,21 @@ if __name__ == '__main__':
     optimizer = optim.Adam([p for p in model.parameters() if p.requires_grad],
                            lr=hparams.syncnet_lr)
     
+    # test_data_loader = data_utils.DataLoader(
+    # test_dataset, batch_size=hparams.syncnet_batch_size,
+    # num_workers=8, collate_fn=collate_variable_length)
 
-    eval_model(test_data_loader, device, model)
-        
+    # eval_model(test_data_loader, device, model)
 
-                # blankThreshold = -1
-        # blankLabels = fconfm < blankThreshold
+    test_data_loader_batch_size_1 = data_utils.DataLoader(
+    test_dataset, batch_size=1,
+    num_workers=8)
 
-        # for i in range(len(fconfm)):
-        #     print(f"Truth: {y[i].item()}, fconfm: {fconfm[i]:.3f}, Label: {blankLabels[i].item()}")
-
-        # true_labels = []
-        # false_labels = []
-        # for i in range(len(fconfm)):
-        #     if y[i].item() == 1:
-        #         true_labels.append(fconfm[i])
-        #     else:
-        #         false_labels.append(fconfm[i])
-        # print(f"True labels: {len(true_labels)}, False labels: {len(false_labels)}")
-
-        # print(max(true_labels), min(true_labels), np.mean(true_labels))
-        # print(true_labels)
-        # print(max(false_labels), min(false_labels), np.mean(false_labels))
-        # print(false_labels)
+    eval_model_batch_size_1(test_data_loader_batch_size_1, device, model)
             
     # s = SyncNetInstance()
     # s.loadParameters(checkpoint_path, use_cuda=use_cuda)
     # s.eval()
-
-    # # print("Loading checkpoint path")
-    # if checkpoint_path is not None:
-    #     load_checkpoint(checkpoint_path, model, optimizer, reset_optimizer=False)
-    # else:
-    #     checkpoint_path = os.listdir(checkpoint_dir)[-1]
-    #     checkpoint_path = os.path.join(checkpoint_dir, checkpoint_path)
-    #     load_checkpoint(checkpoint_path, model, optimizer, reset_optimizer=False)
-    # print("Loaded checkpoint path: ", checkpoint_path)
 
     
     

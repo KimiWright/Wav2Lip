@@ -33,7 +33,7 @@ args = parser.parse_args()
 
 global_step = 0
 global_epoch = 0
-use_cuda = torch.cuda.is_available()
+use_cuda = False#torch.cuda.is_available()
 print('use_cuda: {}'.format(use_cuda))
 
 syncnet_T = 5
@@ -328,6 +328,12 @@ if __name__ == '__main__':
     print("Loading checkpoint path")
     if checkpoint_path is not None:
         load_checkpoint(checkpoint_path, model, optimizer, reset_optimizer=False)
+    else:
+        checkpoint_path = os.listdir(checkpoint_dir)[-1]
+        checkpoint_path = os.path.join(checkpoint_dir, checkpoint_path)
+        load_checkpoint(checkpoint_path, model, optimizer, reset_optimizer=False)
+    print("Loaded checkpoint from: {}".format(checkpoint_path))
+    
 
     print("Begining Training")
     train(device, model, train_data_loader, test_data_loader, optimizer,

@@ -2,6 +2,7 @@
 
 #SBATCH --time=72:00:00   # walltime
 #SBATCH --gpus=1
+#SBATCH -p m13l,m13h
 #SBATCH --mem=100G   # memory per CPU core
 #SBATCH --mail-user=KimiWright64@gmail.com   # email address
 #SBATCH --mail-type=BEGIN
@@ -17,4 +18,4 @@ export OMP_NUM_THREADS=$SLURM_CPUS_ON_NODE
 
 # LOAD MODULES, INSERT CODE, AND RUN YOUR PROGRAMS HERE
 mamba activate vsr
-python /home/ksw38/RVL/color_syncnet/Wav2Lip/landmarks_syncnet_train_gru2.py --checkpoint_path /home/ksw38/RVL/color_syncnet/Wav2Lip/pre_loaded_audio_checkpoints/audio_loaded.pth --checkpoint_dir "pre_loaded_audio_checkpoints"
+python /home/ksw38/RVL/color_syncnet/Wav2Lip/landmarks_syncnet_train_gru2.py --checkpoint_path /home/ksw38/RVL/color_syncnet/Wav2Lip/pre_loaded_audio_checkpoints/checkpoint_step001170000.pth --checkpoint_dir "pre_loaded_audio_checkpoints"
