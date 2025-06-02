@@ -5,6 +5,7 @@ from torch import optim
 from hparams import hparams
 import landmarks_syncnet_train_gru2 as gru2
 from models import SyncNet_landmarks_gru2 as SyncNet
+import torch.utils.data as data_utils
 
 
 parser = argparse.ArgumentParser(description='Code to train the expert lip-sync discriminator')
@@ -17,6 +18,7 @@ checkpoint_dir = args.checkpoint_dir
 checkpoint_path = args.checkpoint_path
 
 syncnet_mel_step_size = 16
+batch_size = 1 #hparams.syncnet_batch_size
 
 def crop_audio_window(spec, start_frame_num):
         
@@ -59,33 +61,45 @@ if __name__ == "__main__":
     gru2.load_checkpoint(checkpoint_path, model, optimizer, reset_optimizer=False)
     print("Loaded checkpoint from: {}".format(checkpoint_path))
 
-    x, mel, y = test_dataset[0]
+    test_data_loader = data_utils.DataLoader(
+        test_dataset, batch_size=batch_size,
+        num_workers=8)
     model.eval()
 
-    # Transform data to CUDA device
-    x = x.to(device)
+    silent_mel = cropped_mel(silence, start_frame_num=0).to(device) # shape: (1, Mel, Time)
+    silent_mel = silent_mel.unsqueeze(0).repeat(batch_size, 1, 1, 1)  # [batch_size, 1, Mel, Time]
+    white_noise_mel = cropped_mel(white_noise, start_frame_num=0).to(device) # shape: (1, Mel, Time)
+    white_noise_mel = white_noise_mel.unsqueeze(0).repeat(batch_size, 1, 1, 1)  # [batch_size, 1, Mel, Time]
 
-    mel = mel.to(device)
+    ys = []
+    silent_ys = []
+    white_noise_ys = []
+    for step, (x, mel, y) in enumerate(test_data_loader):        
+        x = x.to(device)
+        mel = mel.to(device)
 
-    print("Model")
 
-    a, v = model(mel, x)
-    y = y.to(device)
-    print("Model run complete")
-    loss = gru2.cosine_loss(a, v, y)
+        a, v = model(mel, x)
+        y = y.to(device)
+        loss = gru2.cosine_loss(a, v, y)
 
-    silent_mel = cropped_mel(silence, start_frame_num=0).to(device)
-    white_noise_mel = cropped_mel(white_noise, start_frame_num=0).to(device)
-    print("Mel shape: {}".format(mel.shape))
-    print("Silent mel shape: {}".format(silent_mel.shape))
-    print("White noise mel shape: {}".format(white_noise_mel.shape))
+        silent_a, silent_v = model(silent_mel, x)
+        white_noise_a, white_noise_v = model(white_noise_mel, x)
 
-    silent_a, silent_v = model(silent_mel, x)
-    white_noise_a, white_noise_v = model(white_noise_mel, x)
+        silent_loss = gru2.cosine_loss(silent_a, silent_v, y)
+        white_noise_loss = gru2.cosine_loss(white_noise_a, white_noise_v, y)
+        threshold = .5
+        silent_y = int(silent_loss < threshold)
+        white_noise_y = int(white_noise_loss < threshold)
+        y = int(y.item())
+        print(y, silent_y, white_noise_y)
+        print("Loss on test data: {}".format(loss.item()))
+        print("Loss on silent audio: {} result {}".format(silent_loss.item(), silent_y))
+        print("Loss on white noise audio: {} result {}".format(white_noise_loss.item(), white_noise_y))
+        print()
 
-    silent_loss = gru2.cosine_loss(silent_a, silent_v, y)
-    white_noise_loss = gru2.cosine_loss(white_noise_a, white_noise_v, y)
-    print("Loss on test data: {}".format(loss.item()))
-    print("Loss on silent audio: {}".format(silent_loss.item()))
-    print("Loss on white noise audio: {}".format(white_noise_loss.item()))
+        
+
+        if step == 5:
+            break
     
