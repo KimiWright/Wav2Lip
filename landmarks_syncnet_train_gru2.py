@@ -10,6 +10,8 @@ from torch import optim
 import torch.backends.cudnn as cudnn
 from torch.utils import data as data_utils
 import numpy as np
+import math
+from torch.optim.lr_scheduler import LambdaLR
 
 from glob import glob
 
@@ -191,7 +193,7 @@ def cosine_loss(a, v, y):
     return loss
 
 def train(device, model, train_data_loader, test_data_loader, optimizer,
-          checkpoint_dir=None, checkpoint_interval=None, nepochs=None):
+          checkpoint_dir=None, checkpoint_interval=None, nepochs=None, scheduler=None): # Add scheduler parameter
     global global_step, global_epoch
     resumed_step = global_step
     
@@ -212,7 +214,12 @@ def train(device, model, train_data_loader, test_data_loader, optimizer,
 
             loss = cosine_loss(a, v, y)
             loss.backward()
+            torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=1.0)  # Gradient clipping
             optimizer.step()
+
+            # Step the scheduler if it is provided
+            if scheduler is not None:
+                scheduler.step()
 
             global_step += 1
             cur_session_steps = global_step - resumed_step
@@ -298,6 +305,13 @@ def load_checkpoint(path, model, optimizer, reset_optimizer=False):
 
     return model
 
+def get_linear_warmup_scheduler(optimizer, warmup_steps, total_steps):
+    def lr_lambda(current_step):
+        if current_step < warmup_steps:
+            return float(current_step) / float(max(1, warmup_steps))
+        return max(0.0, float(total_steps - current_step) / float(max(1, total_steps - warmup_steps)))
+    return LambdaLR(optimizer, lr_lambda)
+
 if __name__ == '__main__':
     checkpoint_dir = args.checkpoint_dir
     checkpoint_path = args.checkpoint_path
@@ -323,15 +337,21 @@ if __name__ == '__main__':
     print('total trainable params {}'.format(sum(p.numel() for p in model.parameters() if p.requires_grad)))
 
     optimizer = optim.Adam([p for p in model.parameters() if p.requires_grad],
-                        lr=hparams.syncnet_lr)
+                        lr=hparams.syncnet_lr, weight_decay=1e-5) # Try adding weight decay
+    
+    # Learning rate scheduler
+    total_steps = len(train_data_loader) * hparams.nepochs
+    warmup_steps = int(total_steps * 0.1)  # 10% of total steps for warmup
+    scheduler = get_linear_warmup_scheduler(optimizer, warmup_steps, total_steps)
 
+    reset_optimizer = True # For the next training session the current continues to stagnate. Current session was set to False
     print("Loading checkpoint path")
     if checkpoint_path is not None:
-        load_checkpoint(checkpoint_path, model, optimizer, reset_optimizer=False)
+        load_checkpoint(checkpoint_path, model, optimizer, reset_optimizer=reset_optimizer)
     else:
         checkpoint_path = os.listdir(checkpoint_dir)[-1]
         checkpoint_path = os.path.join(checkpoint_dir, checkpoint_path)
-        load_checkpoint(checkpoint_path, model, optimizer, reset_optimizer=False)
+        load_checkpoint(checkpoint_path, model, optimizer, reset_optimizer=reset_optimizer)
     print("Loaded checkpoint from: {}".format(checkpoint_path))
     
 
