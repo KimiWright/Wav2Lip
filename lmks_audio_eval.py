@@ -134,98 +134,20 @@ def true_negative_rate(ys, test_ys):
             true_negative += 1
     return true_negative / len(ys)
 
-def best_accuracy(silent_losses, white_noise_losses, ys, thresholds):
-    best_threshold_silent = 0.5
-    best_accuracy_silent = -1.0
-    best_threshold_white_noise = 0.5
-    best_accuracy_white_noise = -1.0
-    best_true_negative_rate_white_noise = -1.0
-    best_true_negative_rate_silent = -1.0
-    best_true_positive_rate_silent = -1.0
-    best_true_positive_rate_white_noise = -1.0
-
-    print("Starting evaluation")
+def best_accuracy(losses, true_y, flip=False, thresholds=np.arange(0.0, 1.2, 0.1)):
+    best_acc = 0
+    best_threshold = 0
     for threshold in thresholds:
-        silent_ys = []
-        white_noise_ys = []
-
-        for silent_loss, white_noise_loss in zip(silent_losses, white_noise_losses):
-            silent_y = int(silent_loss < threshold)
-            white_noise_y = int(white_noise_loss < threshold)
-            silent_ys.append(silent_y)
-            white_noise_ys.append(white_noise_y)
-
-        silent_accuracy = accuracy(silent_ys, test_ys=ys)
-        white_noise_accuracy = accuracy(white_noise_ys, test_ys=ys)
-
-        if silent_accuracy > best_accuracy_silent:
-            best_accuracy_silent = silent_accuracy
-            best_threshold_silent = threshold
-
-        if white_noise_accuracy > best_accuracy_white_noise:
-            best_accuracy_white_noise = white_noise_accuracy
-            best_threshold_white_noise = threshold
-
-        true_positive_rate_silent = true_positive_rate(silent_ys, test_ys=ys)
-        true_positive_rate_white_noise = true_positive_rate(white_noise_ys, test_ys=ys)
-        true_negative_rate_silent = true_negative_rate(silent_ys, test_ys=ys)
-        true_negative_rate_white_noise = true_negative_rate(white_noise_ys, test_ys=ys)
-
-        best_true_positive_rate_silent = max(best_true_positive_rate_silent, true_positive_rate_silent)
-        best_true_positive_rate_white_noise = max(best_true_positive_rate_white_noise, true_positive_rate_white_noise)
-        best_true_negative_rate_silent = max(best_true_negative_rate_silent, true_negative_rate_silent)
-        best_true_negative_rate_white_noise = max(best_true_negative_rate_white_noise, true_negative_rate_white_noise)
-
-    print("Final silent accuracy: {}, Final white noise accuracy: {}".format(best_accuracy_silent, best_accuracy_white_noise))
-    print("Best silent threshold: {}, Best white noise threshold: {}".format(best_threshold_silent, best_threshold_white_noise))
-    print("Best silent true negative rate: {}, Best white noise true negative rate: {}".format(
-        best_true_negative_rate_silent, best_true_negative_rate_white_noise))
-
-
-def best_accuracy_less_than(silent_losses, white_noise_losses, ys, thresholds):
-    silent_ys = []
-    white_noise_ys = []
-    thresholds = np.arange(0.0, 1.0, 0.01)
-    best_thereshold_silent = 0.5
-    best_accuracy_silent = -1.0
-    best_thereshold_white_noise = 0.5
-    best_accuracy_white_noise = -1.
-    best_true_negative_rate_white_noise = -1.
-    best_true_negative_rate_silent = -1.
-    best_true_positive_rate_silent = -1.
-    best_true_positive_rate_white_noise = -1.
-    print("Starting Less Than evaluation")
-    for threshold in thresholds:
-        for silent_loss, white_noise_loss in zip(silent_losses, white_noise_losses):
-            silent_y = int(silent_loss > threshold)
-            white_noise_y = int(white_noise_loss > threshold)
-            silent_ys.append(silent_y)
-            white_noise_ys.append(white_noise_y)
-        silent_accuracy = accuracy(silent_ys, test_ys=ys)
-        white_noise_accuracy = accuracy(white_noise_ys, test_ys=ys)
-        if silent_accuracy > best_accuracy_silent:
-            best_accuracy_silent = silent_accuracy
-            best_thereshold_silent = threshold
-        if white_noise_accuracy > best_accuracy_white_noise:
-            best_accuracy_white_noise = white_noise_accuracy
-            best_thereshold_white_noise = threshold
-        true_positive_rate_silent = true_positive_rate(silent_ys, test_ys=ys)
-        true_positive_rate_white_noise = true_positive_rate(white_noise_ys, test_ys=ys)
-        true_negative_rate_silent = true_negative_rate(silent_ys, test_ys=ys)
-        true_negative_rate_white_noise = true_negative_rate(white_noise_ys, test_ys=ys)
-        if true_positive_rate_silent > best_true_positive_rate_silent:
-            best_true_positive_rate_silent = true_positive_rate_silent
-        if true_positive_rate_white_noise > best_true_positive_rate_white_noise:
-            best_true_positive_rate_white_noise = true_positive_rate_white_noise
-        if true_negative_rate_silent > best_true_negative_rate_silent:
-            best_true_negative_rate_silent = true_negative_rate_silent
-        if true_negative_rate_white_noise > best_true_negative_rate_white_noise:
-            best_true_negative_rate_white_noise = true_negative_rate_white_noise
-        # print("Threshold: {}".format(threshold))
-        # print("Silent accuracy: {}, White noise accuracy: {}".format(silent_accuracy, white_noise_accuracy))
-    print("Final silent accuracy: {}, Final white noise accuracy: {}".format(best_accuracy_silent, best_accuracy_white_noise))
-    print("Best silent threshold: {}, Best white noise threshold: {}".format(best_thereshold_silent, best_thereshold_white_noise))
-    print("Best silent true negative rate: {}, Best white noise true negative rate: {}".format(best_true_negative_rate_silent, best_true_negative_rate_white_noise))
+        if flip:
+            results = [1.0 if loss < threshold else 0.0 for loss in losses]
+        else:
+            results = [0.0 if loss < threshold else 1.0 for loss in losses]
+        acc = accuracy(true_y, results)
+        if acc > best_acc:
+            best_acc = acc
+            best_threshold = threshold
+    print(f"Best accuracy: {best_acc} at threshold: {best_threshold}")
+    return best_acc, best_threshold
 
 if __name__ == "__main__":
     # Generate 1 second of silence
@@ -288,8 +210,12 @@ if __name__ == "__main__":
 
     print()
     print("Regular dataset")
-    best_accuracy(silent_losses, white_noise_losses, ys, thresholds=np.arange(0.0, 1.0, 0.01))
-    best_accuracy_less_than(silent_losses, white_noise_losses, ys, thresholds=np.arange(0.0, 1.0, 0.01))
+    print("Silent losses:")
+    best_accuracy(silent_losses, ys)
+    best_accuracy(silent_losses, ys, flip=True)
+    print("White noise losses:")
+    best_accuracy(white_noise_losses, ys)
+    best_accuracy(white_noise_losses, ys, flip=True)
 
     mf_test_dataset = Moving_Face_Dataset(args.data_root, args.ground_truth)
     mf_test_data_loader = data_utils.DataLoader(
@@ -320,8 +246,12 @@ if __name__ == "__main__":
 
     print()
     print("Moving face dataset")
-    best_accuracy(silent_losses, white_noise_losses, ys, thresholds=np.arange(0.0, 1.0, 0.01))
-    best_accuracy_less_than(silent_losses, white_noise_losses, ys, thresholds=np.arange(0.0, 1.0, 0.01))
+    print("Silent losses:")
+    best_accuracy(silent_losses, ys)
+    best_accuracy(silent_losses, ys, flip=True)
+    print("White noise losses:")
+    best_accuracy(white_noise_losses, ys)
+    best_accuracy(white_noise_losses, ys, flip=True)
 
 
 
