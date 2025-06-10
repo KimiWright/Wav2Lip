@@ -254,8 +254,6 @@ if __name__ == "__main__":
     best_accuracy(white_noise_losses, ys, flip=True)
 
 
-
-## Make another one using the whole video
 ## Why are we using syncnet instead of a model that is trained on VVAD?
     
     
