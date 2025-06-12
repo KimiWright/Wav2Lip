@@ -9,6 +9,7 @@ from facetools import genMediapipeInfo,norm_lmks
 # Iterate through all of files in all of the folders in the dataset
 source_main_path = "/home/ksw38/.cache/kagglehub/datasets/adrianlubitz/vvadlrs3/versions/4/faceImages_small.h5"
 out_main_path = "/home/ksw38/groups/grp_landmarks/nobackup/archive/landmarks_vvadlrs3/main"
+out_main_path = "/home/ksw38/groups/grp_landmarks/nobackup/autodelete/landmarks_vvadlrs3/main"
 
 def save_landmarks(data, name):
     for i, frames in enumerate(data):
@@ -46,15 +47,17 @@ with h5py.File(source_main_path, 'r') as f:
     y_test = f['y_test']
     y_train = f['y_train']
 
-    save_landmarks(x_test, "x_test")
-    # save_landmarks(x_train, "x_train")
+    # save_landmarks(x_test, "x_test")
+    save_landmarks(x_train, "x_train")
 
     # Save the ground truth labels
     print("Saving ground truth labels...")
-    np.save(os.path.join(out_main_path, "y_test"), y_test)
+    # np.save(os.path.join(out_main_path, "y_test"), y_test)
+    # print("Saved ground truth labels.")
+    # print(os.path.join(out_main_path, "y_test"))
+    np.save(os.path.join(out_main_path, "y_train"), y_train)
     print("Saved ground truth labels.")
-    print(os.path.join(out_main_path, "y_test"))
-    # np.save(os.path.join(out_main_path, "y_train"), y_train)
+    print(os.path.join(out_main_path, "y_train"))
     
 
 
