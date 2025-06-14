@@ -167,6 +167,7 @@ if __name__ == "__main__":
     optimizer = optim.Adam([p for p in model.parameters() if p.requires_grad],
                         lr=hparams.syncnet_lr)
 
+    # checkpoint_dir = "triplets_checkpoints"
     print("Loading checkpoint path")
     if checkpoint_path  is None:
         checkpoint_path = os.listdir(checkpoint_dir)[-1]

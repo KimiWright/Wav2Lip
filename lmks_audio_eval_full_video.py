@@ -15,6 +15,7 @@ import random
 data_root = '/home/ksw38/groups/grp_landmarks/nobackup/archive/landmarks_vvadlrs3/main/x_test/'
 ground_truth = '/home/ksw38/groups/grp_landmarks/nobackup/archive/landmarks_vvadlrs3/main/y_test.npy'
 checkpoint_dir = 'landmarks_checkpoints_gru2'
+checkpoint_dir = "triplets_checkpoints"
 checkpoint_path = None
 
 class Dataset(object):

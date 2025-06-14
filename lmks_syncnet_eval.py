@@ -3,12 +3,15 @@ from landmarks_syncnet_eval import *
 
 device = "cpu"#torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
+# checkpoint_dir = "triplets_checkpoints"
 
 if checkpoint_path is None:
     checkpoint_path = os.listdir(checkpoint_dir)[-1]
     checkpoint_path = os.path.join(checkpoint_dir, checkpoint_path)
 
 model = load_face_model(checkpoint_path, device)
+print('checkpoint path: {}'.format(checkpoint_path))
+print('total trainable params {}'.format(sum(p.numel() for p in model.parameters() if p.requires_grad)))
 
 test_dataset = Dataset(args.data_root, args.ground_truth)
 test_data_loader = data_utils.DataLoader(
