@@ -47,7 +47,7 @@ def get_window_npy(data, syncnet_T = 5, start_id=0):
     else:
         return None
 
-def get_data(data_root, ground_truth):
+def get_data(data_root, ground_truth, data_point_limit=None):
     all_files = get_files_list(data_root) 
     lmks_files = [f for f in all_files if f.endswith('lmks.npy')]
     roll_files = [f for f in all_files if f.endswith('roll.npy')]
@@ -89,7 +89,15 @@ def get_data(data_root, ground_truth):
         x_pitch = npy_data[2][:, None]
         x_yaw = npy_data[3][:, None]
         x_video = np.concatenate([x_lmks, x_roll, x_pitch, x_yaw], axis=1)
+
+        kernel_size = 3 # kernel size used for syncnet
+        if x_video.shape[0] < kernel_size or x_video.shape[1] < kernel_size: 
+            # print(f"Video too short for kernel size {kernel_size}: {x_video.shape[0]}")
+            continue  # Skip if the video is too short for the kernel size
+
         data.append((x_video, y[idx]))
+        if data_point_limit is not None and len(data) >= data_point_limit:
+            break
 
     return data
 
@@ -98,7 +106,7 @@ def get_data(data_root, ground_truth):
 #################
 
 data_out_test = get_data(data_root, ground_truth)
-data_out_train = get_data(train_data_root, ground_truth_train)
+data_out_train = get_data(train_data_root, ground_truth_train, data_point_limit=None)
 
 class Dataset_Full_Video(object):
     def __init__(self, split = 'test'):
@@ -132,15 +140,26 @@ class Dataset_5_Frame(object):
         return x_video, y
     
 class Dataset_5_Frame_Chunks(object):
-    def __init__(self, data_root, ground_truth):
-        self.data = data_out
+    def __init__(self, split = 'test'):
+        if split == 'test':
+            self.data = data_out_test
+        elif split == 'train':
+            self.data = data_out_train
+        else:
+            raise ValueError("Split must be 'test' or 'train'")
 
     def __len__(self):
         return len(self.data)
     def __getitem__(self, idx):
         x_video, y = self.data[idx]
-        x_video = get_window_npy(x_video, start_id=0)
-        return x_video, y
+        x_video_chunks = []
+        num_frames = x_video.shape[0]
+        for start_id in range(0, num_frames, 5):  # Get chunks of 5 frames
+            chunk = get_window_npy(x_video, start_id=start_id)
+            if chunk is not None:
+                x_video_chunks.append(chunk)
+        x_video_chunks = np.array(x_video_chunks)
+        return x_video_chunks, y
 
 #################
 # Audio generation functions
@@ -189,7 +208,6 @@ def audio_loop(model, data_loader, device): # Try the loss from contrastive lear
             x = x.to(device).to(torch.float32)
             y = y.to(device).to(torch.float32).unsqueeze(0)
             y_vals.append(int(y.item()))
-            # y_vals.extend(y.cpu().numpy().tolist())  # Collect all y values for accuracy calculation
 
             for i, sound_type in enumerate(sound_types):
                 if sound_type == "silence":
@@ -201,23 +219,22 @@ def audio_loop(model, data_loader, device): # Try the loss from contrastive lear
                 mel = mel.to(device).to(torch.float32).unsqueeze(0)
                 a, v = model(mel, x)
                 loss = gru2.cosine_loss(a, v, y)
-                # losses[i].append(loss.item())
                 losses[i].append(loss.cpu().item())  # Store loss on CPU to avoid GPU memory issues
-            # if step == 5:
-            #     break
         return losses, y_vals
     
 def audio_loop_5_frame_chunk(model, data_loader, device): # Try the loss from contrastive learning
+    # sound_types = ["babble_noise"] ## FIXME: Remove this line to test all sound types ##
     with torch.no_grad():
         num_sounds = len(sound_types)
         losses = [[] for _ in range(num_sounds)]
         y_vals = []
         for step, (x, y) in enumerate(data_loader):
-            num_frames = x.shape[1]
+            num_frames = 5#x.shape[1]
             x = x.to(device).to(torch.float32)
+            # Change to [Chunk, Batch, Frames, Features] for easier iteration
+            x = x.permute(1, 0, 2, 3)  # [Chunk, Batch, Frames, Features]
             y = y.to(device).to(torch.float32).unsqueeze(0)
             y_vals.append(int(y.item()))
-            # y_vals.extend(y.cpu().numpy().tolist())  # Collect all y values for accuracy calculation
 
             for i, sound_type in enumerate(sound_types):
                 if sound_type == "silence":
@@ -227,12 +244,24 @@ def audio_loop_5_frame_chunk(model, data_loader, device): # Try the loss from co
                 else:
                     mel = generate_mel_for_frames(num_frames, silence=False)
                 mel = mel.to(device).to(torch.float32).unsqueeze(0)
-                a, v = model(mel, x)
+                a_vals = []
+                v_vals = []
+
+                for j in range(x.shape[0]):  # Iterate over the chunks
+                    try:
+                        a, v = model(mel, x[j])  # x[j] is now [Batch, Frames, Features]
+                        a_vals.append(a)
+                        v_vals.append(v)
+                    except Exception as e:
+                        print(f"Error processing chunk {j} in step {step}: {e}")
+                        continue
+                # Mean over the chunks, try other methods later
+                a_vals = torch.stack(a_vals, dim=0)  # [Batch, 128] # Try other methods later
+                v_vals = torch.stack(v_vals, dim=0)  # [Batch, 128]
+                a = a_vals.mean(dim=0)  # Average over Chunk
+                v = v_vals.mean(dim=0)  # Average over batch
                 loss = gru2.cosine_loss(a, v, y)
-                # losses[i].append(loss.item())
                 losses[i].append(loss.cpu().item())  # Store loss on CPU to avoid GPU memory issues
-            # if step == 5:
-            #     break
         return losses, y_vals
 
 ####################
@@ -280,6 +309,7 @@ def all_accuracies(losses, ys):
 def train_threshold(losses_train, true_y_train, losses_test, true_y_test, thresholds=np.arange(0.0, 1.2, 0.1)):
     best_acc_train, best_threshold = best_accuracy(losses_train, true_y_train, flip=False, thresholds=thresholds)
     acc_test = test_accuracy(losses_test, true_y_test, best_threshold, flip=False)
+    # print(f"Thresholds: {thresholds}")
     print(f"Train accuracy: {best_acc_train}, Test accuracy: {acc_test} at threshold: {best_threshold}")
     return best_threshold, acc_test
 
@@ -297,7 +327,8 @@ print() #Provide visual separation from the prepatory code
 
 if __name__ == "__main__":
     device = "cpu" #torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    batch_size = hparams.batch_size
+    shuffle_dataset = False
+    num_workers = 1
 
     if checkpoint_path  is None:
         checkpoint_path = os.listdir(checkpoint_dir)[-1]
@@ -324,18 +355,32 @@ if __name__ == "__main__":
     print(f"Number of samples in training dataset: {len(train_dataset)}")
     test_data_loader = data_utils.DataLoader(
         test_dataset, batch_size=1,
-        num_workers=8, shuffle=True)
+        num_workers=num_workers, shuffle=shuffle_dataset)
     train_data_loader = data_utils.DataLoader(
         train_dataset, batch_size=1,
-        num_workers=8, shuffle=True)
+        num_workers=num_workers, shuffle=shuffle_dataset)
+    
 
+    for i, (x, y) in enumerate(train_data_loader):
+        if i < 250:
+            continue
+        # print(f"Test data sample {i}: {x.shape}, label: {y.item()}")
+        x = x.to(device).to(torch.float32)
+        num_frames = x.shape[1]
+        mel = generate_mel_for_frames(num_frames, silence=True)
+        mel = mel.to(device).to(torch.float32).unsqueeze(0)
+        a, v = model(mel, x)
+        if a.shape != (1, 128) or v.shape != (1, 128):
+            print(f"Output shapes: a: {a.shape}, v: {v.shape}")
+
+    ## Configure which tests to perform
     test_accuracy_threshold_on_test_data = False
     train_accuracy_threshold_on_train_data = False
-    test_accuracy_threshold_on_train_data = True
-
+    test_accuracy_threshold_on_train_data = False
     find_test_losses = test_accuracy_threshold_on_test_data or test_accuracy_threshold_on_train_data
     find_train_losses = train_accuracy_threshold_on_train_data or test_accuracy_threshold_on_train_data
 
+    print("Finding losses for full video dataset")
     if find_test_losses:
         losses, y_vals = audio_loop(model, test_data_loader, device)
     if find_train_losses:
@@ -351,37 +396,77 @@ if __name__ == "__main__":
         all_accuracies(losses, y_vals)
 
     if test_accuracy_threshold_on_train_data:
+        min_threshold = min(np.min(losses[i]) for i in range(len(sound_types)))
+        max_threshold = max(np.max(losses[i]) for i in range(len(sound_types)))
+        threshold_range = np.arange(min_threshold, max_threshold + 0.1, 0.1)
         print("\nTest data accuracies with training data threshold:")
-        train_threshold_all_sound_types(train_losses, train_y_vals, losses, y_vals)
+        train_threshold_all_sound_types(train_losses, train_y_vals, losses, y_vals, thresholds=threshold_range)
         print()
     print()
 
-    # test_dataset_5_frame = Dataset_5_Frame('test')
-    # batch_size = 1
-    # print(f"Number of samples in 5-frame dataset: {len(test_dataset_5_frame)}")
-    # print(f"Number of samples in training 5-frame dataset: {len(train_dataset)}")
-    # test_data_loader_5_frame = data_utils.DataLoader(
-    #     test_dataset_5_frame, batch_size=batch_size,
-    #     num_workers=8, drop_last=True, shuffle=True)
-    # train_dataset_5_frame = Dataset_5_Frame('train')
-    # train_data_loader_5_frame = data_utils.DataLoader(
-    #     train_dataset_5_frame, batch_size=batch_size,
-    #     num_workers=8, drop_last=True, shuffle=True)
+    test_dataset_5_frame = Dataset_5_Frame('test')
+    batch_size = 1
+    print(f"Number of samples in 5-frame dataset: {len(test_dataset_5_frame)}")
+    print(f"Number of samples in training 5-frame dataset: {len(train_dataset)}")
+    test_data_loader_5_frame = data_utils.DataLoader(
+        test_dataset_5_frame, batch_size=batch_size,
+        num_workers=8, drop_last=True, shuffle=shuffle_dataset)
+    train_dataset_5_frame = Dataset_5_Frame('train')
+    train_data_loader_5_frame = data_utils.DataLoader(
+        train_dataset_5_frame, batch_size=batch_size,
+        num_workers=8, drop_last=True, shuffle=shuffle_dataset)
     
-    # if find_test_losses:
-    #     losses_5_frame, y_vals_5_frame = audio_loop_5_frame_chunk(model, test_data_loader_5_frame, device)
-    # if find_train_losses:
-    #     train_losses_5_frame, train_y_vals_5_frame = audio_loop_5_frame_chunk(model, train_data_loader_5_frame, device)
+    print("Finding losses for 5-frame dataset")
+    if find_test_losses:
+        losses_5_frame, y_vals_5_frame = audio_loop(model, test_data_loader_5_frame, device)
+    if find_train_losses:
+        train_losses_5_frame, train_y_vals_5_frame = audio_loop(model, train_data_loader_5_frame, device)
 
-    # if test_accuracy_threshold_on_test_data:
-    #     print("Finding threshold on test data (cheating for comparison purposes) for 5-frame dataset")
-    #     print("Test data accuracies:")
-    #     all_accuracies(losses_5_frame, y_vals_5_frame)
-    #     print()
-    # if train_accuracy_threshold_on_train_data:
-    #     print("Training data accuracies:")
-    #     all_accuracies(train_losses_5_frame, train_y_vals_5_frame)
+    if test_accuracy_threshold_on_test_data:
+        print("Finding threshold on test data (cheating for comparison purposes) for 5-frame dataset")
+        print("Test data accuracies:")
+        all_accuracies(losses_5_frame, y_vals_5_frame)
+        print()
+    if train_accuracy_threshold_on_train_data:
+        print("Training data accuracies:")
+        all_accuracies(train_losses_5_frame, train_y_vals_5_frame)
 
-    # if test_accuracy_threshold_on_train_data:
-    #     print("\nTest data accuracies with training data threshold:")
-    #     train_threshold_all_sound_types(train_losses_5_frame, train_y_vals_5_frame, losses_5_frame, y_vals_5_frame)
+    if test_accuracy_threshold_on_train_data:
+        min_threshold = min(np.min(losses[i]) for i in range(len(sound_types)))
+        max_threshold = max(np.max(losses[i]) for i in range(len(sound_types)))
+        threshold_range = np.arange(min_threshold, max_threshold + 0.1, 0.1)
+        print("\nTest data accuracies with training data threshold:")
+        train_threshold_all_sound_types(train_losses_5_frame, train_y_vals_5_frame, losses_5_frame, y_vals_5_frame, thresholds=threshold_range)
+
+    test_dataset_5_frame_chunks = Dataset_5_Frame_Chunks('test')
+    print(f"Number of samples in 5-frame chunks dataset: {len(test_dataset_5_frame_chunks)}")
+    train_dataset_5_frame_chunks = Dataset_5_Frame_Chunks('train')
+    print(f"Number of samples in training 5-frame chunks dataset: {len(train_dataset_5_frame_chunks)}")
+    
+    test_data_loader_5_frame_chunks = data_utils.DataLoader(
+        test_dataset_5_frame_chunks, batch_size=batch_size,
+        num_workers=8, drop_last=True, shuffle=shuffle_dataset)
+    train_data_loader_5_frame_chunks = data_utils.DataLoader(
+        train_dataset_5_frame_chunks, batch_size=batch_size,
+        num_workers=8, drop_last=True, shuffle=shuffle_dataset)
+    
+
+    print("Finding losses for 5-frame chunks dataset")
+    test_accuracy_threshold_on_train_data = True
+
+    find_test_losses = True
+    find_train_losses = True
+    if find_test_losses:
+        losses_5_frame_chunks, y_vals_5_frame_chunks = audio_loop_5_frame_chunk(model, test_data_loader_5_frame_chunks, device)
+        print("Test losses found for 5-frame chunks dataset")
+
+    if find_train_losses:
+        train_losses_5_frame_chunks, train_y_vals_5_frame_chunks = audio_loop_5_frame_chunk(model, train_data_loader_5_frame_chunks, device)
+        print("Train losses found for 5-frame chunks dataset")
+
+    if test_accuracy_threshold_on_train_data:
+        min_threshold = min(np.min(losses_5_frame_chunks[i]) for i in range(len(sound_types)))
+        max_threshold = max(np.max(losses_5_frame_chunks[i]) for i in range(len(sound_types)))
+        threshold_range = np.arange(min_threshold, max_threshold + 0.1, 0.1)
+        print("\nTest data accuracies with training data threshold:")
+        train_threshold_all_sound_types(train_losses_5_frame_chunks, train_y_vals_5_frame_chunks, losses_5_frame_chunks, y_vals_5_frame_chunks, thresholds=threshold_range)
