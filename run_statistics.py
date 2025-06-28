@@ -106,7 +106,7 @@ def get_data(data_root, ground_truth, data_point_limit=None):
 #################
 
 data_out_test = get_data(data_root, ground_truth)
-data_out_train = get_data(train_data_root, ground_truth_train, data_point_limit=None)
+data_out_train = get_data(train_data_root, ground_truth_train, data_point_limit=600)
 
 class Dataset_Full_Video(object):
     def __init__(self, split = 'test'):
@@ -223,10 +223,10 @@ def audio_loop(model, data_loader, device): # Try the loss from contrastive lear
         return losses, y_vals
     
 def audio_loop_5_frame_chunk(model, data_loader, device): # Try the loss from contrastive learning
-    # sound_types = ["babble_noise"] ## FIXME: Remove this line to test all sound types ##
     with torch.no_grad():
         num_sounds = len(sound_types)
         losses = [[] for _ in range(num_sounds)]
+        av_val_lists = [[] for _ in range(num_sounds)]
         y_vals = []
         for step, (x, y) in enumerate(data_loader):
             num_frames = 5#x.shape[1]
@@ -244,25 +244,36 @@ def audio_loop_5_frame_chunk(model, data_loader, device): # Try the loss from co
                 else:
                     mel = generate_mel_for_frames(num_frames, silence=False)
                 mel = mel.to(device).to(torch.float32).unsqueeze(0)
-                a_vals = []
-                v_vals = []
 
+                av_vals = []
                 for j in range(x.shape[0]):  # Iterate over the chunks
                     try:
                         a, v = model(mel, x[j])  # x[j] is now [Batch, Frames, Features]
-                        a_vals.append(a)
-                        v_vals.append(v)
+                        av_vals.append((a, v))
                     except Exception as e:
                         print(f"Error processing chunk {j} in step {step}: {e}")
                         continue
-                # Mean over the chunks, try other methods later
-                a_vals = torch.stack(a_vals, dim=0)  # [Batch, 128] # Try other methods later
-                v_vals = torch.stack(v_vals, dim=0)  # [Batch, 128]
-                a = a_vals.mean(dim=0)  # Average over Chunk
-                v = v_vals.mean(dim=0)  # Average over batch
-                loss = gru2.cosine_loss(a, v, y)
+                av_val_lists[i].append(av_vals)
+        return y_vals, av_val_lists
+    
+def chunk_losses(y_vals, av_val_list):
+    losses = [[] for _ in range(len(sound_types))]
+    for i, av_vals in enumerate(av_val_list): # Iterate over sound types
+            # print(f"{sound_types[i]} Number of videos: {len(av_vals)}")
+            # print(len(y_vals))
+            for j, video in enumerate(av_vals):  # Iterate over videos
+                # for chunk in video:
+                #     print(chunk[0].shape, chunk[1].shape) # a and v shapes
+                a_vals, v_vals = zip(*video)  # Unzip a and v values
+                a_vals = torch.stack(a_vals, dim=0)  # [Chunks, Batch, 128]
+                v_vals = torch.stack(v_vals, dim=0)  # [Chunks, Batch, 128]
+                a_mean = a_vals.mean(dim=0)  # Average over Chunks
+                v_mean = v_vals.mean(dim=0)  # Average over Batch
+                y = torch.Tensor([y_vals[j]]).unsqueeze(0)
+                loss = gru2.cosine_loss(a_mean, v_mean, y)
+                # print(f"Loss for video {j}: {loss.item()}")
                 losses[i].append(loss.cpu().item())  # Store loss on CPU to avoid GPU memory issues
-        return losses, y_vals
+    return losses
 
 ####################
 # Accuracy functions
@@ -361,17 +372,16 @@ if __name__ == "__main__":
         num_workers=num_workers, shuffle=shuffle_dataset)
     
 
-    for i, (x, y) in enumerate(train_data_loader):
-        if i < 250:
-            continue
-        # print(f"Test data sample {i}: {x.shape}, label: {y.item()}")
-        x = x.to(device).to(torch.float32)
-        num_frames = x.shape[1]
-        mel = generate_mel_for_frames(num_frames, silence=True)
-        mel = mel.to(device).to(torch.float32).unsqueeze(0)
-        a, v = model(mel, x)
-        if a.shape != (1, 128) or v.shape != (1, 128):
-            print(f"Output shapes: a: {a.shape}, v: {v.shape}")
+    # for i, (x, y) in enumerate(train_data_loader):
+    #     if i < 250:
+    #         continue
+    #     # print(f"Test data sample {i}: {x.shape}, label: {y.item()}")
+    #     x = x.to(device).to(torch.float32)
+    #     num_frames = x.shape[1]
+    #     mel = generate_mel_for_frames(num_frames, silence=True)
+    #     mel = mel.to(device).to(torch.float32).unsqueeze(0)
+    #     print(f"Step {i}, x shape: {x.shape}")
+    #     a, v = model(mel, x)
 
     ## Configure which tests to perform
     test_accuracy_threshold_on_test_data = False
@@ -439,7 +449,7 @@ if __name__ == "__main__":
         train_threshold_all_sound_types(train_losses_5_frame, train_y_vals_5_frame, losses_5_frame, y_vals_5_frame, thresholds=threshold_range)
 
     test_dataset_5_frame_chunks = Dataset_5_Frame_Chunks('test')
-    print(f"Number of samples in 5-frame chunks dataset: {len(test_dataset_5_frame_chunks)}")
+    print(f"\nNumber of samples in 5-frame chunks dataset: {len(test_dataset_5_frame_chunks)}")
     train_dataset_5_frame_chunks = Dataset_5_Frame_Chunks('train')
     print(f"Number of samples in training 5-frame chunks dataset: {len(train_dataset_5_frame_chunks)}")
     
@@ -451,18 +461,21 @@ if __name__ == "__main__":
         num_workers=8, drop_last=True, shuffle=shuffle_dataset)
     
 
-    print("Finding losses for 5-frame chunks dataset")
+    print("\nFinding losses for 5-frame chunks dataset")
     test_accuracy_threshold_on_train_data = True
 
     find_test_losses = True
     find_train_losses = True
     if find_test_losses:
-        losses_5_frame_chunks, y_vals_5_frame_chunks = audio_loop_5_frame_chunk(model, test_data_loader_5_frame_chunks, device)
+        y_vals_5_frame_chunks, av_val_list = audio_loop_5_frame_chunk(model, test_data_loader_5_frame_chunks, device)
         print("Test losses found for 5-frame chunks dataset")
+        losses_5_frame_chunks = chunk_losses(y_vals_5_frame_chunks, av_val_list)
 
     if find_train_losses:
-        train_losses_5_frame_chunks, train_y_vals_5_frame_chunks = audio_loop_5_frame_chunk(model, train_data_loader_5_frame_chunks, device)
+        train_y_vals_5_frame_chunks, av_val_list = audio_loop_5_frame_chunk(model, train_data_loader_5_frame_chunks, device)
         print("Train losses found for 5-frame chunks dataset")
+        train_losses_5_frame_chunks = chunk_losses(train_y_vals_5_frame_chunks, av_val_list)
+        
 
     if test_accuracy_threshold_on_train_data:
         min_threshold = min(np.min(losses_5_frame_chunks[i]) for i in range(len(sound_types)))
