@@ -61,7 +61,6 @@ def get_data(data_root, ground_truth, data_point_limit=None, start_idx=0):
         if idx < start_idx:
             continue
 
-        print(idx, end='\r')  # Print the index to track progress
         lmks_file = lmks_files[idx]
         roll_file = roll_files[idx]
         pitch_file = pitch_files[idx]
@@ -110,7 +109,7 @@ def get_data(data_root, ground_truth, data_point_limit=None, start_idx=0):
 #################
 
 data_out_test = get_data(data_root, ground_truth)
-data_out_train = get_data(train_data_root, ground_truth_train, data_point_limit=None, start_idx=2000)
+data_out_train = get_data(train_data_root, ground_truth_train, data_point_limit=500, start_idx=2000)
 
 class Dataset_Full_Video(object):
     def __init__(self, split = 'test'):
@@ -140,13 +139,13 @@ class Dataset_5_Frame(object):
         return len(self.data)
     def __getitem__(self, idx):
         # print(f"Getting item {idx} from dataset")
-        x_video, y = self.data[idx]
-        if x_video is None:
+        x_video_full, y = self.data[idx]
+        if x_video_full is None:
             raise ValueError(f"x_video is None for index {idx}")
-        # print(f"x_video shape before windowing: {x_video.shape}")
-        x_video = get_window_npy(x_video, start_id=0)
-        if x_video is None:
-            raise ValueError(f"x_video is None after windowing for index {idx}")
+        # print(f"x_video shape before windowing: {x_video_full.shape}")
+        x_video = get_window_npy(x_video_full, start_id=0)
+        # if x_video is None:
+        #     raise ValueError(f"x_video_full {x_video_full.shape} {idx}")
         # print(f"x_video shape: {x_video.shape}")
         return x_video, y
     
@@ -437,7 +436,7 @@ if __name__ == "__main__":
         num_frames = x.shape[1]
         mel = generate_mel_for_frames(num_frames, silence=True)
         mel = mel.to(device).to(torch.float32).unsqueeze(0)
-        print(f"Step {i}, x shape: {x.shape}, mel shape: {mel.shape}")
+        # print(f"Step {i}, x shape: {x.shape}, mel shape: {mel.shape}")
         # a, v = model(mel, x)
     
     print("Finding losses for 5-frame dataset")
@@ -456,8 +455,8 @@ if __name__ == "__main__":
         all_accuracies(train_losses_5_frame, train_y_vals_5_frame)
 
     if test_accuracy_threshold_on_train_data:
-        min_threshold = min(np.min(losses[i]) for i in range(len(sound_types)))
-        max_threshold = max(np.max(losses[i]) for i in range(len(sound_types)))
+        min_threshold = min(np.min(train_losses_5_frame[i]) for i in range(len(sound_types)))
+        max_threshold = max(np.max(train_losses_5_frame[i]) for i in range(len(sound_types)))
         threshold_range = np.arange(min_threshold, max_threshold + 0.1, 0.1)
         print("\nTest data accuracies with training data threshold:")
         train_threshold_all_sound_types(train_losses_5_frame, train_y_vals_5_frame, losses_5_frame, y_vals_5_frame, thresholds=threshold_range)
