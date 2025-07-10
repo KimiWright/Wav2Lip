@@ -1,7 +1,8 @@
 from pathlib import Path
 import cv2
 import numpy as np
-videoPath = Path("/fslgroup/grp_lip/datasets/lrs2/mvlrs_v1/main/5551009007333662603/00001.mp4")
+# videoPath = Path("/fslgroup/grp_lip/datasets/lrs2/mvlrs_v1/main/5551009007333662603/00001.mp4")
+videoPath = Path("00001.mp4")
 cap = cv2.VideoCapture(str(videoPath))
 frames = []
 while True:
