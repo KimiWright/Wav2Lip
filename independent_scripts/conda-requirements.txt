@@ -30,18 +30,6 @@ colorama=0.4.6=pyhd8ed1ab_1
 contourpy=1.3.1=py310h3788b33_0
 cpython=3.10.16=py310hd8ed1ab_1
 cryptography=44.0.1=py310h6c63255_0
-cuda-crt-tools=12.8.61=ha770c72_1
-cuda-cudart=12.8.57=h5888daf_1
-cuda-cudart_linux-64=12.8.57=h3f2d84a_1
-cuda-cuobjdump=12.8.55=hbd13f7d_0
-cuda-cupti=12.8.57=hbd13f7d_0
-cuda-nvcc-tools=12.8.61=he02047a_1
-cuda-nvdisasm=12.8.55=hbd13f7d_0
-cuda-nvrtc=12.8.61=hbd13f7d_0
-cuda-nvtx=12.8.55=hbd13f7d_0
-cuda-nvvm-tools=12.8.61=he02047a_1
-cuda-version=12.8=h5d125a7_3
-cudnn=9.10.0.56=hcd2ec93_2
 cusparselt=0.7.0.0=hcd2ec93_0
 cycler=0.12.1=pyhd8ed1ab_1
 cyrus-sasl=2.1.27=h54b06d7_7
@@ -117,9 +105,6 @@ libcblas=3.9.0=30_h372d94f_mkl
 libclang-cpp19.1=19.1.7=default_hb5137d0_1
 libclang-cpp20.1=20.1.5=default_h1df26ce_0
 libclang13=20.1.5=default_he06ed0a_0
-libcublas=12.8.3.14=h9ab20c4_0
-libcudnn=9.10.0.56=h4840ae0_2
-libcudnn-dev=9.10.0.56=hcd2ec93_2
 libcudss=0.5.0.16=h14340ca_1
 libcudss0=0.4.0.2=he55f5cd_2
 libcufft=11.3.3.41=hbd13f7d_0
@@ -205,7 +190,6 @@ libstdcxx=14.2.0=hc0a3c3a_1
 libstdcxx-ng=14.2.0=h4852527_1
 libsystemd0=257.3=h3dc2cb9_0
 libtiff=4.7.0=hd9ff511_3
-libtorch=2.6.0=cuda126_mkl_h9fa54b4_302
 libudev1=257.3=h9a4d06a_0
 libunwind=1.6.2=h9c3ff4c_0
 liburing=2.9=h84d6215_0
@@ -278,7 +262,6 @@ python=3.10.16=he725a3c_1_cpython
 python-dateutil=2.9.0.post0=pyhff2d567_1
 python-tzdata=2025.1=pyhd8ed1ab_0
 python_abi=3.10=5_cp310
-pytorch=2.6.0=cuda126_mkl_py310_hb403307_302
 pytz=2024.1=pyhd8ed1ab_0
 pywavelets=1.8.0=py310hf462985_0
 qhull=2020.2=h434a139_5
@@ -307,10 +290,7 @@ tbb=2021.13.0=hceb3a55_1
 threadpoolctl=3.5.0=pyhc1e730c_0
 tifffile=2025.2.18=pyhd8ed1ab_0
 tk=8.6.13=noxft_h4845f30_101
-torchvision=0.21.0=cuda126_py310_h4459643_1
-torchvision-extra-decoders=0.0.2=py310h9a3ef1b_2
 tqdm=4.67.1=pyhd8ed1ab_1
-triton=3.2.0=cuda126py310h50ec074_0
 typing-extensions=4.12.2=hd8ed1ab_1
 typing_extensions=4.12.2=pyha770c72_1
 tzdata=2025a=h78e105d_0
