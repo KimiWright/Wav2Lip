@@ -1,6 +1,6 @@
 #!/bin/bash --login
 
-#SBATCH --time=01:00:00   # walltime
+#SBATCH --time=10:00:00   # walltime
 #SBATCH --gpus=8
 #SBATCH --mem=100G   # memory per CPU core
 #SBATCH --mail-user=KimiWright64@gmail.com   # email address
