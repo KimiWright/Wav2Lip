@@ -167,22 +167,23 @@ with h5py.File(source_main_path, 'r') as f:
     print("Babble losses:")
     _, ba_thresh = best_accuracy(babble_losses_train, ys_train)
 
-    ## These should match the training losses, if they don't there are errors in this code
-    sil_results = [1.0 if loss < sil_thresh else 1.0 for loss in silent_losses_train]
-    wn_results = [1.0 if loss < wn_thresh else 1.0 for loss in white_noise_losses_train]
-    ba_results = [1.0 if loss < ba_thresh else 1.0 for loss in babble_losses_train]
+    print()
+    print("These should match the training losses, if they don't there are errors in this code")
+    sil_results = [0.0 if loss < sil_thresh else 1.0 for loss in silent_losses_train]
+    wn_results = [0.0 if loss < wn_thresh else 1.0 for loss in white_noise_losses_train]
+    ba_results = [0.0 if loss < ba_thresh else 1.0 for loss in babble_losses_train]
     sil_acc = accuracy(ys_train, sil_results)
     wn_acc = accuracy(ys_train, wn_results)
     ba_acc = accuracy(ys_train, ba_results)
     print(f"Silent accuracy: {sil_acc}")
     print(f"White noise accuracy: {wn_acc}")
     print(f"Babble accuracy: {ba_acc}")
-
+    print()
     ## Train threshold on the test set
     print("Training thresholds on the test set")
-    sil_results = [1.0 if loss < sil_thresh else 1.0 for loss in silent_losses]
-    wn_results = [1.0 if loss < wn_thresh else 1.0 for loss in white_noise_losses]
-    ba_results = [1.0 if loss < ba_thresh else 1.0 for loss in babble_losses]
+    sil_results = [0.0 if loss < sil_thresh else 1.0 for loss in silent_losses]
+    wn_results = [0.0 if loss < wn_thresh else 1.0 for loss in white_noise_losses]
+    ba_results = [0.0 if loss < ba_thresh else 1.0 for loss in babble_losses]
     sil_acc = accuracy(ys, sil_results)
     wn_acc = accuracy(ys, wn_results)
     ba_acc = accuracy(ys, ba_results)

@@ -109,7 +109,7 @@ def get_data(data_root, ground_truth, data_point_limit=None, start_idx=0):
 #################
 
 data_out_test = get_data(data_root, ground_truth)
-# data_out_train = get_data(train_data_root, ground_truth_train, data_point_limit=500, start_idx=2000)
+# data_out_train = get_data(train_data_root, ground_truth_train, data_point_limit=100, start_idx=2000)
 data_out_train = get_data(train_data_root, ground_truth_train)
 
 class Dataset_Full_Video(object):
@@ -473,10 +473,6 @@ if __name__ == "__main__":
     
 
     print("\nFinding losses for 5-frame chunks dataset")
-    test_accuracy_threshold_on_train_data = True
-
-    find_test_losses = True
-    find_train_losses = True
     if find_test_losses:
         y_vals_5_frame_chunks, av_val_list = audio_loop_5_frame_chunk(model, test_data_loader_5_frame_chunks, device)
         print("Test losses found for 5-frame chunks dataset")

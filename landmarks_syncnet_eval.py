@@ -30,7 +30,7 @@ parser = argparse.ArgumentParser(description='Code to train the expert lip-sync 
 
 parser.add_argument("--data_root", help="Root folder of the preprocessed landmarks for LRS3 VVAD dataset", default='/home/ksw38/groups/grp_landmarks/nobackup/archive/landmarks_vvadlrs3/main/x_test/')
 parser.add_argument('--ground_truth', help="Ground truth folder of the LRS3 VVAD dataset", default='/home/ksw38/groups/grp_landmarks/nobackup/archive/landmarks_vvadlrs3/main/y_test.npy')
-parser.add_argument('--checkpoint_dir', help='Save checkpoints to this directory', default='landmarks_checkpoints_gru2', type=str)
+parser.add_argument('--checkpoint_dir', help='Save checkpoints to this directory', default='triplets_checkpoints', type=str)
 parser.add_argument('--checkpoint_path', help='Resumed from this checkpoint', default=None, type=str)
 
 args = parser.parse_args()
@@ -38,7 +38,7 @@ args = parser.parse_args()
 
 global_step = 0
 global_epoch = 0
-use_cuda = False#torch.cuda.is_available()
+use_cuda = torch.cuda.is_available()
 print('use_cuda: {}'.format(use_cuda))
 
 syncnet_T = 5
@@ -124,13 +124,13 @@ class Dataset(object):
                 try:
                     npy_data.append(np.load(npy_file))
                 except Exception as e:
-                    print(f"Error loading npy file {npy_file}: {e}")
+                    # print(f"Error loading npy file {npy_file}: {e}")
                     break
             if len(npy_data) != 4:
                 continue
             # Check if the data is empty
             if any(data.size == 0 for data in npy_data):
-                print(f"Empty data in npy files: {npy_file_names}")
+                # print(f"Empty data in npy files: {npy_file_names}")
                 continue
             
             num_frames = npy_data[0].shape[0]
@@ -214,7 +214,7 @@ def eval_model_batch_size_1(test_data_loader, device, model):
                 # offset, conf, dists_npy, fconfm = computeDist(feat_video, feat_still, vshift=15)
                 fconfm = computeDist(feat_video, feat_still, vshift=15)
                 blankThreshold = i
-                result = fconfm.item() > blankThreshold
+                result = fconfm.item() < blankThreshold # >
                 if result and y.item() == 1:
                     true_positives.append(fconfm.item())
                 elif result and y.item() == 0:
