@@ -109,8 +109,8 @@ def get_data(data_root, ground_truth, data_point_limit=None, start_idx=0):
 #################
 
 data_out_test = get_data(data_root, ground_truth)
-# data_out_train = get_data(train_data_root, ground_truth_train, data_point_limit=100, start_idx=2000)
-data_out_train = get_data(train_data_root, ground_truth_train)
+data_out_train = get_data(train_data_root, ground_truth_train, data_point_limit=100)
+# data_out_train = get_data(train_data_root, ground_truth_train)
 
 class Dataset_Full_Video(object):
     def __init__(self, split = 'test'):
@@ -276,7 +276,7 @@ def audio_loop_5_frame_chunk(model, data_loader, device): # Try the loss from co
                 av_val_lists[i].append(av_vals)
         return y_vals, av_val_lists
     
-def chunk_losses(y_vals, av_val_list):
+def chunk_losses(y_vals, av_val_list, device):
     losses = [[] for _ in range(len(sound_types))]
     for i, av_vals in enumerate(av_val_list): # Iterate over sound types
             # print(f"{sound_types[i]} Number of videos: {len(av_vals)}")
@@ -476,12 +476,12 @@ if __name__ == "__main__":
     if find_test_losses:
         y_vals_5_frame_chunks, av_val_list = audio_loop_5_frame_chunk(model, test_data_loader_5_frame_chunks, device)
         print("Test losses found for 5-frame chunks dataset")
-        losses_5_frame_chunks = chunk_losses(y_vals_5_frame_chunks, av_val_list)
+        losses_5_frame_chunks = chunk_losses(y_vals_5_frame_chunks, av_val_list, device)
 
     if find_train_losses:
         train_y_vals_5_frame_chunks, av_val_list = audio_loop_5_frame_chunk(model, train_data_loader_5_frame_chunks, device)
         print("Train losses found for 5-frame chunks dataset")
-        train_losses_5_frame_chunks = chunk_losses(train_y_vals_5_frame_chunks, av_val_list)
+        train_losses_5_frame_chunks = chunk_losses(train_y_vals_5_frame_chunks, av_val_list, device)
         
 
     if test_accuracy_threshold_on_train_data:

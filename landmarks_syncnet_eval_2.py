@@ -17,6 +17,8 @@ data_out_test = run_stats.data_out_test
 data_out_train = run_stats.data_out_train
 checkpoint_path = run_stats.checkpoint_path
 checkpoint_dir = run_stats.checkpoint_dir
+flip = True
+print("Using flip:", flip) # Note, some of the flips are hardcoded in the run_statistics.py file as False, so this will not always be used.
 
 #############
 # Loading functions
@@ -73,8 +75,8 @@ class Dataset_Still_Face_5_Frames(object):
             x_video = run_stats.get_window_npy(x_video_full, start_id=0)
             if x_video is not None:
                 self.processed_data.append((x_video, y))
-            else:
-                print(f"Skipping data point {x_video_full.shape} due to insufficient frames")
+            # else:
+                        #     print(f"Skipping data point {x_video_full.shape} due to insufficient frames")
         
     def __len__(self):
         return len(self.processed_data)
@@ -108,8 +110,8 @@ class Dataset_Still_Face_5_Frame_Chunks(object):
                     x_still_chunks.append(np.tile(chunk[0], (chunk.shape[0], 1)))  # Make a still video of the first frame
             if len(x_video_chunks) > 0:
                 self.processed_data.append((np.array(x_video_chunks), np.array(x_still_chunks), y))
-            else:
-                print(f"Skipping data point {x_video_full.shape} due to insufficient frames for chunks")
+            # else:
+            #     print(f"Skipping data point {x_video_full.shape} due to insufficient frames for chunks")
 
     def __len__(self):
         return len(self.processed_data)
@@ -188,8 +190,11 @@ def still_face_evaluation_loop(model, test_data_loader, train_data_loader, devic
         fconfm_range = np.arange(min_fconfm_train, max_fconfm_train + 0.1, 0.1)
         cosine_loss_range = np.arange(min_cosine_loss_train, max_cosine_loss_train + 0.1, 0.1)
 
-        run_stats.best_accuracy(cosine_losses_train, y_vals_train, flip=False, thresholds=cosine_loss_range)
-        run_stats.best_accuracy(fconfm_train, y_vals_train, flip=False, thresholds=fconfm_range)
+        print("Training statistics:")
+        print("Cosine Loss")
+        run_stats.best_accuracy(cosine_losses_train, y_vals_train, flip=flip, thresholds=cosine_loss_range)
+        print("Fconfm")
+        run_stats.best_accuracy(fconfm_train, y_vals_train, flip=flip, thresholds=fconfm_range)
 
         fconfm_test = []
         cosine_losses_test = []
@@ -208,7 +213,10 @@ def still_face_evaluation_loop(model, test_data_loader, train_data_loader, devic
             loss = cosine_loss(feat_video, feat_still, y)
             cosine_losses_test.append(loss.item())
 
+        print("Testing statistics:")
+        print("Cosine Loss")
         run_stats.train_threshold(cosine_losses_train, y_vals_train, cosine_losses_test, y_vals_test, thresholds=cosine_loss_range)
+        print("Fconfm")
         run_stats.train_threshold(fconfm_train, y_vals_train, fconfm_test, y_vals_test, thresholds=fconfm_range)
 
 def chunk_losses(y_vals, av_vals, device):
@@ -311,8 +319,11 @@ if __name__ == "__main__":
         fconfm_range = np.arange(min_fconfm_train, max_fconfm_train + 0.1, 0.1)
         cosine_loss_range = np.arange(min_cosine_loss_train, max_cosine_loss_train + 0.1, 0.1) 
 
-        run_stats.best_accuracy(cosine_losses, y_vals_train, flip=False, thresholds=cosine_loss_range)
-        run_stats.best_accuracy(fconfm_vals, y_vals_train, flip=False, thresholds=fconfm_range)
+        print("Training statistics:")
+        print("Cosine Loss")
+        run_stats.best_accuracy(cosine_losses, y_vals_train, flip=flip, thresholds=cosine_loss_range)
+        print("Fconfm")
+        run_stats.best_accuracy(fconfm_vals, y_vals_train, flip=flip, thresholds=fconfm_range)
 
         y_vals_test = []
         av_val_lists_test = []
@@ -330,5 +341,8 @@ if __name__ == "__main__":
             av_val_lists_test.append(av_vals_test)
         cosine_losses, fconfm_vals = chunk_losses(y_vals_test, av_val_lists_test, device)  
 
+        print("Testing statistics:")
+        print("Cosine Loss")
         run_stats.train_threshold(cosine_losses, y_vals_train, cosine_losses, y_vals_test, thresholds=cosine_loss_range)
+        print("Fconfm")
         run_stats.train_threshold(fconfm_vals, y_vals_train, fconfm_vals, y_vals_test, thresholds=fconfm_range)
