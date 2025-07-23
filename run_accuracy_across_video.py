@@ -10,12 +10,12 @@ class Dataset_5_Frame_Chunks_No_Short_Videos(object):
             raise ValueError("Split must be 'test' or 'train'")
         
         self.processed_data = []
-        modal_frame_num = 38 # Mode of frames in the dataset
+        modal_frame_num = 35 # Mode of frames in the dataset
         for datum in self.data:
             x_video, y = datum
             x_video_chunks = []
             num_frames = x_video.shape[0]
-            if num_frames == modal_frame_num:
+            if num_frames > modal_frame_num:
                 for start_id in range(0, num_frames, 5):  # Get chunks of 5 frames
                     chunk = get_window_npy(x_video, start_id=start_id)
                     if chunk is not None:
@@ -58,8 +58,6 @@ def babble_loop_5_frame_chunk(model, data_loader, device): # Try the loss from c
 def chunk_losses_single(y_vals, av_vals, device):
     losses = []
     for j, video in enumerate(av_vals):  # Iterate over videos
-        # for chunk in video:
-        #     print(chunk[0].shape, chunk[1].shape) # a and v shapes
         a_vals, v_vals = zip(*video)  # Unzip a and v values
         a_vals = torch.stack(a_vals, dim=0)  # [Chunks, Batch, 128]
         v_vals = torch.stack(v_vals, dim=0)  # [Chunks, Batch, 128]
@@ -70,7 +68,6 @@ def chunk_losses_single(y_vals, av_vals, device):
         v_mean = v_mean.to(device)
         y = y.to(device)
         loss = gru2.cosine_loss(a_mean, v_mean, y)
-        # print(f"Loss for video {j}: {loss.item()}")
         losses.append(loss.cpu().item())  # Store loss on CPU to avoid GPU memory issues
     return losses
 
@@ -114,13 +111,7 @@ if __name__ == "__main__":
     # acc_test = test_accuracy(losses_5_frame_chunks, y_vals_5_frame_chunks, threshold, flip=False)
     # print(f"Test accuracy: {acc_test}")
 
-    print(av_val_list[0][0][0].shape, av_val_list[0][0][1].shape)  # Check shapes of a and v
-
-
-    print(len(av_val_list[0][0]))  # Number of videos
-    num_chunks = len(av_val_list[0][0])  # Number of chunks in the first video
-    print(num_chunks)
-    num_chunks = 7
+    num_chunks = 7 # Hardcoded number of chunks, can be adjusted based on the dataset, based on dataset with >35 frames
     all_losses = [[] for _ in range(num_chunks)]  # Initialize losses for each chunk
     for j, video in enumerate(av_val_list):  # Iterate over videos
         a_vals, v_vals = zip(*video)  # Unzip a and v values
