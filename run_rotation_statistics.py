@@ -107,15 +107,13 @@ def get_data(data_root, ground_truth, data_point_limit=None, start_idx=0):
 ################
 # Datasets
 #################
-
-data_out_test = get_data(data_root, ground_truth)
     
 class Dataset_5_Frame_Rotation(object):
     def __init__(self, split = 'test'):
         if split == 'test':
-            self.data = data_out_test
-        # elif split == 'train':
-        #     self.data = data_out_train
+            self.data = get_data(data_root, ground_truth)
+        elif split == 'train':
+            self.data = get_data(train_data_root, ground_truth)
         else:
             raise ValueError("Split must be 'test' or 'train'")
         
@@ -165,8 +163,21 @@ def babble_loop(model, data_loader, device): # Try the loss from contrastive lea
     with torch.no_grad():
         losses = []
         y_vals = []
+        global babble_emb
+        babble_emb = babble_emb.to(device)
+        roll_max = 0
+        roll_min = 0
         for step, (x, y) in enumerate(data_loader):
             x_video, x_roll, x_pitch, x_yaw = x
+            # Change shape from [1, Frames, 1] to [Frames]
+            x_roll = x_roll.squeeze()
+            if max(x_roll) > roll_max:
+                roll_max = max(x_roll)
+            if min(x_roll) < roll_min:
+                roll_min = min(x_roll)
+
+            # print(max(x_roll), max(x_pitch), max(x_yaw))
+            # print(min(x_roll), min(x_pitch), min(x_yaw))
             x_video = x_video.to(device).to(torch.float32)
             x_roll = x_roll.to(device).to(torch.float32)
             x_pitch = x_pitch.to(device).to(torch.float32)
@@ -177,6 +188,7 @@ def babble_loop(model, data_loader, device): # Try the loss from contrastive lea
             v = model(x_video)
             loss = gru2.cosine_loss(babble_emb, v, y)
             losses.append(loss.cpu().item())
+        print(f"Roll range: {roll_min} to {roll_max}")
         return losses, y_vals
 
 ####################
