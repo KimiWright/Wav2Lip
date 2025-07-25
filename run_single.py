@@ -65,6 +65,6 @@ if __name__ == "__main__":
     if checkpoint_path  is None:
         checkpoint_path = os.listdir(checkpoint_dir)[-1]
         checkpoint_path = os.path.join(checkpoint_dir, checkpoint_path)
-    gru2.load_checkpoint(checkpoint_path, model, optimizer, reset_optimizer=False)
+    load_checkpoint(checkpoint_path, model, optimizer, reset_optimizer=False)
     print("Loaded checkpoint from: {}".format(checkpoint_path))
     model.eval()
