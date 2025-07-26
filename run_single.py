@@ -8,6 +8,8 @@ from torch import optim
 import torch.utils.data as data_utils
 
 from hparams import hparams
+from models.lmks_only import lmks_only
+from models.audio_only import audio_only
 from models import SyncNet_landmarks_gru2 as SyncNet # Eventually switch to face only and pregenerated audio
 
 
@@ -19,6 +21,9 @@ ground_truth_train = '/home/ksw38/groups/grp_landmarks/nobackup/autodelete/landm
 checkpoint_dir = 'landmarks_checkpoints_gru2'
 checkpoint_dir = "triplets_checkpoints"
 checkpoint_path = None
+
+babble_embedding_path = "kimi/babble_embedding.npy"
+babble_emb = torch.Tensor(np.load(babble_embedding_path))
 
 def _load(checkpoint_path):
     use_cuda = torch.cuda.is_available()
@@ -46,6 +51,27 @@ def load_checkpoint(path, model, optimizer, reset_optimizer=False):
 
     return model
 
+def load_partial_model(checkpoint_path, device, startswith='face'):
+    checkpoint = torch.load(checkpoint_path, map_location='cpu')
+    full_state_dict = checkpoint['state_dict']
+
+    partial_state_dict = {k: v for k, v in full_state_dict.items() if k.startswith(startswith)}
+
+    if startswith == 'face':
+        model = lmks_only().to(device)
+    elif startswith == 'audio':
+        model = audio_only().to(device)
+    else:
+        raise ValueError("startswith must be 'face' or 'audio'")
+    
+    missing, unexpected = model.load_state_dict(partial_state_dict, strict=False)
+    if missing:
+        print("Missing keys in the state_dict:", missing)
+    if unexpected:
+        print("Unexpected keys in the state_dict:", unexpected)
+    print('total trainable params {}'.format(sum(p.numel() for p in model.parameters() if p.requires_grad)))
+    return model
+
 if __name__ == "__main__":
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     shuffle_dataset = False
@@ -68,3 +94,6 @@ if __name__ == "__main__":
     load_checkpoint(checkpoint_path, model, optimizer, reset_optimizer=False)
     print("Loaded checkpoint from: {}".format(checkpoint_path))
     model.eval()
+
+    lmks_model = load_partial_model(checkpoint_path, device=device, startswith='face')
+    lmks_model.eval()
