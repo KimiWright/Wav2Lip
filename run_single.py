@@ -5,12 +5,17 @@ from tqdm import tqdm
 
 import torch
 from torch import optim
+import torch.nn as nn
 import torch.utils.data as data_utils
 
 from hparams import hparams
 from models.lmks_only import lmks_only
 from models.audio_only import audio_only
-from models import SyncNet_landmarks_gru2 as SyncNet # Eventually switch to face only and pregenerated audio
+
+from facetools import genMediapipeInfo, norm_lmks
+
+from pathlib import Path
+import cv2
 
 
 data_root = '/home/ksw38/groups/grp_landmarks/nobackup/archive/landmarks_vvadlrs3/main/x_test/'
@@ -25,44 +30,17 @@ checkpoint_path = None
 babble_embedding_path = "kimi/babble_embedding.npy"
 babble_emb = torch.Tensor(np.load(babble_embedding_path))
 
-def _load(checkpoint_path):
-    use_cuda = torch.cuda.is_available()
-    if use_cuda:
-        checkpoint = torch.load(checkpoint_path)
-    else:
-        checkpoint = torch.load(checkpoint_path,
-                                map_location=lambda storage, loc: storage)
-    return checkpoint
+######################
+# Model Functions
+######################
 
-def load_checkpoint(path, model, optimizer, reset_optimizer=False):
-    global global_step
-    global global_epoch
-
-    print("Load checkpoint from: {}".format(path))
-    checkpoint = _load(path)
-    model.load_state_dict(checkpoint["state_dict"])
-    if not reset_optimizer:
-        optimizer_state = checkpoint["optimizer"]
-        if optimizer_state is not None:
-            print("Load optimizer state from {}".format(path))
-            optimizer.load_state_dict(checkpoint["optimizer"])
-    global_step = checkpoint["global_step"]
-    global_epoch = checkpoint["global_epoch"]
-
-    return model
-
-def load_partial_model(checkpoint_path, device, startswith='face'):
+def load_face_model(checkpoint_path, device):
     checkpoint = torch.load(checkpoint_path, map_location='cpu')
     full_state_dict = checkpoint['state_dict']
-
+    startswith='face'
     partial_state_dict = {k: v for k, v in full_state_dict.items() if k.startswith(startswith)}
 
-    if startswith == 'face':
-        model = lmks_only().to(device)
-    elif startswith == 'audio':
-        model = audio_only().to(device)
-    else:
-        raise ValueError("startswith must be 'face' or 'audio'")
+    model = lmks_only().to(device)
     
     missing, unexpected = model.load_state_dict(partial_state_dict, strict=False)
     if missing:
@@ -72,28 +50,57 @@ def load_partial_model(checkpoint_path, device, startswith='face'):
     print('total trainable params {}'.format(sum(p.numel() for p in model.parameters() if p.requires_grad)))
     return model
 
+logloss = nn.BCELoss()
+def cosine_loss(a, v, y):
+    d = nn.functional.cosine_similarity(a, v)
+    d = (d + 1) / 2 # Normalize to [0, 1]
+    loss = logloss(d.unsqueeze(1), y)
+
+    return loss
+
+def process_video(video_path):
+    cap = cv2.VideoCapture(str(video_path))
+    frames = []
+    while True:
+        ret, frame = cap.read()
+        if not ret:
+            break
+        frames.append(frame)
+    cap.release()
+
+    _, lmks, allYaw, allPitch, allRoll = genMediapipeInfo(frames)
+    lmks = norm_lmks(lmks) # this does the final normalization
+    return len(frames), lmks, np.array(allYaw), np.array(allPitch), np.array(allRoll)
+
 if __name__ == "__main__":
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     shuffle_dataset = False
     num_workers = 1
-
-    if checkpoint_path  is None:
-        checkpoint_path = os.listdir(checkpoint_dir)[-1]
-        checkpoint_path = os.path.join(checkpoint_dir, checkpoint_path)
-
-    model = SyncNet().to(device)
-    print('total trainable params {}'.format(sum(p.numel() for p in model.parameters() if p.requires_grad)))
-
-    optimizer = optim.Adam([p for p in model.parameters() if p.requires_grad],
-                        lr=hparams.syncnet_lr)
+    threshold = .72
 
     print("Loading checkpoint path")
     if checkpoint_path  is None:
         checkpoint_path = os.listdir(checkpoint_dir)[-1]
         checkpoint_path = os.path.join(checkpoint_dir, checkpoint_path)
-    load_checkpoint(checkpoint_path, model, optimizer, reset_optimizer=False)
-    print("Loaded checkpoint from: {}".format(checkpoint_path))
-    model.eval()
 
-    lmks_model = load_partial_model(checkpoint_path, device=device, startswith='face')
+    lmks_model = load_face_model(checkpoint_path, device=device)
     lmks_model.eval()
+
+    video_path = "kimi/00001.mp4" # 35 frames
+
+    num_frames, lmks, allYaw, allPitch, allRoll = process_video(video_path)
+    print(f"Processing video: {video_path} with {num_frames} frames")
+    x_lmks = lmks.reshape(num_frames, -1)
+    x_roll = allRoll[:, None]
+    x_pitch = allPitch[:, None]
+    x_yaw = allYaw[:, None]
+    x_video = np.concatenate([x_lmks, x_roll, x_pitch, x_yaw], axis=1)
+
+    x_video = torch.Tensor(x_video).unsqueeze(0).to(device).to(torch.float32)
+    lmks_model = lmks_model.to(device)
+    with torch.no_grad():
+        face_emb = lmks_model(x_video).to(device)
+        loss = cosine_loss(babble_emb.to(device), face_emb, torch.ones((1, 1)).to(device)) ###FIXME redo thresholds on run_statistics.py with this number instead of y
+        print(f"Cosine loss: {loss.item()}")
+        result = 1.0 if loss < threshold else 0.0
+        print(f"Result: {result} (threshold: {threshold})")
