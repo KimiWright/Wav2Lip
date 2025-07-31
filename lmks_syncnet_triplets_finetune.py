@@ -157,7 +157,7 @@ def finetune_eval_model(test_data_loader, device, face_model, audio_model):
             audio_model.eval()
             face_model.eval()
 
-            anchor_emb = audio_model(silent_mel)
+            anchor_emb = audio_model(silent_mel.repeat(batch_size, 1, 1, 1).to(device))
             pos_emb = face_model(pos)
             neg_emb = face_model(neg)
 
@@ -171,7 +171,7 @@ def finetune_eval_model(test_data_loader, device, face_model, audio_model):
         return avg_loss
     
 def finetune_train(device, face_model, audio_model, train_data_loader, test_data_loader, optimizer,
-          checkpoint_dir=None, checkpoint_interval=None, nepochs=None, batch_size=1, scheduler=None):
+          checkpoint_dir=None, checkpoint_interval=None, nepochs=None, scheduler=None):
     global global_step, global_epoch, silent_mel
     resumed_step = global_step
     print(silent_mel.shape)
@@ -186,6 +186,7 @@ def finetune_train(device, face_model, audio_model, train_data_loader, test_data
             audio_model.train()
             face_model.train()
 
+            batch_size = pos.shape[0]
             anchor_emb = audio_model(silent_mel.repeat(batch_size, 1, 1, 1).to(device))
             pos_emb = face_model(pos)
             neg_emb = face_model(neg)
@@ -249,4 +250,4 @@ if __name__ == "__main__":
                     lr=hparams.syncnet_lr, weight_decay=1e-5)
     
     finetune_train(device, face_model, audio_model, train_data_loader, test_data_loader, optimizer=optimizer,
-          checkpoint_dir=checkpoint_dir, checkpoint_interval=hparams.syncnet_checkpoint_interval, nepochs=hparams.nepochs, batch_size=batch_size)
+          checkpoint_dir=checkpoint_dir, checkpoint_interval=hparams.syncnet_checkpoint_interval, nepochs=hparams.nepochs)
