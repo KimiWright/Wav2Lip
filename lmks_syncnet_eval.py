@@ -3,7 +3,7 @@ from landmarks_syncnet_eval import *
 
 device = "cpu"#torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-checkpoint_dir = "triplets_checkpoints"
+checkpoint_dir = "finetune_checkpoints"
 
 if checkpoint_path is None:
     checkpoint_path = os.listdir(checkpoint_dir)[-1]

@@ -19,7 +19,7 @@ train_data_root = '/home/ksw38/groups/grp_landmarks/nobackup/autodelete/landmark
 ground_truth_train = '/home/ksw38/groups/grp_landmarks/nobackup/autodelete/landmarks_vvadlrs3/main/y_train.npy'
 
 checkpoint_dir = 'landmarks_checkpoints_gru2'
-checkpoint_dir = "triplets_checkpoints"
+checkpoint_dir = "finetune_checkpoints"
 checkpoint_path = None
 
 

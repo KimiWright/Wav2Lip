@@ -1,9 +1,40 @@
-from lmks_syncnet_train_triplets import *
+# from lmks_syncnet_train_triplets import *
+from os.path import dirname, join, basename, isfile
+from tqdm import tqdm
+
+from models import SyncNet_landmarks_gru2 as SyncNet
+import landmarks_audio as audio
+
+import torch
+from torch import nn
+from torch import optim
+import torch.backends.cudnn as cudnn
+from torch.utils import data as data_utils
+import numpy as np
+import math
+from torch.optim.lr_scheduler import LambdaLR
+import torch.nn.functional as F
+
+from glob import glob
+
+import os, random, cv2, argparse
+from hparams import hparams, get_image_list
+
+from collections import defaultdict
+from os import path
+
+import re
+from models.lmks_only import lmks_only
+from models.audio_only import audio_only
+from models import SyncNet_landmarks_gru2 as SyncNet
 
 data_root = '/home/ksw38/groups/grp_landmarks/nobackup/archive/landmarks_vvadlrs3/main/x_test/'
 ground_truth = '/home/ksw38/groups/grp_landmarks/nobackup/archive/landmarks_vvadlrs3/main/y_test.npy'
 train_data_root = '/home/ksw38/groups/grp_landmarks/nobackup/autodelete/landmarks_vvadlrs3/main/x_train/'
 ground_truth_train = '/home/ksw38/groups/grp_landmarks/nobackup/autodelete/landmarks_vvadlrs3/main/y_train.npy'
+
+global_step_finetune = 0
+global_epoch_finetune = 0
 
 ################################
 # Get Data and support functions
@@ -142,6 +173,66 @@ def finetune_triplet_loss(anchor, positive, negative, margin=0.2):
     return loss.mean()
 
 ################
+# Save and Load Models
+################
+
+def load_partial_model(checkpoint_path, device, startswith='face'):
+    checkpoint = torch.load(checkpoint_path, map_location='cpu')
+    full_state_dict = checkpoint['state_dict']
+
+    partial_state_dict = {k: v for k, v in full_state_dict.items() if k.startswith(startswith)}
+
+    if startswith == 'face':
+        model = lmks_only().to(device)
+    elif startswith == 'audio':
+        model = audio_only().to(device)
+    else:
+        raise ValueError("startswith must be 'face' or 'audio'")
+    missing, unexpected = model.load_state_dict(partial_state_dict, strict=False)
+    if missing:
+        print("Missing keys in the state_dict:", missing)
+    if unexpected:
+        print("Unexpected keys in the state_dict:", unexpected)
+    print('total trainable params {}'.format(sum(p.numel() for p in model.parameters() if p.requires_grad)))
+    return model
+
+def save_checkpoint(model, optimizer, step, checkpoint_dir, epoch):
+
+    checkpoint_path = join(
+        checkpoint_dir, "checkpoint_step{:09d}.pth".format(global_step_finetune))
+    optimizer_state = optimizer.state_dict() if hparams.save_optimizer_state else None
+    torch.save({
+        "state_dict": model.state_dict(),
+        "optimizer": optimizer_state,
+        "global_step": step,
+        "global_epoch": epoch,
+    }, checkpoint_path)
+    print("Saved checkpoint:", checkpoint_path)
+
+def combine_models_and_save_checkpoint(face_model, audio_model, optimizer, step, checkpoint_dir, epoch):
+    combined_state_dict = {}
+    face_state_dict = face_model.state_dict()
+    audio_state_dict = audio_model.state_dict()
+
+    for k, v in face_state_dict.items():
+        print("Saving lmks portion")
+        combined_state_dict['face.' + k] = v
+    for k, v in audio_state_dict.items():
+        print("Saving audio portion")
+        combined_state_dict['audio.' + k] = v
+
+    checkpoint_path = join(
+        checkpoint_dir, "checkpoint_step{:09d}.pth".format(global_step_finetune))
+    optimizer_state = optimizer.state_dict() if hparams.save_optimizer_state else None
+    torch.save({
+        "state_dict": combined_state_dict,
+        "optimizer": optimizer_state,
+        "global_step": step,
+        "global_epoch": epoch,
+    }, checkpoint_path)
+    print("Saved combined checkpoint:", checkpoint_path)
+
+################
 # Training
 ################
 def finetune_eval_model(test_data_loader, device, face_model, audio_model):
@@ -157,6 +248,7 @@ def finetune_eval_model(test_data_loader, device, face_model, audio_model):
             audio_model.eval()
             face_model.eval()
 
+            batch_size = pos.shape[0]
             anchor_emb = audio_model(silent_mel.repeat(batch_size, 1, 1, 1).to(device))
             pos_emb = face_model(pos)
             neg_emb = face_model(neg)
@@ -172,14 +264,14 @@ def finetune_eval_model(test_data_loader, device, face_model, audio_model):
     
 def finetune_train(device, face_model, audio_model, train_data_loader, test_data_loader, optimizer,
           checkpoint_dir=None, checkpoint_interval=None, nepochs=None, scheduler=None):
-    global global_step, global_epoch, silent_mel
-    resumed_step = global_step
+    global global_step_finetune, global_epoch_finetune, silent_mel
+    resumed_step = global_step_finetune
     print(silent_mel.shape)
-    while global_epoch < nepochs:
+    while global_epoch_finetune < nepochs:
         running_loss = 0.0
-        prog_bar = tqdm(enumerate(train_data_loader))
+        # prog_bar = tqdm(enumerate(train_data_loader))
         
-        for step, (pos, neg) in enumerate(tqdm(test_data_loader)):
+        for step, (pos, neg) in enumerate(test_data_loader):
             pos = pos.to(device).to(torch.float32)
             neg = neg.to(device).to(torch.float32)
 
@@ -199,20 +291,20 @@ def finetune_train(device, face_model, audio_model, train_data_loader, test_data
             if scheduler is not None:
                 scheduler.step()
 
-            global_step += 1
-            cur_session_steps = global_step - resumed_step
+            global_step_finetune += 1
+            cur_session_steps = global_step_finetune - resumed_step
             running_loss += loss.item()
 
-            if global_step == 1 or global_step % checkpoint_interval == 0:
-                combine_models_and_save_checkpoint(face_model, audio_model, optimizer, global_step, checkpoint_dir, global_epoch)
+            if global_step_finetune == 1 or global_step_finetune % checkpoint_interval == 0:
+                combine_models_and_save_checkpoint(face_model, audio_model, optimizer, global_step_finetune, checkpoint_dir, global_epoch_finetune)
 
-            if global_step % hparams.syncnet_eval_interval == 0:
+            if global_step_finetune % hparams.syncnet_eval_interval == 0:
                 with torch.no_grad():
                     finetune_eval_model(test_data_loader, device, face_model, audio_model)
 
-            prog_bar.set_description('Loss: {}'.format(running_loss / (step + 1)))
-        print(f"Global_epoch: {global_epoch}")
-        global_epoch += 1
+            # prog_bar.set_description('Loss: {}'.format(running_loss / (step + 1)))
+        # print(f"Global_epoch: {global_epoch}")
+        global_epoch_finetune += 1
 
 
 if __name__ == "__main__":
