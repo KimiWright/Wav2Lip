@@ -22,6 +22,7 @@ test_data_loader = data_utils.DataLoader(
 fconfms = []
 losses = []
 ys = []
+cos_sim_vals = []
 for step, (x_video, x_still, y) in enumerate(test_data_loader):
     x_video = x_video.to(device).to(torch.float32)
     x_still = x_still.to(device).to(torch.float32)
@@ -34,8 +35,13 @@ for step, (x_video, x_still, y) in enumerate(test_data_loader):
     fconfms.append(fconfm.item())
     ys.append(int(y.item()))
 
-    loss = cosine_loss(feat_video, feat_still, y.unsqueeze(0).to(torch.float32))
+    # loss = cosine_loss(feat_video, feat_still, y.unsqueeze(0).to(torch.float32))
+    # loss = cosine_loss(feat_video, feat_still, torch.ones((1, 1)).to(device))
+    loss = cosine_loss(feat_video, feat_still, torch.zeros((1, 1)).to(device))
     losses.append(loss.item())
+
+    cos_sim_val = nn.functional.cosine_similarity(feat_video, feat_still)
+    cos_sim_vals.append(cos_sim_val.item())
 
 num_ys_0 = ys.count(0)
 num_ys_1 = ys.count(1)
@@ -47,3 +53,7 @@ best_accuracy(fconfms, ys, flip=True)
 print("cosine loss")
 best_accuracy(losses, ys)
 best_accuracy(losses, ys, flip=True)
+
+print("cosine similarity")
+best_accuracy(cos_sim_vals, ys)
+best_accuracy(cos_sim_vals, ys, flip=True)

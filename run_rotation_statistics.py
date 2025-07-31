@@ -113,7 +113,7 @@ class Dataset_5_Frame_Rotation(object):
         if split == 'test':
             self.data = get_data(data_root, ground_truth)
         elif split == 'train':
-            self.data = get_data(train_data_root, ground_truth)
+            self.data = get_data(train_data_root, ground_truth_train)
         else:
             raise ValueError("Split must be 'test' or 'train'")
         

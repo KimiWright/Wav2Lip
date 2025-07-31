@@ -26,6 +26,20 @@ def generate_babble_mel(num_frames=5, start_frame_num=0, video_fps=hparams.fps, 
     babble_mel = torch.FloatTensor(babble_mel.T).unsqueeze(0)  # [1, Mel, Time]
     return babble_mel
 
+## Silence and White noise
+def generate_mel_for_frames(num_frames, silence = True, video_fps=hparams.fps, mel_fps=80, sample_rate=16000, hop_length=200):
+    mel_frames = int(num_frames * mel_fps / video_fps)
+    num_samples = (mel_frames - 1) * hop_length  # +1 mel frame per hop
+    if silence:
+        gen_audio = torch.zeros(num_samples)
+    else:
+        gen_audio = torch.randn(num_samples) # Generate white noise
+    # Compute mel spectrogram
+    mel = audio.melspectrogram(gen_audio).T  # [Time, Mel]
+    mel = mel[:mel_frames]  # Clip to exact mel_frames
+    mel = torch.FloatTensor(mel.T).unsqueeze(0)  # [1, 80, mel_frames]
+    return mel
+
 ################
 # Model loading
 ################
@@ -51,6 +65,13 @@ def load_partial_model(checkpoint_path, device, startswith='face'):
     print('total trainable params {}'.format(sum(p.numel() for p in model.parameters() if p.requires_grad)))
     return model
 
+def save_emb(mel, audio_model, output_path):
+    mel = mel.to(device)
+    print(mel.shape)
+    emb = audio_model(mel)  # Get the embedding
+    emb = emb.cpu().detach().numpy()  # Convert to numpy array
+    # np.save(output_path, emb)
+    # print(f"Embedding saved to {output_path}")
 
 ###############
 # Main execution
@@ -64,16 +85,10 @@ if checkpoint_path  is None:
         checkpoint_path = os.path.join(checkpoint_dir, checkpoint_path)
 
 babble_mel = generate_babble_mel(5, start_frame_num=0).to(torch.float32).unsqueeze(0)  # Generate a mel for 5 frames
+silent_mel = generate_mel_for_frames(5, silence=True).to(torch.float32).unsqueeze(0)
 
 audio_model = load_partial_model(checkpoint_path, device=device, startswith='audio')
 audio_model.eval()
 
-babble_mel = babble_mel.to(device)
-
-babble_emb = audio_model(babble_mel)  # Get the babble embedding
-babble_emb = babble_emb.cpu().detach().numpy()  # Convert to numpy array
-print(f"Babble embedding shape: {babble_emb.shape}")
-
-output_path = os.path.join("kimi", "babble_embedding.npy")
-np.save(output_path, babble_emb)
-print(f"Babble embedding saved to {output_path}")
+save_emb(babble_mel, audio_model, os.path.join("kimi", "babble_embedding.npy"))
+save_emb(silent_mel, audio_model, os.path.join("kimi", "silent_embedding.npy"))

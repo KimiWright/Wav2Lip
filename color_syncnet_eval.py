@@ -105,15 +105,18 @@ with h5py.File(source_main_path, 'r') as f:
         x = x.to(device)
 
         silent_a, silent_v = model(silent_mel, x)
-        silent_loss = color_syncnet_train.cosine_loss(silent_a, silent_v, y)
+        # silent_loss = color_syncnet_train.cosine_loss(silent_a, silent_v, y)
+        silent_loss = color_syncnet_train.cosine_loss(silent_a, silent_v, torch.ones((1, 1)).to(device))
         silent_losses.append(silent_loss.item())
 
         white_noise_a, white_noise_v = model(white_noise_mel, x)
-        white_noise_loss = color_syncnet_train.cosine_loss(white_noise_a, white_noise_v, y)
+        # white_noise_loss = color_syncnet_train.cosine_loss(white_noise_a, white_noise_v, y)
+        white_noise_loss = color_syncnet_train.cosine_loss(white_noise_a, white_noise_v, torch.ones((1, 1)).to(device))
         white_noise_losses.append(white_noise_loss.item())
 
         babble_a, babble_v = model(babble_mel, x)
-        babble_loss = color_syncnet_train.cosine_loss(babble_a, babble_v, y)
+        # babble_loss = color_syncnet_train.cosine_loss(babble_a, babble_v, y)
+        babble_loss = color_syncnet_train.cosine_loss(babble_a, babble_v, torch.ones((1, 1)).to(device))
         babble_losses.append(babble_loss.item())
 
     print("Test threshold on the test set")
@@ -145,15 +148,18 @@ with h5py.File(source_main_path, 'r') as f:
         x = x.to(device)
 
         silent_a, silent_v = model(silent_mel, x)
-        silent_loss = color_syncnet_train.cosine_loss(silent_a, silent_v, y)
+        # silent_loss = color_syncnet_train.cosine_loss(silent_a, silent_v, y)
+        silent_loss = color_syncnet_train.cosine_loss(silent_a, silent_v, torch.ones((1, 1)).to(device))
         silent_losses_train.append(silent_loss.item())
 
         white_noise_a, white_noise_v = model(white_noise_mel, x)
-        white_noise_loss = color_syncnet_train.cosine_loss(white_noise_a, white_noise_v, y)
+        # white_noise_loss = color_syncnet_train.cosine_loss(white_noise_a, white_noise_v, y)
+        white_noise_loss = color_syncnet_train.cosine_loss(white_noise_a, white_noise_v, torch.ones((1, 1)).to(device))
         white_noise_losses_train.append(white_noise_loss.item())
 
         babble_a, babble_v = model(babble_mel, x)
-        babble_loss = color_syncnet_train.cosine_loss(babble_a, babble_v, y)
+        # babble_loss = color_syncnet_train.cosine_loss(babble_a, babble_v, y)
+        babble_loss = color_syncnet_train.cosine_loss(babble_a, babble_v, torch.ones((1, 1)).to(device))
         babble_losses_train.append(babble_loss.item())
 
     print()
@@ -190,3 +196,43 @@ with h5py.File(source_main_path, 'r') as f:
     print(f"Silent accuracy: {sil_acc}")
     print(f"White noise accuracy: {wn_acc}")
     print(f"Babble accuracy: {ba_acc}")
+
+    print()
+    print("####################\nFlip\n####################")
+    print()
+    print("Training thresholds on the training set")
+    print("Silent losses:")
+    _, sil_thresh = best_accuracy(silent_losses_train, ys_train, flip=True)
+
+    print("White noise losses:")
+    _, wn_thresh = best_accuracy(white_noise_losses_train, ys_train, flip=True)
+
+    print("Babble losses:")
+    _, ba_thresh = best_accuracy(babble_losses_train, ys_train, flip=True)
+
+    print()
+    print("These should match the training losses, if they don't there are errors in this code")
+    sil_results = [1.0 if loss < sil_thresh else 0.0 for loss in silent_losses_train]
+    wn_results = [1.0 if loss < wn_thresh else 0.0 for loss in white_noise_losses_train]
+    ba_results = [1.0 if loss < ba_thresh else 0.0 for loss in babble_losses_train]
+    sil_acc = accuracy(ys_train, sil_results)
+    wn_acc = accuracy(ys_train, wn_results)
+    ba_acc = accuracy(ys_train, ba_results)
+    print(f"Silent accuracy: {sil_acc}")
+    print(f"White noise accuracy: {wn_acc}")
+    print(f"Babble accuracy: {ba_acc}")
+    print()
+    ## Train threshold on the test set
+    print("Training thresholds on the test set")
+    sil_results = [1.0 if loss < sil_thresh else 0.0 for loss in silent_losses]
+    wn_results = [1.0 if loss < wn_thresh else 0.0 for loss in white_noise_losses]
+    ba_results = [1.0 if loss < ba_thresh else 0.0 for loss in babble_losses]
+    sil_acc = accuracy(ys, sil_results)
+    wn_acc = accuracy(ys, wn_results)
+    ba_acc = accuracy(ys, ba_results)
+    print(f"Silent accuracy: {sil_acc}")
+    print(f"White noise accuracy: {wn_acc}")
+    print(f"Babble accuracy: {ba_acc}")
+
+
+    
