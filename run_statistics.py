@@ -6,6 +6,7 @@ from tqdm import tqdm
 import torch
 from torch import optim
 import torch.utils.data as data_utils
+import torch.nn.functional as F
 
 from hparams import hparams
 import landmarks_audio as audio
@@ -20,9 +21,10 @@ ground_truth_train = '/home/ksw38/groups/grp_landmarks/nobackup/autodelete/landm
 
 checkpoint_dir = 'landmarks_checkpoints_gru2'
 checkpoint_dir = "finetune_checkpoints"
+checkpoint_dir = "triplets_checkpoints"
 checkpoint_path = None
 
-
+print("Not Finetuned")
 
 ################################
 # Get Data and support functions
@@ -108,16 +110,26 @@ def get_data(data_root, ground_truth, data_point_limit=None, start_idx=0):
 # Datasets
 #################
 
-data_out_test = get_data(data_root, ground_truth)
-# data_out_train = get_data(train_data_root, ground_truth_train, data_point_limit=100)
-data_out_train = get_data(train_data_root, ground_truth_train)
+# data_out_test = get_data(data_root, ground_truth)
+# # data_out_train = get_data(train_data_root, ground_truth_train, data_point_limit=100)
+# data_out_train = get_data(train_data_root, ground_truth_train)
+data_point_limit = None
+data_out_test = []
+data_out_train = []
 
 class Dataset_Full_Video(object):
     def __init__(self, split = 'test'):
+        global data_out_test, data_out_train, data_point_limit
         if split == 'test':
             self.data = data_out_test
+            if len(self.data) == 0:
+                data_out_test = get_data(data_root, ground_truth, data_point_limit=data_point_limit)
+                self.data = data_out_test
         elif split == 'train':
             self.data = data_out_train
+            if len(self.data) == 0:
+                data_out_train = get_data(train_data_root, ground_truth_train, data_point_limit=data_point_limit)
+                self.data = data_out_train
         else:
             raise ValueError("Split must be 'test' or 'train'")
 
@@ -129,10 +141,17 @@ class Dataset_Full_Video(object):
     
 class Dataset_5_Frame(object):
     def __init__(self, split = 'test'):
+        global data_out_test, data_out_train, data_point_limit
         if split == 'test':
             self.data = data_out_test
+            if len(self.data) == 0:
+                data_out_test = get_data(data_root, ground_truth, data_point_limit=data_point_limit)
+                self.data = data_out_test
         elif split == 'train':
             self.data = data_out_train
+            if len(self.data) == 0:
+                data_out_train = get_data(train_data_root, ground_truth_train, data_point_limit=data_point_limit)
+                self.data = data_out_train
         else:
             raise ValueError("Split must be 'test' or 'train'")
         
@@ -154,10 +173,17 @@ class Dataset_5_Frame(object):
     
 class Dataset_5_Frame_Chunks(object):
     def __init__(self, split = 'test'):
+        global data_out_test, data_out_train, data_point_limit
         if split == 'test':
             self.data = data_out_test
+            if len(self.data) == 0:
+                data_out_test = get_data(data_root, ground_truth, data_point_limit=data_point_limit)
+                self.data = data_out_test
         elif split == 'train':
             self.data = data_out_train
+            if len(self.data) == 0:
+                data_out_train = get_data(train_data_root, ground_truth_train, data_point_limit=data_point_limit)
+                self.data = data_out_train
         else:
             raise ValueError("Split must be 'test' or 'train'")
         
@@ -238,8 +264,9 @@ def audio_loop(model, data_loader, device): # Try the loss from contrastive lear
                     mel = generate_mel_for_frames(num_frames, silence=False)
                 mel = mel.to(device).to(torch.float32).unsqueeze(0)
                 a, v = model(mel, x)
-                loss = gru2.cosine_loss(a, v, y)
+                # loss = gru2.cosine_loss(a, v, y)
                 # loss = gru2.cosine_loss(a, v, torch.ones((1, 1)).to(device))
+                loss = F.cosine_similarity(a, v)
                 losses[i].append(loss.cpu().item())  # Store loss on CPU to avoid GPU memory issues
         return losses, y_vals
     
@@ -294,9 +321,10 @@ def chunk_losses(y_vals, av_val_list, device):
                 a_mean = a_mean.to(device)
                 v_mean = v_mean.to(device)
                 y = y.to(device)
-                loss = gru2.cosine_loss(a_mean, v_mean, y)
+                # loss = gru2.cosine_loss(a_mean, v_mean, y)
                 # loss = gru2.cosine_loss(a_mean, v_mean, torch.ones((1, 1)).to(device))
                 # print(f"Loss for video {j}: {loss.item()}")
+                loss = F.cosine_similarity(a_mean, v_mean)
                 losses[i].append(loss.cpu().item())  # Store loss on CPU to avoid GPU memory issues
     return losses
 
@@ -359,6 +387,49 @@ def train_threshold_all_sound_types(losses_train, true_y_train, losses_test, tru
         acc_tests.append(acc_test)
     return best_thresholds, acc_tests
 
+######################
+# Load Full Model Checkpoint
+######################
+
+def _load(checkpoint_path, use_cuda=False):
+    if use_cuda:
+        checkpoint = torch.load(checkpoint_path)
+    else:
+        checkpoint = torch.load(checkpoint_path,
+                                map_location=lambda storage, loc: storage)
+    return checkpoint
+
+def load_checkpoint(path, model, optimizer, reset_optimizer=False, use_cuda=False):
+    global global_step
+    global global_epoch
+
+    print("Load checkpoint from: {}".format(path))
+    checkpoint = _load(path, use_cuda=use_cuda)
+    full_state_dict = checkpoint["state_dict"]
+    missing, unexpected = model.load_state_dict(full_state_dict, strict=False)
+
+    if missing:
+        print("Trying to load with new keys...")
+        new_state_dict = {}
+        for k, v in full_state_dict.items():
+            new_key = k.split('.', 1)[1] if '.' in k else k
+            new_state_dict[new_key] = v
+        missing, unexpected = model.load_state_dict(new_state_dict, strict=False)
+    if missing:
+        print("Missing keys in the state_dict:", missing)
+    if unexpected:
+        print("Unexpected keys in the state_dict:", unexpected)
+
+    if not reset_optimizer:
+        optimizer_state = checkpoint["optimizer"]
+        if optimizer_state is not None:
+            print("Load optimizer state from {}".format(path))
+            optimizer.load_state_dict(checkpoint["optimizer"])
+    global_step = checkpoint["global_step"]
+    global_epoch = checkpoint["global_epoch"]
+
+    return model
+
 print() #Provide visual separation from the prepatory code
 
 if __name__ == "__main__":
@@ -380,23 +451,10 @@ if __name__ == "__main__":
     if checkpoint_path  is None:
         checkpoint_path = os.listdir(checkpoint_dir)[-1]
         checkpoint_path = os.path.join(checkpoint_dir, checkpoint_path)
-    gru2.load_checkpoint(checkpoint_path, model, optimizer, reset_optimizer=False)
+    load_checkpoint(checkpoint_path, model, optimizer, reset_optimizer=False)
     print("Loaded checkpoint from: {}".format(checkpoint_path))
     model.eval()
     
-
-    test_dataset = Dataset_Full_Video('test')
-    train_dataset = Dataset_Full_Video('train') # Causes problemes in audio loop
-    print(f"Number of samples in full video dataset: {len(test_dataset)}")
-    print(f"Number of samples in training dataset: {len(train_dataset)}")
-    test_data_loader = data_utils.DataLoader(
-        test_dataset, batch_size=1,
-        num_workers=num_workers, shuffle=shuffle_dataset)
-    train_data_loader = data_utils.DataLoader(
-        train_dataset, batch_size=1,
-        num_workers=num_workers, shuffle=shuffle_dataset)
-    
-    print("ZEROS")
 
     ## Configure which tests to perform
     test_accuracy_threshold_on_test_data = True
@@ -407,23 +465,33 @@ if __name__ == "__main__":
 
     print("Finding losses for full video dataset")
     if find_test_losses:
+        test_dataset = Dataset_Full_Video('test')
+        print(f"Number of samples in full video dataset: {len(test_dataset)}")
+        test_data_loader = data_utils.DataLoader(
+            test_dataset, batch_size=1,
+            num_workers=num_workers, shuffle=shuffle_dataset)
         losses, y_vals = audio_loop(model, test_data_loader, device)
     if find_train_losses:
+        train_dataset = Dataset_Full_Video('train')
+        print(f"Number of samples in training dataset: {len(train_dataset)}")
+        train_data_loader = data_utils.DataLoader(
+            train_dataset, batch_size=1,
+            num_workers=num_workers, shuffle=shuffle_dataset)
         train_losses, train_y_vals = audio_loop(model, train_data_loader, device)
 
     if test_accuracy_threshold_on_test_data:
         print("Finding threshold on test data (cheating for comparison purposes) for full video dataset")
         print("Test data accuracies:")
         all_accuracies(losses, y_vals)
-        print()
         print("\tFlip = True:")
         all_accuracies(losses, y_vals, flip=True)
+        print()
     if train_accuracy_threshold_on_train_data:
         print("Training data accuracies:")
         all_accuracies(losses, y_vals)
-        print()
         print("\tFlip = True:")
         all_accuracies(losses, y_vals, flip=True)
+        print()
 
     if test_accuracy_threshold_on_train_data:
         min_threshold = min(np.min(losses[i]) for i in range(len(sound_types)))
@@ -434,22 +502,23 @@ if __name__ == "__main__":
         print()
     print()
 
-    test_dataset_5_frame = Dataset_5_Frame('test')
+    
     batch_size = 1
-    print(f"Number of samples in 5-frame dataset: {len(test_dataset_5_frame)}")
-    print(f"Number of samples in training 5-frame dataset: {len(train_dataset)}")
-    test_data_loader_5_frame = data_utils.DataLoader(
-        test_dataset_5_frame, batch_size=batch_size,
-        num_workers=8, drop_last=True, shuffle=shuffle_dataset)
-    train_dataset_5_frame = Dataset_5_Frame('train')
-    train_data_loader_5_frame = data_utils.DataLoader(
-        train_dataset_5_frame, batch_size=batch_size,
-        num_workers=8, drop_last=True, shuffle=shuffle_dataset)
     
     print("Finding losses for 5-frame dataset")
     if find_test_losses:
+        test_dataset_5_frame = Dataset_5_Frame('test')
+        print(f"Number of samples in 5-frame dataset: {len(test_dataset_5_frame)}")
+        test_data_loader_5_frame = data_utils.DataLoader(
+            test_dataset_5_frame, batch_size=batch_size,
+            num_workers=8, drop_last=True, shuffle=shuffle_dataset)
         losses_5_frame, y_vals_5_frame = audio_loop(model, test_data_loader_5_frame, device)
     if find_train_losses:
+        train_dataset_5_frame = Dataset_5_Frame('train')
+        print(f"Number of samples in training 5-frame dataset: {len(train_dataset_5_frame)}")
+        train_data_loader_5_frame = data_utils.DataLoader(
+            train_dataset_5_frame, batch_size=batch_size,
+            num_workers=8, drop_last=True, shuffle=shuffle_dataset)
         train_losses_5_frame, train_y_vals_5_frame = audio_loop(model, train_data_loader_5_frame, device)
 
     if test_accuracy_threshold_on_test_data:
@@ -476,26 +545,28 @@ if __name__ == "__main__":
         train_threshold_all_sound_types(train_losses_5_frame, train_y_vals_5_frame, losses_5_frame, y_vals_5_frame, thresholds=threshold_range, flip=True)
         print()
 
-    test_dataset_5_frame_chunks = Dataset_5_Frame_Chunks('test')
-    print(f"\nNumber of samples in 5-frame chunks dataset: {len(test_dataset_5_frame_chunks)}")
-    train_dataset_5_frame_chunks = Dataset_5_Frame_Chunks('train')
-    print(f"Number of samples in training 5-frame chunks dataset: {len(train_dataset_5_frame_chunks)}")
-    
-    test_data_loader_5_frame_chunks = data_utils.DataLoader(
-        test_dataset_5_frame_chunks, batch_size=batch_size,
-        num_workers=8, drop_last=True, shuffle=shuffle_dataset)
-    train_data_loader_5_frame_chunks = data_utils.DataLoader(
-        train_dataset_5_frame_chunks, batch_size=batch_size,
-        num_workers=8, drop_last=True, shuffle=shuffle_dataset)
-    
 
     print("\nFinding losses for 5-frame chunks dataset")
     if find_test_losses:
+        test_dataset_5_frame_chunks = Dataset_5_Frame_Chunks('test')
+        print(f"\nNumber of samples in 5-frame chunks dataset: {len(test_dataset_5_frame_chunks)}")
+        
+        
+        test_data_loader_5_frame_chunks = data_utils.DataLoader(
+            test_dataset_5_frame_chunks, batch_size=batch_size,
+            num_workers=8, drop_last=True, shuffle=shuffle_dataset)
         y_vals_5_frame_chunks, av_val_list = audio_loop_5_frame_chunk(model, test_data_loader_5_frame_chunks, device)
         print("Test losses found for 5-frame chunks dataset")
         losses_5_frame_chunks = chunk_losses(y_vals_5_frame_chunks, av_val_list, device)
 
     if find_train_losses:
+        train_dataset_5_frame_chunks = Dataset_5_Frame_Chunks('train')
+        print(f"Number of samples in training 5-frame chunks dataset: {len(train_dataset_5_frame_chunks)}")
+
+        train_data_loader_5_frame_chunks = data_utils.DataLoader(
+            train_dataset_5_frame_chunks, batch_size=batch_size,
+            num_workers=8, drop_last=True, shuffle=shuffle_dataset)
+        
         train_y_vals_5_frame_chunks, av_val_list = audio_loop_5_frame_chunk(model, train_data_loader_5_frame_chunks, device)
         print("Train losses found for 5-frame chunks dataset")
         train_losses_5_frame_chunks = chunk_losses(train_y_vals_5_frame_chunks, av_val_list, device)

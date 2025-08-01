@@ -4,8 +4,10 @@ import numpy as np
 from pathlib import Path
 import cv2
 import h5py
+from scipy import signal
 import torch
 from torch import optim
+import torch.nn.functional as F
 
 from models import SyncNet_color as SyncNet
 from hparams import hparams
@@ -78,7 +80,41 @@ def generate_babble_mel(num_frames=5, start_frame_num=0, video_fps=hparams.fps, 
 babble_mel = generate_babble_mel().to(device)  # [1, Mel, Time]
 babble_mel = babble_mel.unsqueeze(0).repeat(batch_size, 1, 1, 1)  # [batch_size, 1, Mel, Time]
 
+####################################
+# Calc Pdist
+#####################################
 
+def calc_pdist(feat1, feat2, vshift=10):
+    win_size = vshift*2+1
+    feat2p = torch.nn.functional.pad(feat2,(0,0,vshift,vshift))
+    dists = []
+    for i in range(0,len(feat1)):
+        dists.append(torch.nn.functional.pairwise_distance(feat1[[i],:].repeat(win_size, 1), feat2p[i:i+win_size,:]))
+    return dists
+
+def computeDist(feat1, feat2, vshift=15):
+    dists = calc_pdist(feat1, feat2, vshift=vshift)
+    mdist = torch.mean(torch.stack(dists, 1), 1)
+    minval, minidx = torch.min(mdist, 0)
+
+    mdist = mdist.detach().cpu()
+    minidx = minidx.item()
+
+    fdist = np.stack([dist[minidx].detach().cpu().numpy() for dist in dists])
+    fconf = torch.median(mdist).item() - fdist
+    if fconf.shape[0] < 9:
+        kernel = fconf.shape[0] // 2 * 2 + 1  # Next odd number below size
+    else:
+        kernel = 9
+    fconfm = signal.medfilt(fconf, kernel_size=kernel)
+
+
+    np.set_printoptions(formatter={'float': '{: 0.3f}'.format})
+    return fconfm
+
+#########################################
+# Load the dataset and evaluate
+#########################################
 
 with h5py.File(source_main_path, 'r') as f:
     # Get frames from the h5 file
@@ -91,6 +127,9 @@ with h5py.File(source_main_path, 'r') as f:
     silent_losses = []
     white_noise_losses = []
     babble_losses = []
+    silent_fconfms = []
+    white_noise_fconfms = []
+    babble_fconfms = []
     ys = []
     for i, frames in enumerate(x_test):
         frames = frames[start_frame_num:start_frame_num+syncnet_T]
@@ -106,23 +145,33 @@ with h5py.File(source_main_path, 'r') as f:
 
         silent_a, silent_v = model(silent_mel, x)
         # silent_loss = color_syncnet_train.cosine_loss(silent_a, silent_v, y)
-        silent_loss = color_syncnet_train.cosine_loss(silent_a, silent_v, torch.ones((1, 1)).to(device))
+        # silent_loss = color_syncnet_train.cosine_loss(silent_a, silent_v, torch.ones((1, 1)).to(device))
+        silent_loss = F.cosine_similarity(silent_a, silent_v)
         silent_losses.append(silent_loss.item())
+        silent_fconfm = computeDist(silent_a, silent_v, vshift=15)
+        silent_fconfms.append(silent_fconfm.item())
 
         white_noise_a, white_noise_v = model(white_noise_mel, x)
         # white_noise_loss = color_syncnet_train.cosine_loss(white_noise_a, white_noise_v, y)
-        white_noise_loss = color_syncnet_train.cosine_loss(white_noise_a, white_noise_v, torch.ones((1, 1)).to(device))
+        # white_noise_loss = color_syncnet_train.cosine_loss(white_noise_a, white_noise_v, torch.ones((1, 1)).to(device))
+        white_noise_loss = F.cosine_similarity(white_noise_a, white_noise_v)
         white_noise_losses.append(white_noise_loss.item())
+        white_noise_fconfm = computeDist(white_noise_a, white_noise_v, vshift=15)
+        white_noise_fconfms.append(white_noise_fconfm.item())
 
         babble_a, babble_v = model(babble_mel, x)
         # babble_loss = color_syncnet_train.cosine_loss(babble_a, babble_v, y)
-        babble_loss = color_syncnet_train.cosine_loss(babble_a, babble_v, torch.ones((1, 1)).to(device))
+        # babble_loss = color_syncnet_train.cosine_loss(babble_a, babble_v, torch.ones((1, 1)).to(device))
+        babble_loss = F.cosine_similarity(babble_a, babble_v)
         babble_losses.append(babble_loss.item())
+        babble_fconfm = computeDist(babble_a, babble_v, vshift=15)
+        babble_fconfms.append(babble_fconfm.item())
 
     print("Test threshold on the test set")
     print("Silent losses:")
     best_accuracy(silent_losses, ys)
     best_accuracy(silent_losses, ys, flip=True)
+
     print("White noise losses:")
     best_accuracy(white_noise_losses, ys)
     best_accuracy(white_noise_losses, ys, flip=True)
@@ -131,9 +180,24 @@ with h5py.File(source_main_path, 'r') as f:
     best_accuracy(babble_losses, ys)
     best_accuracy(babble_losses, ys, flip=True)
 
+    print("Silent fconfms:")
+    best_accuracy(silent_fconfms, ys)
+    best_accuracy(silent_fconfms, ys, flip=True)
+
+    print("White noise fconfms:")
+    best_accuracy(white_noise_fconfms, ys)
+    best_accuracy(white_noise_fconfms, ys, flip=True)
+
+    print("Babble fconfms:")
+    best_accuracy(babble_fconfms, ys)
+    best_accuracy(babble_fconfms, ys, flip=True)
+
     silent_losses_train = []
     white_noise_losses_train = []
     babble_losses_train = []
+    silent_fconfms_train = []
+    white_noise_fconfms_train = []
+    babble_fconfms_train = []
     ys_train = []
     for i, frames in enumerate(x_train):
         frames = frames[start_frame_num:start_frame_num+syncnet_T]
@@ -149,18 +213,27 @@ with h5py.File(source_main_path, 'r') as f:
 
         silent_a, silent_v = model(silent_mel, x)
         # silent_loss = color_syncnet_train.cosine_loss(silent_a, silent_v, y)
-        silent_loss = color_syncnet_train.cosine_loss(silent_a, silent_v, torch.ones((1, 1)).to(device))
+        # silent_loss = color_syncnet_train.cosine_loss(silent_a, silent_v, torch.ones((1, 1)).to(device))
+        silent_loss = F.cosine_similarity(silent_a, silent_v)
         silent_losses_train.append(silent_loss.item())
+        silent_fconfm = computeDist(silent_a, silent_v, vshift=15)
+        silent_fconfms_train.append(silent_fconfm.item())
 
         white_noise_a, white_noise_v = model(white_noise_mel, x)
         # white_noise_loss = color_syncnet_train.cosine_loss(white_noise_a, white_noise_v, y)
-        white_noise_loss = color_syncnet_train.cosine_loss(white_noise_a, white_noise_v, torch.ones((1, 1)).to(device))
+        # white_noise_loss = color_syncnet_train.cosine_loss(white_noise_a, white_noise_v, torch.ones((1, 1)).to(device))
+        white_noise_loss = F.cosine_similarity(white_noise_a, white_noise_v)
         white_noise_losses_train.append(white_noise_loss.item())
+        white_noise_fconfm = computeDist(white_noise_a, white_noise_v, vshift=15)
+        white_noise_fconfms_train.append(white_noise_fconfm.item())
 
         babble_a, babble_v = model(babble_mel, x)
         # babble_loss = color_syncnet_train.cosine_loss(babble_a, babble_v, y)
-        babble_loss = color_syncnet_train.cosine_loss(babble_a, babble_v, torch.ones((1, 1)).to(device))
+        # babble_loss = color_syncnet_train.cosine_loss(babble_a, babble_v, torch.ones((1, 1)).to(device))
+        babble_loss = F.cosine_similarity(babble_a, babble_v)
         babble_losses_train.append(babble_loss.item())
+        babble_fconfm = computeDist(babble_a, babble_v, vshift=15)
+        babble_fconfms_train.append(babble_fconfm.item())
 
     print()
     print("Training thresholds on the training set")
@@ -235,4 +308,68 @@ with h5py.File(source_main_path, 'r') as f:
     print(f"Babble accuracy: {ba_acc}")
 
 
-    
+    print()
+    print("\tFconfms")
+    print("Silent fconfms:")
+    _, sil_thresh_fconfm = best_accuracy(silent_fconfms_train, ys_train)
+
+    print("White noise fconfms:")
+    _, wn_thresh_fconfm = best_accuracy(white_noise_fconfms_train, ys_train)
+
+    print("Babble fconfms:")
+    _, ba_thresh_fconfm = best_accuracy(babble_fconfms_train, ys_train)
+
+    print()
+    print("These should match the training fconfms, if they don't there are errors in this code")
+    sil_results = [0.0 if fconfm < sil_thresh_fconfm else 1.0 for fconfm in silent_fconfms_train]
+    wn_results = [0.0 if fconfm < wn_thresh_fconfm else 1.0 for fconfm in white_noise_fconfms_train]
+    ba_results = [0.0 if fconfm < ba_thresh_fconfm else 1.0 for fconfm in babble_fconfms_train]
+    sil_acc = accuracy(ys_train, sil_results)
+    wn_acc = accuracy(ys_train, wn_results)
+    ba_acc = accuracy(ys_train, ba_results)
+    print(f"Silent accuracy: {sil_acc}")
+    print(f"White noise accuracy: {wn_acc}")
+    print(f"Babble accuracy: {ba_acc}")
+    print()
+    ## Train threshold on the test set
+    print("Training thresholds on the test set")
+    sil_results = [0.0 if fconfm < sil_thresh_fconfm else 1.0 for fconfm in silent_fconfms]
+    wn_results = [0.0 if fconfm < wn_thresh_fconfm else 1.0 for fconfm in white_noise_fconfms]
+    ba_results = [0.0 if fconfm < ba_thresh_fconfm else 1.0 for fconfm in babble_fconfms]
+    sil_acc = accuracy(ys, sil_results)
+    wn_acc = accuracy(ys, wn_results)
+    ba_acc = accuracy(ys, ba_results)
+    print(f"Silent accuracy: {sil_acc}")
+    print(f"White noise accuracy: {wn_acc}")
+    print(f"Babble accuracy: {ba_acc}")
+    print()
+    print("\tFlip")
+    print("Training thresholds on the training set")
+    print("Silent fconfms:")
+    _, sil_thresh_fconfm = best_accuracy(silent_fconfms_train, ys_train, flip=True) 
+    print("White noise fconfms:")
+    _, wn_thresh_fconfm = best_accuracy(white_noise_fconfms_train, ys_train, flip=True)
+    print("Babble fconfms:")
+    _, ba_thresh_fconfm = best_accuracy(babble_fconfms_train, ys_train, flip=True)
+    print()
+    print("These should match the training fconfms, if they don't there are errors in this code")
+    sil_results = [1.0 if fconfm < sil_thresh_fconfm else 0.0 for fconfm in silent_fconfms_train]
+    wn_results = [1.0 if fconfm < wn_thresh_fconfm else 0.0 for fconfm in white_noise_fconfms_train]
+    ba_results = [1.0 if fconfm < ba_thresh_fconfm else 0.0 for fconfm in babble_fconfms_train]
+    sil_acc = accuracy(ys_train, sil_results)
+    wn_acc = accuracy(ys_train, wn_results)
+    ba_acc = accuracy(ys_train, ba_results)
+    print(f"Silent accuracy: {sil_acc}")
+    print(f"White noise accuracy: {wn_acc}")
+    print(f"Babble accuracy: {ba_acc}")
+    ## Train threshold on the test set
+    print("Training thresholds on the test set")
+    sil_results = [1.0 if fconfm < sil_thresh_fconfm else 0.0 for fconfm in silent_fconfms]
+    wn_results = [1.0 if fconfm < wn_thresh_fconfm else 0.0 for fconfm in white_noise_fconfms]
+    ba_results = [1.0 if fconfm < ba_thresh_fconfm else 0.0 for fconfm in babble_fconfms]
+    sil_acc = accuracy(ys, sil_results)
+    wn_acc = accuracy(ys, wn_results)
+    ba_acc = accuracy(ys, ba_results)
+    print(f"Silent accuracy: {sil_acc}")
+    print(f"White noise accuracy: {wn_acc}")
+    print(f"Babble accuracy: {ba_acc}")

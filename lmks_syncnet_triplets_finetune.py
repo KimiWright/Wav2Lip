@@ -149,9 +149,6 @@ class Finetune_Dataset(object):
 ################
 # Loss
 ################  
-# silent_embedding_path = "kimi/silent_embedding.npy"
-# silent_emb = torch.Tensor(np.load(silent_embedding_path))
-# print("silent_emb shape", silent_emb.shape)
 def generate_mel_for_frames(num_frames, silence = True, video_fps=hparams.fps, mel_fps=80, sample_rate=16000, hop_length=200):
     mel_frames = int(num_frames * mel_fps / video_fps)
     num_samples = (mel_frames - 1) * hop_length  # +1 mel frame per hop
@@ -165,6 +162,22 @@ def generate_mel_for_frames(num_frames, silence = True, video_fps=hparams.fps, m
     mel = torch.FloatTensor(mel.T).unsqueeze(0)  # [1, 80, mel_frames]
     return mel
 silent_mel = generate_mel_for_frames(5, silence=True).to(torch.float32).unsqueeze(0)
+white_noise_mel = generate_mel_for_frames(5, silence=False).to(torch.float32).unsqueeze(0)
+
+def crop_audio_window(spec, num_frames=5, start_frame_num=0, video_fps=hparams.fps, mel_fps=80):
+        mel_frames = int(num_frames * mel_fps / video_fps)
+        start_idx = int(80. * (start_frame_num / float(hparams.fps)))
+        end_idx = start_idx + mel_frames
+        return spec[start_idx : end_idx, :]
+
+babble_noise = '/home/ksw38/groups/grp_lip/nobackup/archive/datasets/speech-commands/_background_noise_/babble_noise.wav'
+babble_wave = audio.load_wav(babble_noise, hparams.sample_rate)
+babble_mel_global = audio.melspectrogram(babble_wave).T  # [Time, Mel]
+def generate_babble_mel(num_frames=5, start_frame_num=0, video_fps=hparams.fps, mel_fps=80):
+    babble_mel = crop_audio_window(babble_mel_global.copy(), num_frames=num_frames, start_frame_num=start_frame_num, video_fps=video_fps, mel_fps=mel_fps)  # Crop to the first mel step
+    babble_mel = torch.FloatTensor(babble_mel.T).unsqueeze(0)  # [1, Mel, Time]
+    return babble_mel
+babble_mel = generate_babble_mel(num_frames=5, start_frame_num=0, video_fps=hparams.fps, mel_fps=80).to(torch.float32).unsqueeze(0)
 
 def finetune_triplet_loss(anchor, positive, negative, margin=0.2):
     pos_sim = F.cosine_similarity(anchor, positive)
@@ -215,10 +228,8 @@ def combine_models_and_save_checkpoint(face_model, audio_model, optimizer, step,
     audio_state_dict = audio_model.state_dict()
 
     for k, v in face_state_dict.items():
-        print("Saving lmks portion")
         combined_state_dict['face.' + k] = v
     for k, v in audio_state_dict.items():
-        print("Saving audio portion")
         combined_state_dict['audio.' + k] = v
 
     checkpoint_path = join(
@@ -236,7 +247,7 @@ def combine_models_and_save_checkpoint(face_model, audio_model, optimizer, step,
 # Training
 ################
 def finetune_eval_model(test_data_loader, device, face_model, audio_model):
-    global silent_mel
+    global babble_mel
     eval_steps = 1400
     print('Evaluating for {} steps'.format(eval_steps))
     losses = []
@@ -249,7 +260,7 @@ def finetune_eval_model(test_data_loader, device, face_model, audio_model):
             face_model.eval()
 
             batch_size = pos.shape[0]
-            anchor_emb = audio_model(silent_mel.repeat(batch_size, 1, 1, 1).to(device))
+            anchor_emb = audio_model(babble_mel.repeat(batch_size, 1, 1, 1).to(device))
             pos_emb = face_model(pos)
             neg_emb = face_model(neg)
 
@@ -264,9 +275,9 @@ def finetune_eval_model(test_data_loader, device, face_model, audio_model):
     
 def finetune_train(device, face_model, audio_model, train_data_loader, test_data_loader, optimizer,
           checkpoint_dir=None, checkpoint_interval=None, nepochs=None, scheduler=None):
-    global global_step_finetune, global_epoch_finetune, silent_mel
+    global global_step_finetune, global_epoch_finetune, babble_mel
     resumed_step = global_step_finetune
-    print(silent_mel.shape)
+    print(babble_mel.shape)
     while global_epoch_finetune < nepochs:
         running_loss = 0.0
         # prog_bar = tqdm(enumerate(train_data_loader))
@@ -279,7 +290,7 @@ def finetune_train(device, face_model, audio_model, train_data_loader, test_data
             face_model.train()
 
             batch_size = pos.shape[0]
-            anchor_emb = audio_model(silent_mel.repeat(batch_size, 1, 1, 1).to(device))
+            anchor_emb = audio_model(babble_mel.repeat(batch_size, 1, 1, 1).to(device))
             pos_emb = face_model(pos)
             neg_emb = face_model(neg)
 
@@ -313,17 +324,15 @@ if __name__ == "__main__":
     num_workers = 1
     
     checkpoint_path = "/home/ksw38/RVL/color_syncnet/Wav2Lip/triplets_checkpoints/checkpoint_step002370000.pth"
-    checkpoint_dir = "finetune_checkpoints"
+    checkpoint_dir = "finetune_checkpoints_babble"
 
     if checkpoint_path is None:
         checkpoint_path = os.listdir(checkpoint_dir)[-1]
         checkpoint_path = os.path.join(checkpoint_dir, checkpoint_path)
+    print('checkpoint path: {}'.format(checkpoint_path))
 
     face_model = load_partial_model(checkpoint_path, device, startswith='face')
-    print('checkpoint path: {}'.format(checkpoint_path))
-    print('total trainable params {}'.format(sum(p.numel() for p in face_model.parameters() if p.requires_grad)))
     audio_model = load_partial_model(checkpoint_path, device, startswith='audio')
-    print('total trainable params {}'.format(sum(p.numel() for p in audio_model.parameters() if p.requires_grad)))  
 
     test_dataset = Finetune_Dataset('test')
     test_data_loader = data_utils.DataLoader(

@@ -6,11 +6,14 @@ from tqdm import tqdm
 import torch
 from torch import optim
 import torch.utils.data as data_utils
+import torch.nn.functional as F
 
 from hparams import hparams
 from models.lmks_only import lmks_only
 from models.audio_only import audio_only
+from models import SyncNet_landmarks_gru2 as SyncNet
 import landmarks_syncnet_train_gru2 as gru2
+import run_statistics as run_stats
 
 data_root = '/home/ksw38/groups/grp_landmarks/nobackup/archive/landmarks_vvadlrs3/main/x_test/'
 ground_truth = '/home/ksw38/groups/grp_landmarks/nobackup/archive/landmarks_vvadlrs3/main/y_test.npy'
@@ -19,6 +22,7 @@ ground_truth_train = '/home/ksw38/groups/grp_landmarks/nobackup/autodelete/landm
 
 checkpoint_dir = 'landmarks_checkpoints_gru2'
 checkpoint_dir = "triplets_checkpoints"
+checkpoint_dir = "finetune_checkpoints"
 checkpoint_path = None
 
 
@@ -134,6 +138,9 @@ class Dataset_5_Frame_Rotation(object):
     def __getitem__(self, idx):
         return self.processed_data[idx]
 
+#################
+# Model Loading
+#################
 
 def load_partial_model(checkpoint_path, device, startswith='face'):
     checkpoint = torch.load(checkpoint_path, map_location='cpu')
@@ -147,8 +154,16 @@ def load_partial_model(checkpoint_path, device, startswith='face'):
         model = audio_only().to(device)
     else:
         raise ValueError("startswith must be 'face' or 'audio'")
-    
     missing, unexpected = model.load_state_dict(partial_state_dict, strict=False)
+
+    if missing:
+        print("Trying to load with new keys...")
+        new_state_dict = {}
+        for k, v in partial_state_dict.items():
+            new_key = k.split('.', 1)[1] if '.' in k else k
+            new_state_dict[new_key] = v
+        missing, unexpected = model.load_state_dict(new_state_dict, strict=False)
+
     if missing:
         print("Missing keys in the state_dict:", missing)
     if unexpected:
@@ -157,14 +172,22 @@ def load_partial_model(checkpoint_path, device, startswith='face'):
     return model
 
 
+##################
+# Find Losses
+##################
+
 babble_embedding_path = "/home/ksw38/RVL/color_syncnet/Wav2Lip/kimi/babble_embedding.npy"
 babble_emb = torch.Tensor(np.load(babble_embedding_path))
+silent_embedding_path = "/home/ksw38/RVL/color_syncnet/Wav2Lip/kimi/silent_embedding.npy"
+silent_emb = torch.Tensor(np.load(silent_embedding_path))
 def babble_loop(model, data_loader, device): # Try the loss from contrastive learning
     with torch.no_grad():
         losses = []
         y_vals = []
         global babble_emb
         babble_emb = babble_emb.to(device)
+        global silent_emb
+        silent_emb = silent_emb.to(device)
         roll_max = 0
         roll_min = 0
         for step, (x, y) in enumerate(data_loader):
@@ -186,7 +209,44 @@ def babble_loop(model, data_loader, device): # Try the loss from contrastive lea
             y = y.to(device).to(torch.float32).unsqueeze(0)
             y_vals.append(int(y.item()))
             v = model(x_video)
-            loss = gru2.cosine_loss(babble_emb, v, y)
+            # loss = gru2.cosine_loss(babble_emb, v, y)
+            # loss = gru2.cosine_loss(babble_emb, v, torch.zeros((1, 1)).to(device))
+            loss = F.cosine_similarity(silent_emb.to(device), v)
+            losses.append(loss.cpu().item())
+        print(f"Roll range: {roll_min} to {roll_max}")
+        return losses, y_vals
+
+def full_model_loop(model, data_loader, device): # Try the loss from contrastive learning
+    with torch.no_grad():
+        losses = []
+        y_vals = []
+        roll_max = 0
+        roll_min = 0
+        num_frames = 5
+        for step, (x, y) in enumerate(data_loader):
+            x_video, x_roll, x_pitch, x_yaw = x
+            # Change shape from [1, Frames, 1] to [Frames]
+            x_roll = x_roll.squeeze()
+            if max(x_roll) > roll_max:
+                roll_max = max(x_roll)
+            if min(x_roll) < roll_min:
+                roll_min = min(x_roll)
+
+            # print(max(x_roll), max(x_pitch), max(x_yaw))
+            # print(min(x_roll), min(x_pitch), min(x_yaw))
+            x_video = x_video.to(device).to(torch.float32)
+            x_roll = x_roll.to(device).to(torch.float32)
+            x_pitch = x_pitch.to(device).to(torch.float32)
+            x_yaw = x_yaw.to(device).to(torch.float32)
+  
+            y = y.to(device).to(torch.float32).unsqueeze(0)
+            y_vals.append(int(y.item()))
+
+            mel = run_stats.generate_mel_for_frames(num_frames, silence=True).to(device).to(torch.float32).unsqueeze(0)
+
+            a, v = model(mel, x_video)
+
+            loss = F.cosine_similarity(a, v)
             losses.append(loss.cpu().item())
         print(f"Roll range: {roll_min} to {roll_max}")
         return losses, y_vals
@@ -216,6 +276,7 @@ if __name__ == "__main__":
     num_workers = 1
     batch_size = 1
     threshold = 0.72 # Threshold for accuracy
+    threshold = 0.0
 
     print("Loading checkpoint path")
     if checkpoint_path  is None:
@@ -233,5 +294,40 @@ if __name__ == "__main__":
         num_workers=8, drop_last=True, shuffle=shuffle_dataset)
     
     losses, y_vals = babble_loop(lmks_model, test_data_loader, device)
-    acc_test = test_accuracy(losses, y_vals, threshold, flip=False)
+    acc_test = test_accuracy(losses, y_vals, threshold, flip=True)
     print(f"Test accuracy: {acc_test}")
+
+    losses = np.array(losses)
+    y_vals = np.array(y_vals)
+    print(len(losses), len(y_vals))
+    # Masks
+    mask_y1 = y_vals == 1
+    mask_y0 = y_vals == 0
+
+    # Losses by class
+    losses_y1 = losses[mask_y1]
+    losses_y0 = losses[mask_y0]
+
+    # Stats
+    mean_y1 = losses_y1.mean()
+    std_y1 = losses_y1.std()
+
+    mean_y0 = losses_y0.mean()
+    std_y0 = losses_y0.std()
+
+    # Print
+    print(f"y=1 → mean: {mean_y1:.4f}, std: {std_y1:.4f}")
+    print(f"y=0 → mean: {mean_y0:.4f}, std: {std_y0:.4f}")
+
+    model = SyncNet().to(device)
+    print('total trainable params {}'.format(sum(p.numel() for p in model.parameters() if p.requires_grad)))
+
+    optimizer = optim.Adam([p for p in model.parameters() if p.requires_grad],
+                        lr=hparams.syncnet_lr)
+    run_stats.load_checkpoint(checkpoint_path, model, optimizer, reset_optimizer=False)
+    print("Loaded checkpoint from: {}".format(checkpoint_path))
+    model.eval()
+
+    full_model_losses, full_model_y_vals = full_model_loop(model, test_data_loader, device)
+    acc_full_model = test_accuracy(full_model_losses, full_model_y_vals, threshold, flip=True)
+    print(f"Full model test accuracy: {acc_full_model}")
