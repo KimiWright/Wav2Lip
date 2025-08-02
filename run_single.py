@@ -7,6 +7,7 @@ import torch
 from torch import optim
 import torch.nn as nn
 import torch.utils.data as data_utils
+import torch.nn.functional as F
 
 from hparams import hparams
 from models.lmks_only import lmks_only
@@ -16,6 +17,7 @@ from facetools import genMediapipeInfo, norm_lmks
 
 from pathlib import Path
 import cv2
+import time
 
 
 data_root = '/home/ksw38/groups/grp_landmarks/nobackup/archive/landmarks_vvadlrs3/main/x_test/'
@@ -29,6 +31,9 @@ checkpoint_path = None
 
 babble_embedding_path = "kimi/babble_embedding.npy"
 babble_emb = torch.Tensor(np.load(babble_embedding_path))
+
+frame_limit = 5
+start_time = 0
 
 ######################
 # Model Functions
@@ -59,7 +64,22 @@ def cosine_loss(a, v, y):
     return loss
 
 def process_video(video_path):
+    global start_time
     cap = cv2.VideoCapture(str(video_path))
+    fps = cap.get(cv2.CAP_PROP_FPS)
+
+    # output_video = 'kimi/five_frames.mp4'
+    # width  = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
+    # height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
+    # fourcc = cv2.VideoWriter_fourcc(*'mp4v')
+    # out = cv2.VideoWriter(output_video, fourcc, fps, (width, height))
+    # for i in range(5):
+    #     ret, frame = cap.read()
+    #     if not ret:
+    #         print(f"Stopped early at frame {i}.")
+    #         break
+    #     out.write(frame)
+    print(f"Video FPS: {fps}")
     frames = []
     while True:
         ret, frame = cap.read()
@@ -67,16 +87,21 @@ def process_video(video_path):
             break
         frames.append(frame)
     cap.release()
+    if frame_limit is not None and len(frames) > frame_limit:
+        frames = frames[:frame_limit]
 
+    # start_time = time.time()
     _, lmks, allYaw, allPitch, allRoll = genMediapipeInfo(frames)
     lmks = norm_lmks(lmks) # this does the final normalization
+    # print(f"Normalization took {time.time() - start_time:.2f} seconds")
     return len(frames), lmks, np.array(allYaw), np.array(allPitch), np.array(allRoll)
 
 if __name__ == "__main__":
+    start_time = time.time()
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     shuffle_dataset = False
     num_workers = 1
-    threshold = .72
+    threshold = 0.1
 
     print("Loading checkpoint path")
     if checkpoint_path  is None:
@@ -87,20 +112,27 @@ if __name__ == "__main__":
     lmks_model.eval()
 
     video_path = "kimi/00001.mp4" # 35 frames
+    # video_path = "/home/dj/RVL_syncnet/data/kimi_test2.mp4"
+    # video_path = "kimi/five_frames.mp4" # 5 frames
 
     num_frames, lmks, allYaw, allPitch, allRoll = process_video(video_path)
-    print(f"Processing video: {video_path} with {num_frames} frames")
+    # print(f"Processing video: {video_path} with {num_frames} frames")
+    # print(f"Left function call {time.time() - start_time:.2f} seconds")
     x_lmks = lmks.reshape(num_frames, -1)
     x_roll = allRoll[:, None]
     x_pitch = allPitch[:, None]
     x_yaw = allYaw[:, None]
     x_video = np.concatenate([x_lmks, x_roll, x_pitch, x_yaw], axis=1)
+    # print(f"Finished reshaping video data in {time.time() - start_time:.2f} seconds")
 
     x_video = torch.Tensor(x_video).unsqueeze(0).to(device).to(torch.float32)
     lmks_model = lmks_model.to(device)
     with torch.no_grad():
+        model_start_time = time.time()
         face_emb = lmks_model(x_video).to(device)
-        loss = cosine_loss(babble_emb.to(device), face_emb, torch.ones((1, 1)).to(device)) ###FIXME redo thresholds on run_statistics.py with this number instead of y
+        # print(f"Face embedding computed in {time.time() - model_start_time:.2f} seconds")
+        loss = F.cosine_similarity(babble_emb.to(device), face_emb)
+        print(f"Found loss in {time.time() - start_time:.2f} seconds")
         print(f"Cosine loss: {loss.item()}")
         result = 1.0 if loss < threshold else 0.0
         print(f"Result: {result} (threshold: {threshold})")
