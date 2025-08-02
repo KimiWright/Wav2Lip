@@ -499,6 +499,8 @@ if __name__ == "__main__":
         threshold_range = np.arange(min_threshold, max_threshold + 0.1, 0.1)
         print("\nTest data accuracies with training data threshold:")
         train_threshold_all_sound_types(train_losses, train_y_vals, losses, y_vals, thresholds=threshold_range)
+        print("\tFlip = True:")
+        train_threshold_all_sound_types(train_losses, train_y_vals, losses, y_vals, thresholds=threshold_range, flip=True)
         print()
     print()
 

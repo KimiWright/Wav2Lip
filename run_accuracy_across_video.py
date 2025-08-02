@@ -2,10 +2,18 @@ from run_statistics import *
 
 class Dataset_5_Frame_Chunks_No_Short_Videos(object):
     def __init__(self, split = 'test'):
+        global data_out_test, data_out_train
+        data_point_limit = None
         if split == 'test':
             self.data = data_out_test
+            if len(self.data) == 0:
+                data_out_test = get_data(data_root, ground_truth, data_point_limit=data_point_limit)
+                self.data = data_out_test
         elif split == 'train':
             self.data = data_out_train
+            if len(self.data) == 0:
+                data_out_train = get_data(train_data_root, ground_truth_train, data_point_limit=data_point_limit)
+                self.data = data_out_train
         else:
             raise ValueError("Split must be 'test' or 'train'")
         
@@ -67,7 +75,8 @@ def chunk_losses_single(y_vals, av_vals, device):
         a_mean = a_mean.to(device)
         v_mean = v_mean.to(device)
         y = y.to(device)
-        loss = gru2.cosine_loss(a_mean, v_mean, y)
+        # loss = gru2.cosine_loss(a_mean, v_mean, y)
+        loss = F.cosine_similarity(a_mean, v_mean)  # Cosine similarity loss
         losses.append(loss.cpu().item())  # Store loss on CPU to avoid GPU memory issues
     return losses
 
@@ -78,6 +87,7 @@ if __name__ == "__main__":
     num_workers = 1
     batch_size = 1
     threshold = 0.72 # Threshold for accuracy
+    threshold = 0.1
 
     if checkpoint_path  is None:
         checkpoint_path = os.listdir(checkpoint_dir)[-1]
@@ -93,7 +103,7 @@ if __name__ == "__main__":
     if checkpoint_path  is None:
         checkpoint_path = os.listdir(checkpoint_dir)[-1]
         checkpoint_path = os.path.join(checkpoint_dir, checkpoint_path)
-    gru2.load_checkpoint(checkpoint_path, model, optimizer, reset_optimizer=False)
+    load_checkpoint(checkpoint_path, model, optimizer, reset_optimizer=False)
     print("Loaded checkpoint from: {}".format(checkpoint_path))
     model.eval()
 
@@ -120,13 +130,14 @@ if __name__ == "__main__":
         for k in range(num_chunks):
             a_val = a_vals[k].to(device)  # [Batch, 128]
             v_val = v_vals[k].to(device)  # [Batch, 128]
-            loss = gru2.cosine_loss(a_val, v_val, y)
+            # loss = gru2.cosine_loss(a_val, v_val, y)
+            loss = F.cosine_similarity(a_val, v_val)
             vid_losses.append(loss.cpu().item())  # Store loss on CPU to avoid GPU memory issues
             all_losses[k].append(loss.cpu().item())  # Append loss to the corresponding
 
     chunk_accuracies = []
     for i, chunk_losses in enumerate(all_losses):
-        acc = test_accuracy(chunk_losses, y_vals_5_frame_chunks, threshold, flip=False)
+        acc = test_accuracy(chunk_losses, y_vals_5_frame_chunks, threshold, flip=True)
         print(f"Chunk {i} accuracy: {acc}")
         chunk_accuracies.append(acc * 100)  # Convert to percentage
 
