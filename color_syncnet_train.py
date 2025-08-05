@@ -190,7 +190,8 @@ def train(device, model, train_data_loader, test_data_loader, optimizer,
         global_epoch += 1
 
 def eval_model(test_data_loader, global_step, device, model, checkpoint_dir):
-    eval_steps = 1400
+    # eval_steps = 1400
+    eval_steps = None ## Modification ##
     print('Evaluating for {} steps'.format(eval_steps))
     losses = []
     while 1:
@@ -209,7 +210,7 @@ def eval_model(test_data_loader, global_step, device, model, checkpoint_dir):
             loss = cosine_loss(a, v, y)
             losses.append(loss.item())
 
-            if step > eval_steps: break
+            if eval_steps is not None and step > eval_steps: break ## Modification ##
 
         averaged_loss = sum(losses) / len(losses)
         print(averaged_loss)

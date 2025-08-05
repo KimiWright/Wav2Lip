@@ -31,12 +31,14 @@ import landmarks_syncnet_train_gru2 as gru2
 logloss = nn.BCELoss()
 def cosine_loss(a, v, y):
     d = nn.functional.cosine_similarity(a, v)
+    d = (d + 1) / 2 # Normalize to [0, 1]
     loss = logloss(d.unsqueeze(1), y)
 
     return loss
 
 def eval_model(test_data_loader, device, model):
-    eval_steps = 1400
+    # eval_steps = 1400
+    eval_steps = None
     print('Evaluating for {} steps'.format(eval_steps))
     losses = []
     while 1:
@@ -55,7 +57,7 @@ def eval_model(test_data_loader, device, model):
             loss = cosine_loss(a, v, y)
             losses.append(loss.item())
 
-            if step > eval_steps: break
+            if eval_steps is not None and step > eval_steps: break
 
         averaged_loss = sum(losses) / len(losses)
         print(averaged_loss)
@@ -72,14 +74,21 @@ if __name__ == "__main__":
         checkpoint_path = os.listdir(checkpoint_dir)[-1]
         checkpoint_path = os.path.join(checkpoint_dir, checkpoint_path)
 
-    device = 'cpu'# torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     model = SyncNet().to(device)
     print('total trainable params {}'.format(sum(p.numel() for p in model.parameters() if p.requires_grad)))
+
+    optimizer = optim.Adam([p for p in model.parameters() if p.requires_grad],
+                        lr=hparams.syncnet_lr)
+
+    gru2.load_checkpoint(checkpoint_path, model, optimizer, reset_optimizer=False)
+    print("Loaded checkpoint from: {}".format(checkpoint_path))
+    model.eval()
 
     test_dataset = gru2.Dataset('val')
 
     test_data_loader = data_utils.DataLoader(
         test_dataset, batch_size=hparams.syncnet_batch_size,
-        num_workers=8)
+        num_workers=1)
 
     eval_model(test_data_loader, device, model)

@@ -21,10 +21,11 @@ ground_truth_train = '/home/ksw38/groups/grp_landmarks/nobackup/autodelete/landm
 
 checkpoint_dir = 'landmarks_checkpoints_gru2'
 checkpoint_dir = "finetune_checkpoints"
-checkpoint_dir = "triplets_checkpoints"
+checkpoint_dir = "finetune_checkpoints_babble"
+# checkpoint_dir = "triplets_checkpoints"
 checkpoint_path = None
 
-print("Not Finetuned")
+print("Finetuned on Babble")
 
 ################################
 # Get Data and support functions
@@ -256,6 +257,7 @@ def audio_loop(model, data_loader, device): # Try the loss from contrastive lear
             y_vals.append(int(y.item()))
 
             for i, sound_type in enumerate(sound_types):
+                num_frames = 5 # Use 5 frames for the mel generation ### TESTING ###
                 if sound_type == "silence":
                     mel = generate_mel_for_frames(num_frames, silence=True)
                 elif sound_type == "babble_noise":
