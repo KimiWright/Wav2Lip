@@ -11,7 +11,7 @@ import torch.nn.functional as F
 
 from hparams import hparams
 # from lmks_audio_eval import cropped_mel, accuracy
-import landmarks_audio as audio
+# import landmarks_audio as audio
 from models import SyncNet_color as SyncNet
 
 from pathlib import Path
@@ -34,28 +34,8 @@ checkpoint_path = None
 # Mel
 ########################
 # Switch to importing kimi/silent_mel_color.npy
-# Mel doesn't matter for timing, we can update to the most accurate mel later
-syncnet_mel_step_size = 80  # 80 ms per step, as per SyncNet paper
-def crop_audio_window(spec, start_frame_num):
-        
-    start_idx = int(80. * (start_frame_num / float(hparams.fps)))
-
-    end_idx = start_idx + syncnet_mel_step_size
-
-    return spec[start_idx : end_idx, :]
-
-def cropped_mel(audio_tensor, start_frame_num=0):
-    mel = audio.melspectrogram(audio_tensor).T # shape: (Time, Mel)
-    cropped_mel = crop_audio_window(mel.copy(), start_frame_num)
-    mel = torch.FloatTensor(cropped_mel.T).unsqueeze(0)  # [1, Mel, Time]
-    return mel
-
-
-silence = torch.zeros(16000)  # 1 second at 16kHz
-white_noise = torch.randn(16000)
-batch_size = 1
-silent_mel = cropped_mel(silence, start_frame_num=0).to(device) # shape: (1, Mel, Time)
-silent_mel = silent_mel.unsqueeze(0).repeat(batch_size, 1, 1, 1)  # [batch_size, 1, Mel, Time]
+silent_mel = np.load('kimi/silent_mel_color.npy')
+silent_mel = torch.FloatTensor(silent_mel).to(device)
 
 #########################
 # Model Functions
@@ -94,15 +74,24 @@ def process_video(video_path):
     print(f"Video FPS: {fps}")
     frames = []
     while True:
+        print("Hello")
         ret, frame = cap.read()
+        print(f"Processed frame: {len(frames)}")
         if not ret:
             break
         frames.append(frame)
+        
     cap.release()
     if frame_limit is not None and len(frames) > frame_limit:
         frames = frames[:frame_limit]
 
     cap.release()
+    x = np.concatenate(frames, axis=2)/255
+    x = x.transpose(2, 0, 1)
+    x = x[:, x.shape[1]//2:]
+    x = torch.FloatTensor(x)
+    x = x.unsqueeze(0).to(device)  # Add batch dimension and move to device
+    return x
 
 if __name__ == "__main__":
     start_time = time.time()
@@ -122,4 +111,13 @@ if __name__ == "__main__":
                         lr=hparams.syncnet_lr)
     load_checkpoint(checkpoint_path, model, optimizer, reset_optimizer=False)
     model.eval()
+
+    video_path = "kimi/00001.mp4" # 35 frames
+    # video_path = "/home/dj/RVL_syncnet/data/kimi_test2.mp4"
+    video_path = "kimi/video_sync.mp4"
+
+    x = process_video(video_path)
+
+    print(f"Processed video shape: {x.shape}")
+    silent_a, silent_v = model(silent_mel, x)
 

@@ -100,6 +100,7 @@ if __name__ == "__main__":
     video_path = "kimi/00001.mp4" # 35 frames
     # video_path = "/home/dj/RVL_syncnet/data/kimi_test2.mp4"
     # video_path = "kimi/five_frames.mp4" # 5 frames
+    video_path = "kimi/video_sync.mp4"
 
     num_frames, lmks, allYaw, allPitch, allRoll = process_video(video_path)
     # print(f"Processing video: {video_path} with {num_frames} frames")
