@@ -1,6 +1,6 @@
 #!/bin/bash --login
 
-#SBATCH --time=72:00:00   # walltime
+#SBATCH --time=10:00:00   # walltime
 #SBATCH --gpus=8
 #SBATCH --mem=100G   # memory per CPU core
 #SBATCH --mail-user=KimiWright64@gmail.com   # email address
@@ -9,12 +9,12 @@
 #SBATCH --mail-type=FAIL
 #SBATCH --cpus-per-task=1
 #SBATCH --chdir /home/ksw38/RVL/color_syncnet/Wav2Lip
-#SBATCH -o /home/ksw38/RVL/color_syncnet/Wav2Lip/slurm/%A_%x_%a.out
-#SBATCH -e /home/ksw38/RVL/color_syncnet/Wav2Lip/slurm/Error_%A_%x_%a.out
+#SBATCH -o /home/ksw38/RVL/color_syncnet/Wav2Lip/slurm/color_syncnet_eval/%A_%x_%a.out
+#SBATCH -e /home/ksw38/RVL/color_syncnet/Wav2Lip/slurm/color_syncnet_eval/Error_%A_%x_%a.out
 
 # Set the max number of threads to use for programs using OpenMP. Should be <= ppn. Does nothing if the program doesn't use OpenMP.
 export OMP_NUM_THREADS=$SLURM_CPUS_ON_NODE
 
 # LOAD MODULES, INSERT CODE, AND RUN YOUR PROGRAMS HERE
 mamba activate vsr
-python color_syncnet_eval_syncnet_task.py --data_root "dummy" --checkpoint_dir "dummy"
+python color_syncnet_eval_still_face.py --data_root "dummy" --checkpoint_dir "dummy"

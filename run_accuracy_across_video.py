@@ -38,7 +38,9 @@ class Dataset_5_Frame_Chunks_No_Short_Videos(object):
     def __getitem__(self, idx):
         return self.processed_data[idx]
 
-babble_mel = generate_babble_mel(5, start_frame_num=0).to(torch.float32).unsqueeze(0)  # Generate a mel for 5 frames
+num_frames = 5  # Number of frames in each chunk
+babble_mel = generate_babble_mel(num_frames=num_frames, start_frame_num=0).to(torch.float32).unsqueeze(0)  # Generate a mel for 5 frames
+babble_mel = generate_mel_for_frames(num_frames, silence=True).to(torch.float32).unsqueeze(0) ## For Testing
 def babble_loop_5_frame_chunk(model, data_loader, device): # Try the loss from contrastive learning
     with torch.no_grad():
         av_val_lists = []

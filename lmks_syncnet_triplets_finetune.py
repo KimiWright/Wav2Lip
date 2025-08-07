@@ -122,7 +122,7 @@ class Finetune_Dataset(object):
         if split == 'test':
             self.data = get_data(data_root, ground_truth)
         elif split == 'train':
-            self.data = get_data(train_data_root, ground_truth_train, data_point_limit=100, start_idx=0)
+            self.data = get_data(train_data_root, ground_truth_train, data_point_limit=None, start_idx=0)
         else:
             raise ValueError("Split must be 'test' or 'train'")
         
@@ -132,13 +132,15 @@ class Finetune_Dataset(object):
             x_video_full, y = datum
             if x_video_full is None:
                 raise ValueError("x_video_full is None")
-            x_video = get_window_npy(x_video_full, start_id=0)
+            x_video = get_window_npy(x_video_full, start_id=random.randint(0, x_video_full.shape[0] - 5)) # Maybe make start_id random in get item?
             if x_video is not None:
                 if y == 0:
                     self.not_talking.append(x_video)
                 else:
                     self.talking.append(x_video)
-        
+        print(f"Number of not talking samples: {len(self.not_talking)}")
+        print(f"Number of talking samples: {len(self.talking)}")
+
     def __len__(self):
         return len(self.not_talking)
     def __getitem__(self, idx):
@@ -178,6 +180,8 @@ def generate_babble_mel(num_frames=5, start_frame_num=0, video_fps=hparams.fps, 
     babble_mel = torch.FloatTensor(babble_mel.T).unsqueeze(0)  # [1, Mel, Time]
     return babble_mel
 babble_mel = generate_babble_mel(num_frames=5, start_frame_num=0, video_fps=hparams.fps, mel_fps=80).to(torch.float32).unsqueeze(0)
+
+audio_mel = white_noise_mel
 
 def finetune_triplet_loss(anchor, positive, negative, margin=0.2):
     pos_sim = F.cosine_similarity(anchor, positive)
@@ -247,7 +251,7 @@ def combine_models_and_save_checkpoint(face_model, audio_model, optimizer, step,
 # Training
 ################
 def finetune_eval_model(test_data_loader, device, face_model, audio_model):
-    global babble_mel
+    global audio_mel
     eval_steps = 1400
     print('Evaluating for {} steps'.format(eval_steps))
     losses = []
@@ -260,7 +264,7 @@ def finetune_eval_model(test_data_loader, device, face_model, audio_model):
             face_model.eval()
 
             batch_size = pos.shape[0]
-            anchor_emb = audio_model(babble_mel.repeat(batch_size, 1, 1, 1).to(device))
+            anchor_emb = audio_model(audio_mel.repeat(batch_size, 1, 1, 1).to(device))
             pos_emb = face_model(pos)
             neg_emb = face_model(neg)
 
@@ -275,14 +279,14 @@ def finetune_eval_model(test_data_loader, device, face_model, audio_model):
     
 def finetune_train(device, face_model, audio_model, train_data_loader, test_data_loader, optimizer,
           checkpoint_dir=None, checkpoint_interval=None, nepochs=None, scheduler=None):
-    global global_step_finetune, global_epoch_finetune, babble_mel
+    global global_step_finetune, global_epoch_finetune, audio_mel
     resumed_step = global_step_finetune
-    print(babble_mel.shape)
+
     while global_epoch_finetune < nepochs:
         running_loss = 0.0
         # prog_bar = tqdm(enumerate(train_data_loader))
         
-        for step, (pos, neg) in enumerate(test_data_loader):
+        for step, (pos, neg) in enumerate(train_data_loader):
             pos = pos.to(device).to(torch.float32)
             neg = neg.to(device).to(torch.float32)
 
@@ -290,7 +294,7 @@ def finetune_train(device, face_model, audio_model, train_data_loader, test_data
             face_model.train()
 
             batch_size = pos.shape[0]
-            anchor_emb = audio_model(babble_mel.repeat(batch_size, 1, 1, 1).to(device))
+            anchor_emb = audio_model(audio_mel.repeat(batch_size, 1, 1, 1).to(device))
             pos_emb = face_model(pos)
             neg_emb = face_model(neg)
 
@@ -324,7 +328,7 @@ if __name__ == "__main__":
     num_workers = 1
     
     checkpoint_path = "/home/ksw38/RVL/color_syncnet/Wav2Lip/triplets_checkpoints/checkpoint_step002370000.pth"
-    checkpoint_dir = "finetune_checkpoints_babble"
+    checkpoint_dir = "finetune_checkpoints_white_noise_2"
 
     if checkpoint_path is None:
         checkpoint_path = os.listdir(checkpoint_dir)[-1]

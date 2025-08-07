@@ -21,11 +21,14 @@ ground_truth_train = '/home/ksw38/groups/grp_landmarks/nobackup/autodelete/landm
 
 checkpoint_dir = 'landmarks_checkpoints_gru2'
 checkpoint_dir = "finetune_checkpoints"
-checkpoint_dir = "finetune_checkpoints_babble"
+print("Finetuned on Silence")
+# checkpoint_dir = "finetune_checkpoints_babble"
+# print("Finetuned On Babble Noise")
+# checkpoint_dir = "finetune_checkpoints_white_noise"
 # checkpoint_dir = "triplets_checkpoints"
 checkpoint_path = None
 
-print("Finetuned on Babble")
+
 
 ################################
 # Get Data and support functions

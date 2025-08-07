@@ -15,6 +15,7 @@ import color_syncnet_train as color_syncnet_train
 from lmks_audio_eval import cropped_mel, accuracy
 import landmarks_audio as audio
 
+
 def best_accuracy(losses, true_y, flip=False, thresholds=np.arange(0.0, 1.2, 0.1)):
     best_acc = 0
     best_threshold = 0
@@ -132,7 +133,7 @@ with h5py.File(source_main_path, 'r') as f:
     babble_fconfms = []
     ys = []
     for i, frames in enumerate(x_test):
-        frames = frames[start_frame_num:start_frame_num+syncnet_T]
+        frames = frames[start_frame_num:start_frame_num+syncnet_T] ## Full Video
         y = torch.FloatTensor([y_test[i]]).to(device).unsqueeze(0)  # Convert to tensor and add batch dimension
         ys.append(y_test[i])
 
@@ -142,7 +143,6 @@ with h5py.File(source_main_path, 'r') as f:
         x = torch.FloatTensor(x)
         x = x.unsqueeze(0)  # Add batch dimension
         x = x.to(device)
-
         silent_a, silent_v = model(silent_mel, x)
         # silent_loss = color_syncnet_train.cosine_loss(silent_a, silent_v, y)
         # silent_loss = color_syncnet_train.cosine_loss(silent_a, silent_v, torch.ones((1, 1)).to(device))
@@ -200,7 +200,7 @@ with h5py.File(source_main_path, 'r') as f:
     babble_fconfms_train = []
     ys_train = []
     for i, frames in enumerate(x_train):
-        frames = frames[start_frame_num:start_frame_num+syncnet_T]
+        frames = frames[start_frame_num:start_frame_num+syncnet_T] ## Full Video
         y = torch.FloatTensor([y_train[i]]).to(device).unsqueeze(0)  # Convert to tensor and add batch dimension
         ys_train.append(y_train[i])
 

@@ -6,6 +6,7 @@ import torch
 import torch.optim as optim
 import torch.utils.data as data_utils
 import torch.nn as nn
+import torch.nn.functional as F
 from scipy import signal
 
 import run_statistics as run_stats
@@ -17,8 +18,7 @@ data_out_test = run_stats.data_out_test
 data_out_train = run_stats.data_out_train
 checkpoint_path = run_stats.checkpoint_path
 checkpoint_dir = run_stats.checkpoint_dir
-flip = True
-print("Using flip:", flip) # Note, some of the flips are hardcoded in the run_statistics.py file as False, so this will not always be used.
+data_point_limit = None # Limit the number of data points to process for testing
 
 #############
 # Loading functions
@@ -31,6 +31,15 @@ def load_face_model(checkpoint_path, device, startswith='face'):
 
     model = lmks_only().to(device)
     missing, unexpected = model.load_state_dict(face_state_dict, strict=False)
+
+    if missing:
+        print("Trying to load with new keys...")
+        new_state_dict = {}
+        for k, v in face_state_dict.items():
+            new_key = k.split('.', 1)[1] if '.' in k else k
+            new_state_dict[new_key] = v
+        missing, unexpected = model.load_state_dict(new_state_dict, strict=False)
+
     if missing:
         print("Missing keys in the state_dict:", missing)
     if unexpected:
@@ -43,10 +52,17 @@ def load_face_model(checkpoint_path, device, startswith='face'):
 #############
 class Dataset_Still_Face(object):
     def __init__(self, split = 'test'):
+        global data_out_test, data_out_train, data_point_limit
         if split == 'test':
             self.data = data_out_test
+            if len(self.data) == 0:
+                data_out_test = run_stats.get_data(run_stats.data_root, run_stats.ground_truth, data_point_limit=data_point_limit)
+                self.data = data_out_test
         elif split == 'train':
             self.data = data_out_train
+            if len(self.data) == 0:
+                data_out_train = run_stats.get_data(run_stats.train_data_root, run_stats.ground_truth_train, data_point_limit=data_point_limit)
+                self.data = data_out_train
         else:
             raise ValueError("Split must be 'test' or 'train'")
         
@@ -60,10 +76,17 @@ class Dataset_Still_Face(object):
     
 class Dataset_Still_Face_5_Frames(object):
     def __init__(self, split = 'test'):
+        global data_out_test, data_out_train, data_point_limit
         if split == 'test':
             self.data = data_out_test
+            if len(self.data) == 0:
+                data_out_test = run_stats.get_data(run_stats.data_root, run_stats.ground_truth, data_point_limit=data_point_limit)
+                self.data = data_out_test
         elif split == 'train':
             self.data = data_out_train
+            if len(self.data) == 0:
+                data_out_train = run_stats.get_data(run_stats.train_data_root, run_stats.ground_truth_train, data_point_limit=data_point_limit)
+                self.data = data_out_train
         else:
             raise ValueError("Split must be 'test' or 'train'")
         
@@ -88,10 +111,17 @@ class Dataset_Still_Face_5_Frames(object):
     
 class Dataset_Still_Face_5_Frame_Chunks(object):
     def __init__(self, split = 'test'):
+        global data_out_test, data_out_train, data_point_limit
         if split == 'test':
             self.data = data_out_test
+            if len(self.data) == 0:
+                data_out_test = run_stats.get_data(run_stats.data_root, run_stats.ground_truth, data_point_limit=data_point_limit)
+                self.data = data_out_test
         elif split == 'train':
             self.data = data_out_train
+            if len(self.data) == 0:
+                data_out_train = run_stats.get_data(run_stats.train_data_root, run_stats.ground_truth_train, data_point_limit=data_point_limit)
+                self.data = data_out_train
         else:
             raise ValueError("Split must be 'test' or 'train'")
         
@@ -122,14 +152,6 @@ class Dataset_Still_Face_5_Frame_Chunks(object):
 ##############
 # Loss functions
 ##############
-logloss = nn.BCELoss()
-def cosine_loss(a, v, y):
-    d = nn.functional.cosine_similarity(a, v)
-    d = (d + 1) / 2 # Normalize to [0, 1]
-    d = torch.clamp(d, min=1e-6, max=1-1e-6)  # Avoid log(0) (Unique to this script)
-    loss = logloss(d.unsqueeze(1), y)
-
-    return loss
 
 def calc_pdist(feat1, feat2, vshift=10):
     win_size = vshift*2+1
@@ -180,7 +202,8 @@ def still_face_evaluation_loop(model, test_data_loader, train_data_loader, devic
 
             fconfm = computeDist(feat_video, feat_still, vshift=15)
             fconfm_train.append(fconfm)
-            loss = cosine_loss(feat_video, feat_still, y)
+            # loss = cosine_loss(feat_video, feat_still, y)
+            loss = F.cosine_similarity(feat_video, feat_still)
             cosine_losses_train.append(loss.item())
 
         min_fconfm_train = np.min(np.concatenate(fconfm_train))
@@ -191,10 +214,16 @@ def still_face_evaluation_loop(model, test_data_loader, train_data_loader, devic
         cosine_loss_range = np.arange(min_cosine_loss_train, max_cosine_loss_train + 0.1, 0.1)
 
         print("Training statistics:")
+        print("\tFlip is True")
         print("Cosine Loss")
-        run_stats.best_accuracy(cosine_losses_train, y_vals_train, flip=flip, thresholds=cosine_loss_range)
+        run_stats.best_accuracy(cosine_losses_train, y_vals_train, flip=True, thresholds=cosine_loss_range)
         print("Fconfm")
-        run_stats.best_accuracy(fconfm_train, y_vals_train, flip=flip, thresholds=fconfm_range)
+        run_stats.best_accuracy(fconfm_train, y_vals_train, flip=True, thresholds=fconfm_range)
+        print("\tFlip is False")
+        print("Cosine Loss")
+        run_stats.best_accuracy(cosine_losses_train, y_vals_train, flip=False, thresholds=cosine_loss_range)
+        print("Fconfm")
+        run_stats.best_accuracy(fconfm_train, y_vals_train, flip=False, thresholds=fconfm_range)
 
         fconfm_test = []
         cosine_losses_test = []
@@ -210,14 +239,21 @@ def still_face_evaluation_loop(model, test_data_loader, train_data_loader, devic
             feat_still = model(x_still)
             fconfm = computeDist(feat_video, feat_still, vshift=15)
             fconfm_test.append(fconfm)
-            loss = cosine_loss(feat_video, feat_still, y)
+            # loss = cosine_loss(feat_video, feat_still, y)
+            loss = F.cosine_similarity(feat_video, feat_still)
             cosine_losses_test.append(loss.item())
 
         print("Testing statistics:")
+        print("\tFlip is True")
         print("Cosine Loss")
-        run_stats.train_threshold(cosine_losses_train, y_vals_train, cosine_losses_test, y_vals_test, thresholds=cosine_loss_range)
+        run_stats.train_threshold(cosine_losses_train, y_vals_train, cosine_losses_test, y_vals_test, thresholds=cosine_loss_range, flip=True)
         print("Fconfm")
-        run_stats.train_threshold(fconfm_train, y_vals_train, fconfm_test, y_vals_test, thresholds=fconfm_range)
+        run_stats.train_threshold(fconfm_train, y_vals_train, fconfm_test, y_vals_test, thresholds=fconfm_range, flip=True)
+        print("\tFlip is False")
+        print("Cosine Loss")
+        run_stats.train_threshold(cosine_losses_train, y_vals_train, cosine_losses_test, y_vals_test, thresholds=cosine_loss_range, flip=False)
+        print("Fconfm")
+        run_stats.train_threshold(fconfm_train, y_vals_train, fconfm_test, y_vals_test, thresholds=fconfm_range, flip=False)
 
 def chunk_losses(y_vals, av_vals, device):
     cosine_losses = []
@@ -234,7 +270,8 @@ def chunk_losses(y_vals, av_vals, device):
         y = y.to(device)
         fconfm = computeDist(a_mean, v_mean, vshift=15)
         fconfm_vals.append(fconfm)
-        loss = cosine_loss(a_mean, v_mean, y)
+        # loss = cosine_loss(a_mean, v_mean, y)
+        loss = F.cosine_similarity(a_mean, v_mean)
         cosine_losses.append(loss.item())
     return cosine_losses, fconfm_vals
 
@@ -250,6 +287,7 @@ if __name__ == "__main__":
         checkpoint_path = os.path.join(checkpoint_dir, checkpoint_path)
 
     model = load_face_model(checkpoint_path, device)
+    print(f"Loading model from: {checkpoint_path}")
 
     optimizer = optim.Adam([p for p in model.parameters() if p.requires_grad],
                            lr=hparams.syncnet_lr)
@@ -265,6 +303,9 @@ if __name__ == "__main__":
         train_dataset, batch_size=1,
         num_workers=num_workers, shuffle=shuffle_dataset)
     
+    print("Total training data points:", len(train_dataset))
+    print("Total testing data points:", len(test_dataset))
+    
     # Run the evaluation loop
     print("\nRunning evaluation loop for Dataset_Still_Face")
     still_face_evaluation_loop(model, test_data_loader, train_data_loader, device)
@@ -278,6 +319,9 @@ if __name__ == "__main__":
     train_data_loader = data_utils.DataLoader(
         train_dataset, batch_size=1,
         num_workers=num_workers, shuffle=shuffle_dataset)
+    
+    print("Total training data points:", len(train_dataset))
+    print("Total testing data points:", len(test_dataset))
 
     # Run the evaluation loop
     print("\nRunning evaluation loop for Dataset_Still_Face_5_Frames")
@@ -292,6 +336,9 @@ if __name__ == "__main__":
     train_data_loader = data_utils.DataLoader(
         train_dataset, batch_size=1,
         num_workers=num_workers, shuffle=shuffle_dataset)
+    
+    print("Total training data points:", len(train_dataset))
+    print("Total testing data points:", len(test_dataset))
 
     print("\nRunning evaluation loop for Dataset_Still_Face_5_Frame_Chunks")
     with torch.no_grad():
@@ -320,10 +367,16 @@ if __name__ == "__main__":
         cosine_loss_range = np.arange(min_cosine_loss_train, max_cosine_loss_train + 0.1, 0.1) 
 
         print("Training statistics:")
+        print("\tFlip is True")
         print("Cosine Loss")
-        run_stats.best_accuracy(cosine_losses, y_vals_train, flip=flip, thresholds=cosine_loss_range)
+        run_stats.best_accuracy(cosine_losses, y_vals_train, flip=True, thresholds=cosine_loss_range)
         print("Fconfm")
-        run_stats.best_accuracy(fconfm_vals, y_vals_train, flip=flip, thresholds=fconfm_range)
+        run_stats.best_accuracy(fconfm_vals, y_vals_train, flip=True, thresholds=fconfm_range)
+        print("\tFlip is False")
+        print("Cosine Loss")
+        run_stats.best_accuracy(cosine_losses, y_vals_train, flip=False, thresholds=cosine_loss_range)
+        print("Fconfm")
+        run_stats.best_accuracy(fconfm_vals, y_vals_train, flip=False, thresholds=fconfm_range)
 
         y_vals_test = []
         av_val_lists_test = []
@@ -342,7 +395,13 @@ if __name__ == "__main__":
         cosine_losses, fconfm_vals = chunk_losses(y_vals_test, av_val_lists_test, device)  
 
         print("Testing statistics:")
+        print("\tFlip is True")
         print("Cosine Loss")
-        run_stats.train_threshold(cosine_losses, y_vals_train, cosine_losses, y_vals_test, thresholds=cosine_loss_range)
+        run_stats.train_threshold(cosine_losses, y_vals_train, cosine_losses, y_vals_test, thresholds=cosine_loss_range, flip=True)
         print("Fconfm")
-        run_stats.train_threshold(fconfm_vals, y_vals_train, fconfm_vals, y_vals_test, thresholds=fconfm_range)
+        run_stats.train_threshold(fconfm_vals, y_vals_train, fconfm_vals, y_vals_test, thresholds=fconfm_range, flip=True)
+        print("\tFlip is False")
+        print("Cosine Loss")
+        run_stats.train_threshold(cosine_losses, y_vals_train, cosine_losses, y_vals_test, thresholds=cosine_loss_range, flip=False)
+        print("Fconfm")
+        run_stats.train_threshold(fconfm_vals, y_vals_train, fconfm_vals, y_vals_test, thresholds=fconfm_range, flip=False)
