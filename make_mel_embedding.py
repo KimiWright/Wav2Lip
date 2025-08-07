@@ -6,6 +6,7 @@ from hparams import hparams
 import landmarks_audio as audio
 from models.lmks_only import lmks_only
 from models.audio_only import audio_only
+import lmks_audio_eval as lmks_audio_eval
 
 #################
 # Audio generation functions
@@ -110,7 +111,10 @@ save_emb(babble_mel, audio_model, os.path.join("kimi", "babble_embedding.npy"))
 save_emb(silent_mel, audio_model, os.path.join("kimi", "silent_embedding.npy"))
 
 silence = torch.zeros(16000)
-silent_mel_color = cropped_mel(silence, start_frame_num=0)
+print(f"Silence shape: {silence.shape}")
+silent_mel_color = lmks_audio_eval.cropped_mel(silence, start_frame_num=0)
+print(f"Cropped silent mel color shape: {silent_mel_color.shape}")
 batch_size = 1
 silent_mel_color = silent_mel_color.unsqueeze(0).repeat(batch_size, 1, 1, 1)
+print(f"Silent mel color shape: {silent_mel_color.shape}")
 np.save(os.path.join("kimi", "silent_mel_color.npy"), silent_mel_color.cpu().numpy())

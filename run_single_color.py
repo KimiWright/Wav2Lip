@@ -10,7 +10,7 @@ import torch.utils.data as data_utils
 import torch.nn.functional as F
 
 from hparams import hparams
-# from lmks_audio_eval import cropped_mel, accuracy
+from lmks_audio_eval import cropped_mel, accuracy
 # import landmarks_audio as audio
 from models import SyncNet_color as SyncNet
 
@@ -21,7 +21,7 @@ import time
 start_time = 0
 frame_limit = 5
 
-use_cuda = torch.cuda.is_available()
+use_cuda = False #torch.cuda.is_available()
 if use_cuda:
     device = torch.device("cuda")
 else:
@@ -36,6 +36,14 @@ checkpoint_path = None
 # Switch to importing kimi/silent_mel_color.npy
 silent_mel = np.load('kimi/silent_mel_color.npy')
 silent_mel = torch.FloatTensor(silent_mel).to(device)
+# print(f"Silent mel shape: {silent_mel.shape}")
+# silence = torch.zeros(16000)  # 1 second at 16kHz
+# print(f"Silence shape: {silence.shape}")
+# batch_size = 1
+# silent_mel = cropped_mel(silence, start_frame_num=0).to(device) # shape: (1, Mel, Time)
+# print(f"Cropped silent mel shape: {silent_mel.shape}")
+# silent_mel = silent_mel.unsqueeze(0).repeat(batch_size, 1, 1, 1)  # [batch_size, 1, Mel, Time]
+# print(f"Silent mel shape: {silent_mel.shape}")
 
 #########################
 # Model Functions
@@ -74,9 +82,7 @@ def process_video(video_path):
     print(f"Video FPS: {fps}")
     frames = []
     while True:
-        print("Hello")
         ret, frame = cap.read()
-        print(f"Processed frame: {len(frames)}")
         if not ret:
             break
         frames.append(frame)
@@ -84,7 +90,7 @@ def process_video(video_path):
     cap.release()
     if frame_limit is not None and len(frames) > frame_limit:
         frames = frames[:frame_limit]
-
+    print(f"Total frames processed: {len(frames)}")
     cap.release()
     x = np.concatenate(frames, axis=2)/255
     x = x.transpose(2, 0, 1)
@@ -115,9 +121,10 @@ if __name__ == "__main__":
     video_path = "kimi/00001.mp4" # 35 frames
     # video_path = "/home/dj/RVL_syncnet/data/kimi_test2.mp4"
     video_path = "kimi/video_sync.mp4"
+    video_path = "kimi_test.mp4"
 
     x = process_video(video_path)
 
     print(f"Processed video shape: {x.shape}")
     silent_a, silent_v = model(silent_mel, x)
-
+    print(f"Silent audio shape: {silent_a.shape}, Silent video shape: {silent_v.shape}")
