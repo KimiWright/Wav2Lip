@@ -19,12 +19,6 @@ from pathlib import Path
 import cv2
 import time
 
-
-data_root = '/home/ksw38/groups/grp_landmarks/nobackup/archive/landmarks_vvadlrs3/main/x_test/'
-ground_truth = '/home/ksw38/groups/grp_landmarks/nobackup/archive/landmarks_vvadlrs3/main/y_test.npy'
-train_data_root = '/home/ksw38/groups/grp_landmarks/nobackup/autodelete/landmarks_vvadlrs3/main/x_train/'
-ground_truth_train = '/home/ksw38/groups/grp_landmarks/nobackup/autodelete/landmarks_vvadlrs3/main/y_train.npy'
-
 checkpoint_dir = 'landmarks_checkpoints_gru2'
 checkpoint_dir = "triplets_checkpoints"
 checkpoint_path = None
@@ -54,14 +48,6 @@ def load_face_model(checkpoint_path, device):
         print("Unexpected keys in the state_dict:", unexpected)
     print('total trainable params {}'.format(sum(p.numel() for p in model.parameters() if p.requires_grad)))
     return model
-
-logloss = nn.BCELoss()
-def cosine_loss(a, v, y):
-    d = nn.functional.cosine_similarity(a, v)
-    d = (d + 1) / 2 # Normalize to [0, 1]
-    loss = logloss(d.unsqueeze(1), y)
-
-    return loss
 
 def process_video(video_path):
     global start_time
