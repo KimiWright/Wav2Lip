@@ -33,6 +33,7 @@ checkpoint_path = None
 ########################
 # Mel
 ########################
+# Switch to importing kimi/silent_mel_color.npy
 # Mel doesn't matter for timing, we can update to the most accurate mel later
 syncnet_mel_step_size = 80  # 80 ms per step, as per SyncNet paper
 def crop_audio_window(spec, start_frame_num):
