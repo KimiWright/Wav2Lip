@@ -10,6 +10,21 @@ from models.audio_only import audio_only
 #################
 # Audio generation functions
 #################
+####### For Color ########
+syncnet_mel_step_size = 16
+def crop_audio_window(spec, start_frame_num):
+        
+    start_idx = int(80. * (start_frame_num / float(hparams.fps)))
+
+    end_idx = start_idx + syncnet_mel_step_size
+
+    return spec[start_idx : end_idx, :]
+
+def cropped_mel(audio_tensor, start_frame_num=0):
+    mel = audio.melspectrogram(audio_tensor).T # shape: (Time, Mel)
+    cropped_mel = crop_audio_window(mel.copy(), start_frame_num)
+    mel = torch.FloatTensor(cropped_mel.T).unsqueeze(0)  # [1, Mel, Time]
+    return mel
 
 def crop_audio_window(spec, num_frames=5, start_frame_num=0, video_fps=hparams.fps, mel_fps=80):
         mel_frames = int(num_frames * mel_fps / video_fps)
@@ -17,6 +32,7 @@ def crop_audio_window(spec, num_frames=5, start_frame_num=0, video_fps=hparams.f
         end_idx = start_idx + mel_frames
         return spec[start_idx : end_idx, :]
 
+####### For Landmarks #######
 ## Babble noise
 babble_noise = '/home/ksw38/groups/grp_lip/nobackup/archive/datasets/speech-commands/_background_noise_/babble_noise.wav'
 babble_wave = audio.load_wav(babble_noise, hparams.sample_rate)
@@ -92,3 +108,9 @@ audio_model.eval()
 
 save_emb(babble_mel, audio_model, os.path.join("kimi", "babble_embedding.npy"))
 save_emb(silent_mel, audio_model, os.path.join("kimi", "silent_embedding.npy"))
+
+silence = torch.zeros(16000)
+silent_mel_color = cropped_mel(silence, start_frame_num=0)
+batch_size = 1
+silent_mel_color = silent_mel_color.unsqueeze(0).repeat(batch_size, 1, 1, 1)
+np.save(os.path.join("kimi", "silent_mel_color.npy"), silent_mel_color.cpu().numpy())
