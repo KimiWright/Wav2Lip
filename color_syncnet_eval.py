@@ -39,7 +39,7 @@ checkpoint_dir = "/home/ksw38/RVL/color_syncnet/Wav2Lip/checkpoints"
 checkpoint_path = "/home/ksw38/RVL/color_syncnet/Wav2Lip/checkpoints/checkpoint_step000510000.pth"
 
 
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+device = "cpu"  # torch.device("cuda" if torch.cuda.is_available() else "cpu")
 syncnet_T = 5
 start_frame_num = 0
 
@@ -143,7 +143,9 @@ with h5py.File(source_main_path, 'r') as f:
         x = torch.FloatTensor(x)
         x = x.unsqueeze(0)  # Add batch dimension
         x = x.to(device)
+        print(x.shape)
         silent_a, silent_v = model(silent_mel, x)
+        print(silent_a.shape, silent_v.shape)
         # silent_loss = color_syncnet_train.cosine_loss(silent_a, silent_v, y)
         # silent_loss = color_syncnet_train.cosine_loss(silent_a, silent_v, torch.ones((1, 1)).to(device))
         silent_loss = F.cosine_similarity(silent_a, silent_v)
