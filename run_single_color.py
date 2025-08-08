@@ -10,7 +10,7 @@ import torch.utils.data as data_utils
 import torch.nn.functional as F
 
 from hparams import hparams
-from lmks_audio_eval import cropped_mel, accuracy
+# from lmks_audio_eval import cropped_mel, accuracy
 # import landmarks_audio as audio
 from models import SyncNet_color as SyncNet
 
@@ -101,6 +101,7 @@ def process_video(video_path):
 
 if __name__ == "__main__":
     start_time = time.time()
+    threshold = 0.1
     print(device)
 
     print("Loading checkpoint path")
@@ -120,11 +121,15 @@ if __name__ == "__main__":
 
     video_path = "kimi/00001.mp4" # 35 frames
     # video_path = "/home/dj/RVL_syncnet/data/kimi_test2.mp4"
-    video_path = "kimi/video_sync.mp4"
-    video_path = "kimi_test.mp4"
+    # video_path = "kimi/video_sync.mp4"
+    # video_path = "kimi_test.mp4"
 
     x = process_video(video_path)
 
-    print(f"Processed video shape: {x.shape}")
-    silent_a, silent_v = model(silent_mel, x)
-    print(f"Silent audio shape: {silent_a.shape}, Silent video shape: {silent_v.shape}")
+    with torch.no_grad():
+        model_start_time = time.time()
+        silent_a, silent_v = model(silent_mel, x)
+        loss = F.cosine_similarity(silent_a, silent_v)
+        print(f"Model run time: {time.time() - model_start_time:.2f} seconds")
+        print(f"Cosine loss: {loss.item()}")
+        result = 1.0 if loss < threshold else 0.0

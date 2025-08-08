@@ -119,6 +119,7 @@ if __name__ == "__main__":
         face_emb = lmks_model(x_video).to(device)
         # print(f"Face embedding computed in {time.time() - model_start_time:.2f} seconds")
         loss = F.cosine_similarity(babble_emb.to(device), face_emb)
+        print(f"Model run time: {time.time() - model_start_time:.2f} seconds")
         print(f"Found loss in {time.time() - start_time:.2f} seconds")
         print(f"Cosine loss: {loss.item()}")
         result = 1.0 if loss < threshold else 0.0
