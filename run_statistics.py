@@ -19,14 +19,16 @@ ground_truth = '/home/ksw38/groups/grp_landmarks/nobackup/archive/landmarks_vvad
 train_data_root = '/home/ksw38/groups/grp_landmarks/nobackup/autodelete/landmarks_vvadlrs3/main/x_train/'
 ground_truth_train = '/home/ksw38/groups/grp_landmarks/nobackup/autodelete/landmarks_vvadlrs3/main/y_train.npy'
 
-checkpoint_dir = 'landmarks_checkpoints_gru2'
+# checkpoint_dir = 'landmarks_checkpoints_gru2'
+# print("No triplets training")
 # checkpoint_dir = "finetune_checkpoints_2"
 # print("Finetuned on Silence")
 # checkpoint_dir = "finetune_checkpoints_babble_2"
 # print("Finetuned On Babble Noise")
-checkpoint_dir = "finetune_checkpoints_white_noise_2"
-print("Finetuned On White Noise")
-# checkpoint_dir = "triplets_checkpoints"
+# checkpoint_dir = "finetune_checkpoints_white_noise_2"
+# print("Finetuned On White Noise")
+checkpoint_dir = "triplets_checkpoints"
+print("No Finetuning")
 checkpoint_path = None
 
 

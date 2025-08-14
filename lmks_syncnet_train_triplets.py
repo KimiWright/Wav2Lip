@@ -1,7 +1,7 @@
 from os.path import dirname, join, basename, isfile
 from tqdm import tqdm
 
-from models import SyncNet_landmarks_gru2 as SyncNet
+# from models import SyncNet_landmarks_gru2 as SyncNet
 import landmarks_audio as audio
 
 import torch
@@ -23,15 +23,19 @@ from collections import defaultdict
 from os import path
 
 import re
-from models.lmks_only import lmks_only
-from models.audio_only import audio_only
-from models import SyncNet_landmarks_gru2 as SyncNet
+# from models.lmks_only import lmks_only
+# from models.audio_only import audio_only
+# from models import SyncNet_landmarks_gru2 as SyncNet
+from models.lmks_only_attn import lmks_only_attn as lmks_only
+from models.audio_only_attn import audio_only_attn as audio_only
+from models import SyncNet_landmarks_attn as SyncNet
+
 
 parser = argparse.ArgumentParser(description='Code to train the expert lip-sync discriminator')
 
 parser.add_argument("--data_root", help="Root folder of the preprocessed landmarks for LRS2 dataset", default='/home/ksw38/groups/grp_landmarks/nobackup/archive/landmarks/main/')
 parser.add_argument('--video_root', help='Root folder of the videos of the LRS2 dataset', default='/home/ksw38/groups/grp_lip/nobackup/autodelete/datasets/fslgroup/grp_lip/compute/datasets/LRS2/preprocessedRetinaface/lrs2/lrs2_video_seg24s/mvlrs_v1/main/')
-parser.add_argument('--checkpoint_dir', help='Save checkpoints to this directory', default='triplets_checkpoints', type=str)
+parser.add_argument('--checkpoint_dir', help='Save checkpoints to this directory', default='attn_checkpoints', type=str)
 parser.add_argument('--checkpoint_path', help='Resumed from this checkpoint', default=None, type=str)
 
 args = parser.parse_args()

@@ -16,5 +16,5 @@
 export OMP_NUM_THREADS=$SLURM_CPUS_ON_NODE
 
 # LOAD MODULES, INSERT CODE, AND RUN YOUR PROGRAMS HERE
-mamba activate vsr
-python color_syncnet_eval_syncnet_task.py --data_root "dummy" --checkpoint_dir "dummy"
+mamba activate color_syncnet
+python color_syncnet_eval_syncnet_task.py --data_root lrs2_preprocessed/ --checkpoint_dir checkpoints/
