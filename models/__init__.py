@@ -9,3 +9,6 @@ from .audio_only import audio_only
 from .lmks_only_attn import lmks_only_attn
 from .audio_only_attn import audio_only_attn
 from .lmks_syncnet_attn import SyncNet_landmarks_attn
+from .lmks_syncnet_gru3 import SyncNet_landmarks_gru3
+from .audio_only3 import audio_only3
+from .lmks_only3 import lmks_only3
