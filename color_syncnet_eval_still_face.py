@@ -35,8 +35,8 @@ def best_accuracy(losses, true_y, flip=False, thresholds=np.arange(0.0, 1.2, 0.1
 source_main_path = "/home/ksw38/.cache/kagglehub/datasets/adrianlubitz/vvadlrs3/versions/4/faceImages_small.h5"
 out_main_path = "/home/ksw38/groups/grp_landmarks/nobackup/autodelete/landmarks_vvadlrs3/main"
 
-checkpoint_dir = "/home/ksw38/RVL/color_syncnet/Wav2Lip/checkpoints"
 checkpoint_path = "/home/ksw38/RVL/color_syncnet/Wav2Lip/checkpoints/checkpoint_step000510000.pth"
+checkpoint_path = "/home/ksw38/RVL/color_syncnet/Wav2Lip/lipsync_expert.pth"
 
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")

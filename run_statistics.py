@@ -11,7 +11,8 @@ import torch.nn.functional as F
 from hparams import hparams
 import landmarks_audio as audio
 import landmarks_syncnet_train_gru2 as gru2
-from models import SyncNet_landmarks_gru2 as SyncNet # Eventually switch to face only and pregenerated audio
+# from models import SyncNet_landmarks_gru2 as SyncNet # Eventually switch to face only and pregenerated audio
+from models import SyncNet_landmarks_gru3 as SyncNet
 
 
 data_root = '/home/ksw38/groups/grp_landmarks/nobackup/archive/landmarks_vvadlrs3/main/x_test/'
@@ -27,8 +28,12 @@ ground_truth_train = '/home/ksw38/groups/grp_landmarks/nobackup/autodelete/landm
 # print("Finetuned On Babble Noise")
 # checkpoint_dir = "finetune_checkpoints_white_noise_2"
 # print("Finetuned On White Noise")
-checkpoint_dir = "triplets_checkpoints"
-print("No Finetuning")
+# checkpoint_dir = "triplets_checkpoints"
+# print("No Finetuning")
+checkpoint_dir = "checkpoints_gru3"
+print("GRU 3")
+# checkpoint_dir = "attn_checkpoints"
+# print("Attention")
 checkpoint_path = None
 
 

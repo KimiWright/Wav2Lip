@@ -50,6 +50,7 @@ def eval_model_syncnet_task(test_data_loader, global_step, device, model, checkp
 if __name__ == "__main__":
     checkpoint_dir = train.args.checkpoint_dir
     checkpoint_path = train.args.checkpoint_path
+    checkpoint_path = "/home/ksw38/RVL/color_syncnet/Wav2Lip/lipsync_expert.pth"
 
     print("Loading checkpoint path")
     if checkpoint_path  is None:
