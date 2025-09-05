@@ -10,6 +10,7 @@ from torch import optim
 import torch.backends.cudnn as cudnn
 from torch.utils import data as data_utils
 import numpy as np
+import pandas as pd
 
 from glob import glob
 
@@ -18,6 +19,7 @@ from hparams import hparams
 
 data_preprocessed = "/home/ksw38/groups/grp_landmarks/nobackup/autodelete/AVA_activespeaker/preprocessed/clips"
 data_raw = "/home/ksw38/groups/grp_landmarks/nobackup/autodelete/AVA_activespeaker/clips"
+labels_csv = "/home/ksw38/groups/grp_landmarks/nobackup/autodelete/AVA_activespeaker/labels_clips.csv"
 
 syncnet_T = 5
 syncnet_mel_step_size = 16
@@ -28,15 +30,17 @@ def get_image_list(data_root, split):
     if split == 'val':
         filelist = filelist[:split_point]
     elif split == 'train':
-        filelist = filelist[split_point:]
+        filelist = filelist[split_point:] # For benchmarking version remove split function, this is all the offical val set, making split = None should work
         
     return filelist
 
 class Dataset(object):
-    def __init__(self, split, data_raw=data_raw, data_preprocessed=data_preprocessed):
+    def __init__(self, split, data_raw=data_raw, data_preprocessed=data_preprocessed, labels_csv=labels_csv):
         self.data_raw = data_raw
         self.data_preprocessed = data_preprocessed
         self.all_videos = get_image_list(self.data_raw, split)
+        self.df = pd.read_csv(labels_csv)
+
 
     def get_frame_id(self, frame):
         return int(basename(frame).split('.')[0])
@@ -70,8 +74,6 @@ class Dataset(object):
         while 1:
             data_root = self.data_preprocessed
             idx = random.randint(0, len(self.all_videos) - 1)
-            ## Debugging Addition
-            idx = 0
             
             vidname = self.all_videos[idx]
 
@@ -83,16 +85,24 @@ class Dataset(object):
             if len(img_names) <= 3 * syncnet_T:
                 continue
             img_name = random.choice(img_names)
-            wrong_img_name = random.choice(img_names)
-            while wrong_img_name == img_name:
-                wrong_img_name = random.choice(img_names)
 
-            if random.choice([True, False]):
-                y = torch.ones(1).float()
-                chosen = img_name
-            else:
+            # indices = self.df.index[self.df["File"] == vidname_file].tolist()
+            indices = self.df.index[self.df["File"].str.contains(vidname_file, na=False)]
+
+            if len(indices) == 0:
+                continue
+            file_idx = indices[0]
+            label = self.df["Label"][file_idx]
+            # print(idx)
+            # print(vidname)
+            # print(file_idx)
+            # print(label)
+            if label == "NOT_SPEAKING":
                 y = torch.zeros(1).float()
-                chosen = wrong_img_name
+            else:
+                y = torch.ones(1).float()
+
+            chosen = img_name
 
             window_fnames = self.get_window(chosen)
             if window_fnames is None:
@@ -155,5 +165,5 @@ if __name__ == "__main__":
         print(f"step {step}")
         print(x.shape, mel.shape, y)
 
-        if step >= 5:
+        if step >= 30:
             break
