@@ -4,6 +4,7 @@ import h5py
 # path = r"C:\Users\Kimi\.cache\kagglehub\datasets\adrianlubitz\vvadlrs3\versions\4"
 path = r"/home/ksw38/.cache/kagglehub/datasets/adrianlubitz/vvadlrs3/versions/4"
 files = os.listdir(path)
+print(files)
 
 face_img_h5_path = os.path.join(path, files[1])
 print(face_img_h5_path)
@@ -29,3 +30,18 @@ with h5py.File(face_img_h5_path, 'r') as f:
     print(y_train.shape)
 
 
+lip_img_h5_path = os.path.join(path, files[-1])
+print(lip_img_h5_path)
+
+with h5py.File(lip_img_h5_path, 'r') as f:
+    # List all groups
+    print("Keys: %s" % f.keys())
+
+    x_test = f['x_test']
+    x_train = f['x_train']
+    y_test = f['y_test']
+    y_train = f['y_train']
+    print(x_test.shape)
+    print(x_train.shape)
+    print(y_test.shape)
+    print(y_train.shape)

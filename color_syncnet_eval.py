@@ -144,9 +144,7 @@ with h5py.File(source_main_path, 'r') as f:
         x = torch.FloatTensor(x)
         x = x.unsqueeze(0)  # Add batch dimension
         x = x.to(device)
-        print(x.shape)
         silent_a, silent_v = model(silent_mel, x)
-        print(silent_a.shape, silent_v.shape)
         # silent_loss = color_syncnet_train.cosine_loss(silent_a, silent_v, y)
         # silent_loss = color_syncnet_train.cosine_loss(silent_a, silent_v, torch.ones((1, 1)).to(device))
         silent_loss = F.cosine_similarity(silent_a, silent_v)
