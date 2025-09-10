@@ -24,7 +24,7 @@ labels_csv = "/home/ksw38/groups/grp_landmarks/nobackup/autodelete/AVA_activespe
 syncnet_T = 5
 syncnet_mel_step_size = 16
 
-def get_image_list(data_root, split):
+def get_image_list(data_root, split=None):
     filelist = os.listdir(data_root)
     split_point = int(len(filelist) * .2) # 20/80 data split
     if split == 'val':
