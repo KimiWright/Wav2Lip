@@ -83,8 +83,10 @@ def process_video(video_path):
     return len(frames), lmks, np.array(allYaw), np.array(allPitch), np.array(allRoll)
 
 if __name__ == "__main__":
+    print() ## Add visual seperation between starting warnings and printout
     start_time = time.time()
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    print(f"Using {device}")
     shuffle_dataset = False
     num_workers = 1
     threshold = 0.1
