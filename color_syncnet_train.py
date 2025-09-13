@@ -230,7 +230,7 @@ def save_checkpoint(model, optimizer, step, checkpoint_dir, epoch):
     }, checkpoint_path)
     print("Saved checkpoint:", checkpoint_path)
 
-def _load(checkpoint_path):
+def _load(checkpoint_path, use_cuda=use_cuda): ## Modification, added use_cuda
     if use_cuda:
         checkpoint = torch.load(checkpoint_path)
     else:
@@ -238,7 +238,7 @@ def _load(checkpoint_path):
                                 map_location=lambda storage, loc: storage)
     return checkpoint
 
-def load_checkpoint(path, model, optimizer, reset_optimizer=False):
+def load_checkpoint(path, model, optimizer, reset_optimizer=False, use_cuda=use_cuda): ## Modification, added use_cuda
     global global_step
     global global_epoch
 

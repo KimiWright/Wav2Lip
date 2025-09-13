@@ -102,47 +102,48 @@ def load_checkpoint(path, model, optimizer, reset_optimizer=False, use_cuda=Fals
 
     return model
 
-device = "cpu" #torch.device("cuda" if torch.cuda.is_available() else "cpu")
-shuffle_dataset = False
-num_workers = 1
+if __name__ == "__main__":
+    device = "cpu" #torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    shuffle_dataset = False
+    num_workers = 1
 
-checkpoint_dir_triplets = "triplets_checkpoints"
-checkpoint_dir_finetune = "finetune_checkpoints"
+    checkpoint_dir_triplets = "triplets_checkpoints"
+    checkpoint_dir_finetune = "finetune_checkpoints"
 
-checkpoint_path_triplets = os.listdir(checkpoint_dir_triplets)[-1]
-checkpoint_path_triplets = os.path.join(checkpoint_dir_triplets, checkpoint_path_triplets)
-checkpoint_path_finetune = os.listdir(checkpoint_dir_finetune)[-1]
-checkpoint_path_finetune = os.path.join(checkpoint_dir_finetune, checkpoint_path_finetune)
+    checkpoint_path_triplets = os.listdir(checkpoint_dir_triplets)[-1]
+    checkpoint_path_triplets = os.path.join(checkpoint_dir_triplets, checkpoint_path_triplets)
+    checkpoint_path_finetune = os.listdir(checkpoint_dir_finetune)[-1]
+    checkpoint_path_finetune = os.path.join(checkpoint_dir_finetune, checkpoint_path_finetune)
 
-#########################
-# SyncNet Model
-#########################
+    #########################
+    # SyncNet Model
+    #########################
 
-model = SyncNet().to(device)
-print('total trainable params {}'.format(sum(p.numel() for p in model.parameters() if p.requires_grad)))
-optimizer = optim.Adam([p for p in model.parameters() if p.requires_grad],
-                        lr=hparams.syncnet_lr, weight_decay=1e-5) # Try adding weight decay
-load_checkpoint(checkpoint_path_finetune, model, optimizer, reset_optimizer=False, use_cuda=False)
+    model = SyncNet().to(device)
+    print('total trainable params {}'.format(sum(p.numel() for p in model.parameters() if p.requires_grad)))
+    optimizer = optim.Adam([p for p in model.parameters() if p.requires_grad],
+                            lr=hparams.syncnet_lr, weight_decay=1e-5) # Try adding weight decay
+    load_checkpoint(checkpoint_path_finetune, model, optimizer, reset_optimizer=False, use_cuda=False)
 
-#######################
-# Partial Models
-#######################
+    #######################
+    # Partial Models
+    #######################
 
-face_model = load_partial_model(checkpoint_path_finetune, device, startswith='face')
-audio_model = load_partial_model(checkpoint_path_finetune, device, startswith='audio')
+    face_model = load_partial_model(checkpoint_path_finetune, device, startswith='face')
+    audio_model = load_partial_model(checkpoint_path_finetune, device, startswith='audio')
 
-checkpoint = torch.load(checkpoint_path_triplets, map_location='cpu')
-full_state_dict_triplets = checkpoint['state_dict']
+    checkpoint = torch.load(checkpoint_path_triplets, map_location='cpu')
+    full_state_dict_triplets = checkpoint['state_dict']
 
-# print(full_state_dict.keys())
-# print()
+    # print(full_state_dict.keys())
+    # print()
 
-checkpoint = torch.load(checkpoint_path_finetune, map_location='cpu')
-full_state_dict_finetuned = checkpoint['state_dict']
-after_period = [s.split('.', 1)[1] if '.' in s else '' for s in full_state_dict_finetuned.keys()]
+    checkpoint = torch.load(checkpoint_path_finetune, map_location='cpu')
+    full_state_dict_finetuned = checkpoint['state_dict']
+    after_period = [s.split('.', 1)[1] if '.' in s else '' for s in full_state_dict_finetuned.keys()]
 
 
-list1 = list(full_state_dict_triplets.keys())
-list2 = after_period
+    list1 = list(full_state_dict_triplets.keys())
+    list2 = after_period
 
-print_non_matching(list1, list2)
+    print_non_matching(list1, list2)

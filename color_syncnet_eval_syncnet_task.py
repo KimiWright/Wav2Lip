@@ -17,7 +17,7 @@ def cosine_loss(a, v, y):
     return loss
 
 def eval_model_syncnet_task(test_data_loader, global_step, device, model, checkpoint_dir):
-    eval_steps = None ## Modification ##
+    eval_steps = 20 ## Modification ##
     check_in_steps = 100
     print('Evaluating for {} steps'.format(eval_steps))
     losses = []
@@ -57,7 +57,7 @@ if __name__ == "__main__":
         checkpoint_path = os.listdir(checkpoint_dir)[-1]
         checkpoint_path = os.path.join(checkpoint_dir, checkpoint_path)
 
-    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    device = torch.device("cuda" if train.use_cuda else "cpu")
     model = SyncNet().to(device)
     print('total trainable params {}'.format(sum(p.numel() for p in model.parameters() if p.requires_grad)))
 
