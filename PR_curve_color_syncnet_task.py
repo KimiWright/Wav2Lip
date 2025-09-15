@@ -12,63 +12,66 @@ import torch.optim as optim
 from torch.utils import data as data_utils
 
 fig_path = "PR_curve_color_syncnet.png"
-eval_step_max = None
+eval_step_max = 100
 checkpoint_path = train.args.checkpoint_path
 
 use_cuda = torch.cuda.is_available()
 device = torch.device("cuda" if use_cuda else "cpu")
 
-## Remove this later - syncthetic data
-# X, y = make_classification(
-#     n_samples=100, n_features=20, n_classes=2, random_state=42)
-
-# X_train, X_test, y_train, y_test = train_test_split(
-#     X, y, test_size=0.2, random_state=42)
-
-# model = LogisticRegression()
-# model.fit(X_train, y_train)
-
-# y_scores = model.predict_proba(X_test)[:, 1]
-
-# print(y_scores)
-# print(y_test)
-## End Remove
-
 
 ## Color Syncnet Model ##
 
-def eval_model_syncnet_task(test_data_loader, device, model):
-    eval_steps = eval_step_max
-    check_in_steps = 100
-    print('Evaluating for {} steps'.format(eval_steps))
-    losses = []
-    y_truth = []
+# def eval_model_syncnet_task(test_data_loader, device, model):
+#     eval_steps = eval_step_max
+#     check_in_steps = 100
+#     print('Evaluating for {} steps'.format(eval_steps))
+#     losses = []
+#     y_truth = []
 
-    for step, (x, mel, y) in enumerate(test_data_loader):
-        model.eval()
+#     for step, (x, mel, y) in enumerate(test_data_loader):
+#         model.eval()
 
-        # Transform data to CUDA device
-        x = x.to(device)
+#         # Transform data to CUDA device
+#         x = x.to(device)
 
-        mel = mel.to(device)
+#         mel = mel.to(device)
 
-        a, v = model(mel, x)
-        y = y.to(device)
+#         a, v = model(mel, x)
+#         y = y.to(device)
 
-        loss = F.cosine_similarity(a, v)
+#         print(y)
 
-        losses.append(loss.item())
-        y_truth.append(y.item())
+#         loss = F.cosine_similarity(a, v)
 
-        if eval_steps is not None and step > eval_steps: break ## Modification ##
-        if check_in_steps is not None and step % check_in_steps == 0: 
-            averaged_loss = sum(losses) / len(losses)
-            print(f"Step {step} averaged_loss: {averaged_loss}")
+#         losses.append(loss.item())
+#         y_truth.append(y.item())
 
-    averaged_loss = sum(losses) / len(losses)
-    print(f"Final: {averaged_loss}")
+#         if eval_steps is not None and step > eval_steps: break ## Modification ##
+#         if check_in_steps is not None and step % check_in_steps == 0: 
+#             averaged_loss = sum(losses) / len(losses)
+#             print(f"Step {step} averaged_loss: {averaged_loss}")
 
-    return y_truth, losses
+    # averaged_loss = sum(losses) / len(losses)
+    # print(f"Final: {averaged_loss}")
+
+    # return y_truth, losses
+
+def eval_model_syncnet_task(test_loader, device, model):
+    model.eval()
+    y_true, y_score = [], []
+    with torch.no_grad():
+        for step, (x, mel, y) in enumerate(test_loader):
+            x = x.to(device, non_blocking=True)
+            mel = mel.to(device, non_blocking=True)
+            a, v = model(mel, x)                           # [B, D] embeddings
+            s = F.cosine_similarity(a, v, dim=1)           # [B] higher = more synced
+
+            # Collect all items in batch safely
+            y_true.extend(y.view(-1).detach().cpu().tolist())
+            y_score.extend(s.view(-1).detach().cpu().tolist())
+
+            if eval_step_max is not None and step >= eval_step_max:
+                break
 
 model = SyncNet().to(device)
 print('total trainable params {}'.format(sum(p.numel() for p in model.parameters() if p.requires_grad)))
@@ -79,6 +82,8 @@ optimizer = optim.Adam([p for p in model.parameters() if p.requires_grad],
 print(f"Loading checkpoint from: {checkpoint_path}")
 if checkpoint_path is not None:
     train.load_checkpoint(checkpoint_path, model, optimizer, reset_optimizer=False, use_cuda=use_cuda)
+model.eval()
+
 
 test_dataset = train.Dataset('val')
 
