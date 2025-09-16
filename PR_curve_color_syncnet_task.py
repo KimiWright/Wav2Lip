@@ -12,7 +12,7 @@ import torch.optim as optim
 from torch.utils import data as data_utils
 
 fig_path = "PR_curve_color_syncnet.png"
-eval_step_max = 100
+eval_step_max = None
 checkpoint_path = train.args.checkpoint_path
 
 use_cuda = torch.cuda.is_available()
@@ -72,6 +72,7 @@ def eval_model_syncnet_task(test_loader, device, model):
 
             if eval_step_max is not None and step >= eval_step_max:
                 break
+    return y_true, y_score
 
 model = SyncNet().to(device)
 print('total trainable params {}'.format(sum(p.numel() for p in model.parameters() if p.requires_grad)))
