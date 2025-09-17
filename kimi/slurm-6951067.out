@@ -1,0 +1,60 @@
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+I0000 00:00:1758043353.892547 1917352 gl_context_egl.cc:85] Successfully initialized EGL. Major : 1 Minor: 5
+I0000 00:00:1758043353.920926 1917378 gl_context.cc:369] GL version: 3.2 (OpenGL ES 3.2 NVIDIA 570.172.08), renderer: Tesla P100-PCIE-16GB/PCIe/SSE2
+W0000 00:00:1758043353.922912 1917352 face_landmarker_graph.cc:174] Sets FaceBlendshapesGraph acceleration to xnnpack by default.
+INFO: Created TensorFlow Lite XNNPACK delegate for CPU.
+W0000 00:00:1758043353.943292 1917386 inference_feedback_manager.cc:114] Feedback manager requires a model with a single signature inference. Disabling support for feedback tensors.
+W0000 00:00:1758043353.970057 1917389 inference_feedback_manager.cc:114] Feedback manager requires a model with a single signature inference. Disabling support for feedback tensors.
+/home/ksw38/RVL/color_syncnet/Wav2Lip/kimi/get_landmarks_preprocessed.py:6: DeprecationWarning: Please import `Rotation` from the `scipy.spatial.transform` namespace; the `scipy.spatial.transform.rotation` namespace is deprecated and will be removed in SciPy 2.0.0.
+  from facetools import genMediapipeInfo,norm_lmks
+I0000 00:00:1758043355.549524 1917352 gl_context_egl.cc:85] Successfully initialized EGL. Major : 1 Minor: 5
+I0000 00:00:1758043355.561668 1917412 gl_context.cc:369] GL version: 3.2 (OpenGL ES 3.2 NVIDIA 570.172.08), renderer: Tesla P100-PCIE-16GB/PCIe/SSE2
+W0000 00:00:1758043355.569747 1917420 inference_feedback_manager.cc:114] Feedback manager requires a model with a single signature inference. Disabling support for feedback tensors.
+/home/ksw38/.conda/envs/vsr/lib/python3.10/site-packages/numpy/_core/fromnumeric.py:3904: RuntimeWarning: Mean of empty slice.
+  return _methods._mean(a, axis=axis, dtype=dtype,
+/home/ksw38/.conda/envs/vsr/lib/python3.10/site-packages/numpy/_core/_methods.py:147: RuntimeWarning: invalid value encountered in scalar divide
+  ret = ret.dtype.type(ret / rcount)
+NOTE: DECRYPTION UNSUCESSFUL. PLEASE INCLUDE NESSESARY MODELS IN DATA DIRECTORY.
+5535415699068794046
+True
+True
+True
+True
+True
+True
+True
+True
+True
+True
+True
+True
+5535423430009926848
+True
+True
+True
+True
+5535496873950688380
+True
+True
+True
+True
+True
+True
+True
+True
+True
+True
+True
+True
+True
+True
+5535864093654496929
+True
+True
+True
+True
+5536038039829982468
+True
+True
+True
+True

@@ -1,0 +1,24 @@
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+I0000 00:00:1758043082.076842 1915755 gl_context_egl.cc:85] Successfully initialized EGL. Major : 1 Minor: 5
+I0000 00:00:1758043082.163635 1915890 gl_context.cc:369] GL version: 3.2 (OpenGL ES 3.2 NVIDIA 570.172.08), renderer: Tesla P100-PCIE-16GB/PCIe/SSE2
+W0000 00:00:1758043082.199867 1915755 face_landmarker_graph.cc:174] Sets FaceBlendshapesGraph acceleration to xnnpack by default.
+INFO: Created TensorFlow Lite XNNPACK delegate for CPU.
+W0000 00:00:1758043082.278520 1915898 inference_feedback_manager.cc:114] Feedback manager requires a model with a single signature inference. Disabling support for feedback tensors.
+W0000 00:00:1758043082.317679 1915900 inference_feedback_manager.cc:114] Feedback manager requires a model with a single signature inference. Disabling support for feedback tensors.
+/home/ksw38/RVL/color_syncnet/Wav2Lip/kimi/get_landmarks_preprocessed.py:6: DeprecationWarning: Please import `Rotation` from the `scipy.spatial.transform` namespace; the `scipy.spatial.transform.rotation` namespace is deprecated and will be removed in SciPy 2.0.0.
+  from facetools import genMediapipeInfo,norm_lmks
+I0000 00:00:1758043085.583201 1915755 gl_context_egl.cc:85] Successfully initialized EGL. Major : 1 Minor: 5
+I0000 00:00:1758043085.595438 1915924 gl_context.cc:369] GL version: 3.2 (OpenGL ES 3.2 NVIDIA 570.172.08), renderer: Tesla P100-PCIE-16GB/PCIe/SSE2
+W0000 00:00:1758043085.611002 1915932 inference_feedback_manager.cc:114] Feedback manager requires a model with a single signature inference. Disabling support for feedback tensors.
+/home/ksw38/.conda/envs/vsr/lib/python3.10/site-packages/numpy/_core/fromnumeric.py:3904: RuntimeWarning: Mean of empty slice.
+  return _methods._mean(a, axis=axis, dtype=dtype,
+/home/ksw38/.conda/envs/vsr/lib/python3.10/site-packages/numpy/_core/_methods.py:147: RuntimeWarning: invalid value encountered in scalar divide
+  ret = ret.dtype.type(ret / rcount)
+NOTE: DECRYPTION UNSUCESSFUL. PLEASE INCLUDE NESSESARY MODELS IN DATA DIRECTORY.
+5535415699068794046
+Traceback (most recent call last):
+  File "/home/ksw38/RVL/color_syncnet/Wav2Lip/kimi/get_landmarks_preprocessed.py", line 42, in <module>
+    np.save(out_path_lmks, lmks)
+  File "/home/ksw38/.conda/envs/vsr/lib/python3.10/site-packages/numpy/lib/_npyio_impl.py", line 583, in save
+    file_ctx = open(file, "wb")
+FileNotFoundError: [Errno 2] No such file or directory: '/home/ksw38/groups/grp_landmarks/nobackup/archive/landmarks_preprocessed/main/5535415699068794046/00001_lmks.npy'
