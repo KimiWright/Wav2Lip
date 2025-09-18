@@ -1,0 +1,19 @@
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+I0000 00:00:1758122977.662508 1804589 gl_context_egl.cc:85] Successfully initialized EGL. Major : 1 Minor: 5
+I0000 00:00:1758122977.731232 1804683 gl_context.cc:369] GL version: 3.2 (OpenGL ES 3.2 NVIDIA 570.172.08), renderer: Tesla P100-PCIE-16GB/PCIe/SSE2
+W0000 00:00:1758122977.766967 1804589 face_landmarker_graph.cc:174] Sets FaceBlendshapesGraph acceleration to xnnpack by default.
+INFO: Created TensorFlow Lite XNNPACK delegate for CPU.
+W0000 00:00:1758122977.827962 1804691 inference_feedback_manager.cc:114] Feedback manager requires a model with a single signature inference. Disabling support for feedback tensors.
+W0000 00:00:1758122977.871500 1804693 inference_feedback_manager.cc:114] Feedback manager requires a model with a single signature inference. Disabling support for feedback tensors.
+/home/ksw38/RVL/color_syncnet/Wav2Lip/kimi/get_landmarks_preprocessed.py:6: DeprecationWarning: Please import `Rotation` from the `scipy.spatial.transform` namespace; the `scipy.spatial.transform.rotation` namespace is deprecated and will be removed in SciPy 2.0.0.
+  from facetools import genMediapipeInfo,norm_lmks
+I0000 00:00:1758122980.812921 1804589 gl_context_egl.cc:85] Successfully initialized EGL. Major : 1 Minor: 5
+I0000 00:00:1758122980.825860 1804721 gl_context.cc:369] GL version: 3.2 (OpenGL ES 3.2 NVIDIA 570.172.08), renderer: Tesla P100-PCIE-16GB/PCIe/SSE2
+W0000 00:00:1758122980.845219 1804729 inference_feedback_manager.cc:114] Feedback manager requires a model with a single signature inference. Disabling support for feedback tensors.
+NOTE: DECRYPTION UNSUCESSFUL. PLEASE INCLUDE NESSESARY MODELS IN DATA DIRECTORY.
+Frames 53
+lmks: (27, 2, 92)
+Traceback (most recent call last):
+  File "/home/ksw38/RVL/color_syncnet/Wav2Lip/kimi/get_landmarks_preprocessed.py", line 63, in <module>
+    print(f"yaw: {allYaw.shape}")
+AttributeError: 'list' object has no attribute 'shape'

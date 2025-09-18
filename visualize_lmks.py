@@ -5,13 +5,15 @@ import numpy as np
 import torch
 import re
 import os
+import cv2
 
 from hparams import hparams, get_image_list
 
 video_root = '/home/ksw38/groups/grp_lip/nobackup/autodelete/datasets/fslgroup/grp_lip/compute/datasets/LRS2/preprocessedRetinaface/lrs2/lrs2_video_seg24s/mvlrs_v1/main/'
-# data_root = '/home/ksw38/groups/grp_landmarks/nobackup/archive/landmarks_vvadlrs3/main/x_test/'
-data_root = '/home/ksw38/groups/grp_landmarks/nobackup/archive/landmarks_preprocessed/main'
+# data_root = '/home/ksw38/groups/grp_landmarks/nobackup/archive/landmarks_preprocessed/main'
+data_root = '/home/ksw38/groups/grp_landmarks/nobackup/archive/landmarks/main'
 visual_root = '/home/ksw38/RVL/color_syncnet/Wav2Lip/lrs2_preprocessed'
+visual_root = "/fslgroup/grp_lip/datasets/lrs2/mvlrs_v1/main/"
 
 syncnet_T = 5
 
@@ -49,7 +51,22 @@ class Dataset(object):
             # landmarks file with the 5 digit id, but not the lmks, roll, pitch, yaw endings
             npy_head = join(data_root, vidname_folder, vidname_file)
             visual_head = join(visual_root, vidname_folder, vidname_file)
+
+
             img_list = glob(os.path.join(visual_head, '*.jpg'))
+            if len(img_list) == 0:
+                videoPath = visual_head + ".mp4"
+                if os.path.exists(videoPath):
+                    cap = cv2.VideoCapture(str(videoPath))
+                    while True:
+                        ret, frame = cap.read()
+                        if not ret:
+                            break
+                        img_list.append(frame)
+                    cap.release()
+                else:
+                    continue
+
 
             # get all of the npy files corresponding to the video
             npy_files = []
@@ -91,12 +108,41 @@ class Dataset(object):
             if len(window_fnames) != 4:
                 continue
 
-            print(visual_head)
-            print(npy_files)
+            # print(visual_head)
+            # print(npy_files)
+            # print(img_list)
             return window_fnames, img_list
+        
+def visualize(frame, lmks, name="visualized_lmks.jpg"):
+    height, width, channels = frame.shape
+    # x_vals = (lmks[0] + 1 ) / 2 * width
+    # y_vals = (lmks[1] + 1 ) / 2 * height
+    # x_vals = lmks[0]
+    # y_vals = lmks[1]
+    scale = 50
+    x_vals = (lmks[0] * scale + 1 ) / 2 * width
+    y_vals = (lmks[1] * scale + 1 ) / 2 * height
+
+    print(x_vals)
+    print('~~~~~~~~~~~~~~~~~~~~')
+    print(y_vals)
+    print()
+    print(width, height)
+
+    if len(x_vals) != len(y_vals):
+        raise(ValueError("x and y are different lengths"))
+    
+    for i in range(len(x_vals)):
+        x = x_vals[i]
+        y = y_vals[i]
+        cv2.circle(frame, (int(x), int(y)), 1, (0, 255, 0), -1)
+    
+    cv2.imwrite(name, frame)
+    print(f"Saved frame at {name}")
         
 if __name__ == "__main__":
     data_limit = 4
+    data_start = None
     batch_size = 1 # hparams.syncnet_batch_size
     test_dataset = Dataset('val')
 
@@ -107,6 +153,8 @@ if __name__ == "__main__":
     # prog_bar = tqdm(enumerate(test_data_loader))
     prog_bar = enumerate(test_data_loader)
     for step, (x_list, img_list) in prog_bar:
+        if data_start is not None and step < data_start:
+            continue
         print(f"Step: {step}")
         x_lmks = x_list[0]
         x_roll = x_list[1]
@@ -114,22 +162,16 @@ if __name__ == "__main__":
         x_yaw = x_list[3]
 
         print(x_lmks.shape)
+        print(x_roll.shape, x_pitch.shape, x_yaw.shape)
         print(f"img_list {len(img_list)}")
         print()
 
         if data_limit is not None and step > data_limit:
             break
     
-    import cv2
-    source_folder_path = "/home/ksw38/RVL/color_syncnet/Wav2Lip/lrs2_preprocessed/6377052336432217027/00006"
-    img_files = glob(os.path.join(source_folder_path, "*.jpg"))
-
-    frames = []
-    for img_file in img_files:
-        frame = cv2.imread(str(img_file))
-        if frame is not None:
-            frames.append(frame)
-        else:
-            print("Warning: {img_file} frame is None")
-
-    print(f"Frames {len(frames)}")
+    # print("***Visualizing Landmarks***")
+    idx = 0
+    batch_idx = 0
+    frame = np.array(img_list[idx][batch_idx])
+    visualize(frame, x_lmks[batch_idx][idx])
+    print("End")

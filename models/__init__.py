@@ -12,3 +12,4 @@ from .lmks_syncnet_attn import SyncNet_landmarks_attn
 from .lmks_syncnet_gru3 import SyncNet_landmarks_gru3
 from .audio_only3 import audio_only3
 from .lmks_only3 import lmks_only3
+from .audio_color import audio_color

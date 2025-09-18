@@ -41,3 +41,22 @@ for folder in folders:
         np.save(out_path_yaw, allYaw)
         np.save(out_path_pitch, allPitch)
         np.save(out_path_roll, allRoll)
+
+# source_folder_path = "/home/ksw38/RVL/color_syncnet/Wav2Lip/lrs2_preprocessed/6377052336432217027/00006"
+# source_folder_path = "/home/ksw38/RVL/color_syncnet/Wav2Lip/lrs2_preprocessed/6078328771191220906/00013"
+# img_files = glob(os.path.join(source_folder_path, "*.jpg"))
+
+# frames = []
+# for img_file in img_files:
+#     frame = cv2.imread(str(img_file))
+#     if frame is not None:
+#         frames.append(frame)
+#     else:
+#         print("Warning: {img_file} frame is None")
+
+# print(f"Frames {len(frames)}")
+
+# _, lmks, allYaw, allPitch, allRoll = genMediapipeInfo(frames) #this does the landmark extraction and a bunch of normalization
+# lmks = norm_lmks(lmks) # this does the final normalization
+
+# print(f"lmks: {lmks.shape}")

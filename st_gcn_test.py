@@ -4,8 +4,9 @@ import models.st_gcn as model
 from os.path import dirname, join, basename, isfile
 from tqdm import tqdm
 
-from models import SyncNet_landmarks_gru2 as SyncNet
-import landmarks_audio as audio
+from models import audio_color as SyncNet
+from models.audio_only import audio_only
+import load_model
 
 import torch
 from torch import nn
@@ -25,6 +26,7 @@ from collections import defaultdict
 from os import path
 
 import re
+from mediapipe.python.solutions.face_mesh_connections import FACEMESH_TESSELATION 
 
 ## Variables ##
 
@@ -34,6 +36,7 @@ ID_LEN = 5 #The number of digits in the id in the file name
 
 video_root = '/home/ksw38/groups/grp_lip/nobackup/autodelete/datasets/fslgroup/grp_lip/compute/datasets/LRS2/preprocessedRetinaface/lrs2/lrs2_video_seg24s/mvlrs_v1/main/'
 data_root = '/home/ksw38/groups/grp_landmarks/nobackup/archive/landmarks_preprocessed/main'
+data_root = '/home/ksw38/groups/grp_landmarks/nobackup/archive/landmarks/main'
 
 parser = argparse.ArgumentParser(description='Code to train the expert lip-sync discriminator')
 parser.add_argument('--video_root', help='Root folder of the videos of the LRS2 dataset', default=video_root)
@@ -152,44 +155,125 @@ class Dataset(object):
 
             if (mel.shape[0] != syncnet_mel_step_size):
                 continue
-            print(window_fnames[0].shape)
-            # Reshape and concatenate the npy data
-            x_lmks = window_fnames[0].reshape(syncnet_T, -1)
-            x_roll = window_fnames[1][:, None]
-            x_pitch = window_fnames[2][:, None]
-            x_yaw = window_fnames[3][:, None]
-            x = np.concatenate([x_lmks, x_roll, x_pitch, x_yaw], axis=1)
 
-            x = torch.FloatTensor(x)
+            # Reshape and concatenate the npy data
+            x_lmks = window_fnames[0]
+            x_roll = window_fnames[1]
+            x_pitch = window_fnames[2]
+            x_yaw = window_fnames[3]
+            # x = np.concatenate([x_lmks, x_roll, x_pitch, x_yaw], axis=1)
+
+            x_rot = np.vstack((x_roll, x_pitch, x_yaw))
+            
+            x = torch.FloatTensor(x_lmks)
             mel = torch.FloatTensor(mel.T).unsqueeze(0)
 
-            return x, mel, y
+            return x, x_rot, mel, y
+
+## Edges ##
+
+def knn_edges(points_xy, k=4):
+    """
+    Build undirected edges by connecting each landmark
+    to its k nearest neighbors.
+    
+    Args:
+        points_xy: np.array [V, 2], landmark coordinates (x,y)
+        k: number of neighbors to connect
+    
+    Returns:
+        edges: list of (i, j) tuples
+    """
+    V = points_xy.shape[0]
+    edges = set()
+    for i, p in enumerate(points_xy):
+        # distances from point i to all others
+        dists = np.linalg.norm(points_xy - p, axis=1)
+        # get indices of k nearest (skip self at index 0)
+        nearest = np.argsort(dists)[1:k+1]
+        for j in nearest:
+            edges.add((i, j))
+            edges.add((j, i))  # make undirected
+    return list(edges)
 
 if __name__ == "__main__":
     ## Set up ##
     data_limit = 4
     batch_size = 1 # hparams.syncnet_batch_size
     test_dataset = Dataset('val')
+    use_cuda = torch.cuda.is_available() #False
+    device = "cuda" if use_cuda else "cpu"
 
     test_data_loader = data_utils.DataLoader(
         test_dataset, batch_size=batch_size,
         num_workers=8)
     
-    ## Test ##
-    # stgcn = model.STGCNFrontEnd(
-    #         num_nodes=num_nodes,
-    #         A=A,
-    #         temporal_kernel_size=temporal_kernel_size,
-    #         dropout=stgcn_dropout
-    #     )
-    ## End Test ##
+
+
+    ## Generate Edges and Adjacency Matrix, maybe adjust later ##
+    first_point = test_dataset[0]
+    (x, x_rot, mel, y) = first_point
+    first_lmks = x[0].T
+    edges = knn_edges(first_lmks)
+    num_lmks = first_lmks.shape[0]
+    # edges = list(FACEMESH_TESSELATION)
+    # print(edges)
+    # print(f"len(edges) {len(edges)}") # Use these in mediapipe version
+
+    print(num_lmks)
+
+    A = model.build_adjacency(num_lmks, edges)
+    V = num_lmks
+    C = 2 # x,y maybe updata to 5 include roll pitch yaw? but those are frame-wise, so maybe I can include it somewhere else?
+    K = 1 # 1 partion, chosen arbitarily 
+    
+
+    temporal_kernel_size = 9
+    stgcn_dropout = 0.0
+
+    ## Init model
+
+    model = model.LandmarkSTGCNConformer(
+        num_nodes=V,
+        A=A,
+        d_model=128,
+        post_linear_hidden=128,
+        conformer_layers=4,
+        conformer_heads=4,
+        conformer_ff=256,
+        conformer_conv_kernel=31
+    )
+    model.to(device)
+    print('total trainable params for stgcn{}'.format(sum(p.numel() for p in model.parameters() if p.requires_grad)))
+
+    checkpoint_path = "/home/ksw38/RVL/color_syncnet/Wav2Lip/lipsync_expert.pth"
+    # syncnet = SyncNet().to(device)
+    # print('total trainable params {}'.format(sum(p.numel() for p in syncnet.parameters() if p.requires_grad)))
+    # optimizer = optim.Adam([p for p in model.parameters() if p.requires_grad],
+    #                         lr=hparams.syncnet_lr, weight_decay=1e-5)
+    # load_model.load_checkpoint(checkpoint_path, syncnet, optimizer, False, use_cuda)
+    audio_model = audio_only().to(device)
+    audio_checkpoint_path = "/home/ksw38/RVL/color_syncnet/Wav2Lip/landmarks_checkpoints_gru2/checkpoint_step001800000.pth"
+    load_model.load_partial_model(checkpoint_path=audio_checkpoint_path, device=device, startswith='audio')
+    
 
     ## Loop ##
     # prog_bar = tqdm(enumerate(test_data_loader))
     prog_bar = enumerate(test_data_loader)
-    for step, (x, mel, y) in prog_bar:
+    for step, (x, x_rot, mel, y) in prog_bar:
         print(step)
-        print(x.shape, mel.shape, y)
+        print(x.shape, x_rot.shape, mel.shape, y)
+
+        x = x.permute(0, 2, 1, 3)
+        print(x.shape)
+        v = model(x)
+        print(v.shape)
+
+        a = audio_model(mel)
+
+        print(v.shape, a.shape)
+
+        
 
         if data_limit is not None and step > data_limit:
             break
