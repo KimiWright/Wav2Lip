@@ -13,3 +13,5 @@ from .lmks_syncnet_gru3 import SyncNet_landmarks_gru3
 from .audio_only3 import audio_only3
 from .lmks_only3 import lmks_only3
 from .audio_color import audio_color
+from .st_gcn import LandmarkSTGCNConformer
+from .st_gcn import build_adjacency

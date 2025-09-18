@@ -7,6 +7,7 @@ from tqdm import tqdm
 from models import audio_color as SyncNet
 from models.audio_only import audio_only
 import load_model
+import landmarks_audio as audio
 
 import torch
 from torch import nn
@@ -16,6 +17,7 @@ from torch.utils import data as data_utils
 import numpy as np
 import math
 from torch.optim.lr_scheduler import LambdaLR
+import torch.nn.functional as F
 
 from glob import glob
 
@@ -197,12 +199,13 @@ def knn_edges(points_xy, k=4):
     return list(edges)
 
 if __name__ == "__main__":
-    ## Set up ##
     data_limit = 4
     batch_size = 1 # hparams.syncnet_batch_size
     test_dataset = Dataset('val')
-    use_cuda = torch.cuda.is_available() #False
+    # use_cuda = torch.cuda.is_available()
+    use_cuda = False
     device = "cuda" if use_cuda else "cpu"
+    print(f"Using {device}")
 
     test_data_loader = data_utils.DataLoader(
         test_dataset, batch_size=batch_size,
@@ -232,7 +235,7 @@ if __name__ == "__main__":
     stgcn_dropout = 0.0
 
     ## Init model
-
+    print("Loading LandmarkSTGCNConformer Model")
     model = model.LandmarkSTGCNConformer(
         num_nodes=V,
         A=A,
@@ -244,36 +247,41 @@ if __name__ == "__main__":
         conformer_conv_kernel=31
     )
     model.to(device)
-    print('total trainable params for stgcn{}'.format(sum(p.numel() for p in model.parameters() if p.requires_grad)))
+    print('total trainable params for stgcn: {}'.format(sum(p.numel() for p in model.parameters() if p.requires_grad)))
+    model.eval()
 
-    checkpoint_path = "/home/ksw38/RVL/color_syncnet/Wav2Lip/lipsync_expert.pth"
+    # print("Loading SyncNet Model")
+    # checkpoint_path = "/home/ksw38/RVL/color_syncnet/Wav2Lip/lipsync_expert.pth"
     # syncnet = SyncNet().to(device)
     # print('total trainable params {}'.format(sum(p.numel() for p in syncnet.parameters() if p.requires_grad)))
-    # optimizer = optim.Adam([p for p in model.parameters() if p.requires_grad],
-    #                         lr=hparams.syncnet_lr, weight_decay=1e-5)
-    # load_model.load_checkpoint(checkpoint_path, syncnet, optimizer, False, use_cuda)
+    print("Loading Audio only Model")
     audio_model = audio_only().to(device)
+    optimizer = optim.Adam([p for p in audio_model.parameters() if p.requires_grad],
+                            lr=hparams.syncnet_lr, weight_decay=1e-5)
+    # load_model.load_checkpoint(checkpoint_path, syncnet, optimizer, False, use_cuda)
+    
     audio_checkpoint_path = "/home/ksw38/RVL/color_syncnet/Wav2Lip/landmarks_checkpoints_gru2/checkpoint_step001800000.pth"
     load_model.load_partial_model(checkpoint_path=audio_checkpoint_path, device=device, startswith='audio')
+    audio_model.eval()
     
 
     ## Loop ##
-    # prog_bar = tqdm(enumerate(test_data_loader))
-    prog_bar = enumerate(test_data_loader)
-    for step, (x, x_rot, mel, y) in prog_bar:
-        print(step)
-        print(x.shape, x_rot.shape, mel.shape, y)
+    with torch.no_grad():
+        # prog_bar = tqdm(enumerate(test_data_loader))
+        prog_bar = enumerate(test_data_loader)
+        for step, (x, x_rot, mel, y) in prog_bar:
+            print(f"Step {step}")
+            print(x.shape, x_rot.shape, mel.shape, y)
+            x = x.permute(0, 2, 1, 3)
 
-        x = x.permute(0, 2, 1, 3)
-        print(x.shape)
-        v = model(x)
-        print(v.shape)
+            lmk_feat = model(x)
+            v = lmk_feat.mean(dim=1)
+            a = audio_model(mel)
 
-        a = audio_model(mel)
+            print(v.shape, a.shape)
+            sim = F.cosine_similarity(a, v)
+            print(sim)
 
-        print(v.shape, a.shape)
 
-        
-
-        if data_limit is not None and step > data_limit:
-            break
+            if data_limit is not None and step > data_limit:
+                break
