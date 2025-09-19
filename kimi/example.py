@@ -11,8 +11,10 @@ while True:
         break
     frames.append(frame)
 cap.release()
-from facetools import genMediapipeInfo,norm_lmks
+from facetools import genMediapipeInfo,norm_lmks, clearMediapipeInfo
 _, lmks, allYaw, allPitch, allRoll = genMediapipeInfo(frames) #this does the landmark extraction and a bunch of normalization
+clearMediapipeInfo()
+lmks = np.swapaxes(lmks, 1,2)
 lmks = norm_lmks(lmks) # this does the final normalization
 #save the lmks and the yaw, pitch, roll to a filefrom facetools import genMediapipeInfo,norm_lmks
 print("\n\nlmks\n")
