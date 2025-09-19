@@ -7,7 +7,6 @@ from facetools import genMediapipeInfo,norm_lmks, clearMediapipeInfo
 
 def norm(lmks):
     lmks_norm = np.zeros_like(lmks, dtype=np.float32)
-    print(lmks.shape)
     for t in range(lmks.shape[0]):
         frame = lmks[t]
         min_xy = frame.min(axis=0)
@@ -25,6 +24,8 @@ out_main_path = "/home/ksw38/groups/grp_landmarks/nobackup/archive/landmarks_nor
 folders = [f for f in os.listdir(source_main_path) if os.path.isdir(os.path.join(source_main_path, f))]
 # folders = folders[2424:len(folders)]
 
+num_skipped_files = 0
+skipped_files = []
 for folder in folders:
     source_folder_path = os.path.join(source_main_path, folder)
     files = glob(os.path.join(source_folder_path, "*.mp4"))
@@ -52,7 +53,15 @@ for folder in folders:
         cap.release()
         _, lmks, allYaw, allPitch, allRoll = genMediapipeInfo(frames) #this does the landmark extraction and a bunch of normalization
         clearMediapipeInfo()
-        lmks = np.swapaxes(lmks, 1,2)
+        try:
+            lmks = np.swapaxes(lmks, 1,2)
+        except Exception as e:
+            print(f"\nError: {e}")
+            print(f"on file {file}\n")
+            num_skipped_files += 1
+            skipped_files.append(file)
+            continue
+
         lmks = norm(lmks)
         
         # Save the landmarks
@@ -60,3 +69,6 @@ for folder in folders:
         np.save(out_path_yaw, allYaw)
         np.save(out_path_pitch, allPitch)
         np.save(out_path_roll, allRoll)
+
+print(f"\n{num_skipped_files} were skipped")
+print(skipped_files)
