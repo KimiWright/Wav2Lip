@@ -28,18 +28,33 @@ from os import path
 
 import re
 
-audio_model_checkpoint_dir = "checkpoints_audio_norot"
-st_gcn_checkpoint_dir = "checkpoints_st_gcn_norot"
+audio_model_checkpoint_dir = "checkpoints_audio_norot_facial"
+st_gcn_checkpoint_dir = "checkpoints_st_gcn_norot_facial"
 global_step = 0
 global_epoch = 0
 use_cuda = torch.cuda.is_available()
 print('use_cuda: {}'.format(use_cuda))
 
 logloss = nn.BCELoss()
-def cosine_loss(a, v, y):
-    d = F.cosine_similarity(a, v)
-    loss = logloss(d.unsqueeze(1), y)
+# def cosine_loss(a, v, y):
+#     d = F.cosine_similarity(a, v)
+#     d_before = d
+#     d = torch.clamp(d, min=0., max=1.)
+#     if not torch.equal(d_before, d):
+#         print(f"Clamped {d_before} to {d}")
 
+#     loss = logloss(d.unsqueeze(1), y)
+
+#     return loss
+
+def cosine_loss(a, v, y):
+    d = F.cosine_similarity(a, v)          # [-1, 1]
+    d = (d + 1) / 2                        # [0, 1]
+    d = torch.clamp(d, min=0., max=1.)
+    d_before = d
+    if not torch.equal(d_before, d):
+        print(f"Clamped {d_before} to {d}")
+    loss = logloss(d.unsqueeze(1), y)      # BCE works safely
     return loss
 
 def save_checkpoint(model, optimizer, step, checkpoint_dir, epoch):
@@ -138,17 +153,19 @@ def train(device, st_gcn_model, audio_model, train_data_loader, test_data_loader
         global_epoch += 1
 
 if __name__ == "__main__":
+    print(f"Using Data from {st.data_root}")
     # Dataset and Dataloader setup
     test_dataset = st.Dataset('val')
     train_dataset = st.Dataset('train')
 
+    num_workers = 1 #hparams.num_workers, 8
     train_data_loader = data_utils.DataLoader(
         train_dataset, batch_size=hparams.syncnet_batch_size, shuffle=True,
-        num_workers=hparams.num_workers)
+        num_workers=num_workers)
 
     test_data_loader = data_utils.DataLoader(
         test_dataset, batch_size=hparams.syncnet_batch_size,
-        num_workers=8)
+        num_workers=num_workers)
 
     device = torch.device("cuda" if use_cuda else "cpu")
 
@@ -161,7 +178,9 @@ if __name__ == "__main__":
     first_point = test_dataset[0]
     (x, x_rot, mel, y) = first_point
     first_lmks = x[0].T
-    edges = st.knn_edges(first_lmks)
+    # edges = st.knn_edges(first_lmks)
+    print("Using Facial Edges")
+    edges = st.facial_edges()
     num_lmks = first_lmks.shape[0]
     A = build_adjacency(num_lmks, edges)
     V = num_lmks
@@ -177,7 +196,7 @@ if __name__ == "__main__":
         conformer_heads=4,
         conformer_ff=256,
         conformer_conv_kernel=31
-    )
+    ).to(device)
 
     st_gcn_optimizer = optim.Adam([p for p in st_gcn_model.parameters() if p.requires_grad],
                             lr=hparams.syncnet_lr, weight_decay=1e-5)

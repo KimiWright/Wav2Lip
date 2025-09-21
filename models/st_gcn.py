@@ -360,6 +360,77 @@ class LandmarkSTGCNConformer(nn.Module):
         out = the_features = self.conformer(feats, key_padding_mask=key_padding_mask)  # [B, T, D]
         return out
 
+class LandmarkSTGCNConformerWithOrientation(nn.Module):
+    def __init__(
+        self,
+        num_nodes: int,
+        A: torch.Tensor,                # [K, V, V] adjacency
+        d_model: int = 128,
+        post_linear_hidden: int = 128,  # hidden size before conformer
+        temporal_kernel_size: int = 9,
+        stgcn_dropout: float = 0.0,
+        conformer_layers: int = 4,
+        conformer_heads: int = 4,
+        conformer_ff: int = 256,
+        conformer_conv_kernel: int = 31,
+        conformer_dropout: float = 0.1,
+    ):
+        super().__init__()
+
+        # ST-GCN front-end
+        self.stgcn = STGCNFrontEnd(
+            num_nodes=num_nodes,
+            A=A,
+            temporal_kernel_size=temporal_kernel_size,
+            dropout=stgcn_dropout,
+        )
+
+        # Pool across nodes (average landmarks → one vector per frame)
+        self.node_pool = nn.AdaptiveAvgPool2d((None, 1))
+
+        # Linear layers + Mish, now input dim is 64 (landmarks) + 3 (roll,pitch,yaw) = 67
+        self.post_linear = nn.Sequential(
+            nn.Linear(64 + 3, post_linear_hidden, bias=True),
+            nn.Mish(),
+            nn.Linear(post_linear_hidden, d_model, bias=True),
+            nn.Mish(),
+        )
+
+        # Temporal Conformer back-end
+        self.conformer = ConformerEncoder(
+            d_model=d_model,
+            n_layers=conformer_layers,
+            n_heads=conformer_heads,
+            d_ff=conformer_ff,
+            conv_kernel_size=conformer_conv_kernel,
+            dropout=conformer_dropout,
+            use_positional_encoding=True,
+        )
+
+    def forward(self, x: torch.Tensor, orientation: torch.Tensor, key_padding_mask=None):
+        """
+        Args:
+            x: [B, 2, T, V] landmark coords
+            orientation: [B, T, 3] roll, pitch, yaw per frame
+            key_padding_mask: optional [B, T] mask for padded timesteps
+        Returns:
+            [B, T, D] features
+        """
+        # Landmark features from ST-GCN
+        y = self.stgcn(x)                       # [B, 64, T, V]
+        y = self.node_pool(y).squeeze(-1)       # [B, 64, T]
+        y = y.transpose(1, 2)                   # [B, T, 64]
+
+        # Fuse orientation
+        feats = torch.cat([y, orientation], dim=-1)  # [B, T, 67]
+
+        # Linear + Mish projection
+        feats = self.post_linear(feats)              # [B, T, D]
+
+        # Temporal Conformer
+        out = self.conformer(feats, key_padding_mask=key_padding_mask)  # [B, T, D]
+        return out
+
 
 # ---------------------------
 # Helper to build adjacency

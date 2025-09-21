@@ -1,4 +1,4 @@
-import models.st_gcn as model
+import models.st_gcn as st
 # import run_statistics as run_stats
 
 from os.path import dirname, join, basename, isfile
@@ -6,7 +6,7 @@ from tqdm import tqdm
 
 from models import audio_color as SyncNet
 from models.audio_only import audio_only
-import load_model
+import load_model as lm
 import landmarks_audio as audio
 
 import torch
@@ -39,6 +39,7 @@ ID_LEN = 5 #The number of digits in the id in the file name
 video_root = '/home/ksw38/groups/grp_lip/nobackup/autodelete/datasets/fslgroup/grp_lip/compute/datasets/LRS2/preprocessedRetinaface/lrs2/lrs2_video_seg24s/mvlrs_v1/main/'
 data_root = '/home/ksw38/groups/grp_landmarks/nobackup/archive/landmarks_preprocessed/main'
 data_root = '/home/ksw38/groups/grp_landmarks/nobackup/archive/landmarks/main'
+data_root = "/home/ksw38/groups/grp_landmarks/nobackup/archive/landmarks_norm/main"
 
 parser = argparse.ArgumentParser(description='Code to train the expert lip-sync discriminator')
 parser.add_argument('--video_root', help='Root folder of the videos of the LRS2 dataset', default=video_root)
@@ -165,12 +166,40 @@ class Dataset(object):
             x_yaw = window_fnames[3]
             # x = np.concatenate([x_lmks, x_roll, x_pitch, x_yaw], axis=1)
 
-            x_rot = np.vstack((x_roll, x_pitch, x_yaw))
+            x_rot = torch.FloatTensor(np.vstack((x_roll, x_pitch, x_yaw)))
             
+            x_lmks = np.swapaxes(x_lmks, 1,2)
             x = torch.FloatTensor(x_lmks)
             mel = torch.FloatTensor(mel.T).unsqueeze(0)
 
             return x, x_rot, mel, y
+
+## Model Loading ##
+
+def _load(checkpoint_path, use_cuda): ## Modification, added use_cuda
+    if use_cuda:
+        checkpoint = torch.load(checkpoint_path)
+    else:
+        checkpoint = torch.load(checkpoint_path,
+                                map_location=lambda storage, loc: storage)
+    return checkpoint
+
+def load_checkpoint(path, model, optimizer, reset_optimizer=False, use_cuda=False): ## Modification, added use_cuda
+    global global_step
+    global global_epoch
+
+    print("Load checkpoint from: {}".format(path))
+    checkpoint = _load(path, use_cuda)
+    model.load_state_dict(checkpoint["state_dict"])
+    if not reset_optimizer:
+        optimizer_state = checkpoint["optimizer"]
+        if optimizer_state is not None:
+            print("Load optimizer state from {}".format(path))
+            optimizer.load_state_dict(checkpoint["optimizer"])
+    global_step = checkpoint["global_step"]
+    global_epoch = checkpoint["global_epoch"]
+
+    return model
 
 ## Edges ##
 
@@ -198,6 +227,23 @@ def knn_edges(points_xy, k=4):
             edges.add((j, i))  # make undirected
     return list(edges)
 
+RVL_FACEMESH_LEFT_EYEBROW = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+RVL_FACEMESH_LEFT_EYE = [10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25]
+RVL_FACEMESH_LIPS = [26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65]
+RVL_FACEMESH_RIGHT_EYE = [66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81]
+RVL_FACEMESH_RIGHT_EYEBROW = [82, 83, 84, 85, 86, 87, 88, 89, 90, 91]
+
+def facial_edges():
+    edges = []
+    for region in [RVL_FACEMESH_LEFT_EYE, RVL_FACEMESH_RIGHT_EYE,
+               RVL_FACEMESH_LEFT_EYEBROW, RVL_FACEMESH_RIGHT_EYEBROW,
+               RVL_FACEMESH_LIPS]:
+        for i in range(len(region)-1):
+            edges.append((region[i], region[i+1]))
+        edges.append((region[-1], region[0])) 
+
+    return edges
+
 if __name__ == "__main__":
     data_limit = 4
     batch_size = 1 # hparams.syncnet_batch_size
@@ -217,7 +263,8 @@ if __name__ == "__main__":
     first_point = test_dataset[0]
     (x, x_rot, mel, y) = first_point
     first_lmks = x[0].T
-    edges = knn_edges(first_lmks)
+    # edges = knn_edges(first_lmks)
+    edges = facial_edges()
     num_lmks = first_lmks.shape[0]
     # edges = list(FACEMESH_TESSELATION)
     # print(edges)
@@ -225,7 +272,7 @@ if __name__ == "__main__":
 
     print(num_lmks)
 
-    A = model.build_adjacency(num_lmks, edges)
+    A = st.build_adjacency(num_lmks, edges)
     V = num_lmks
     C = 2 # x,y maybe updata to 5 include roll pitch yaw? but those are frame-wise, so maybe I can include it somewhere else?
     K = 1 # 1 partion, chosen arbitarily 
@@ -236,7 +283,7 @@ if __name__ == "__main__":
 
     ## Init model
     print("Loading LandmarkSTGCNConformer Model")
-    model = model.LandmarkSTGCNConformer(
+    model = st.LandmarkSTGCNConformer(
         num_nodes=V,
         A=A,
         d_model=128,
@@ -247,8 +294,26 @@ if __name__ == "__main__":
         conformer_conv_kernel=31
     )
     model.to(device)
+    st_gcn_optimizer = optim.Adam([p for p in model.parameters() if p.requires_grad],
+                            lr=hparams.syncnet_lr, weight_decay=1e-5)
     print('total trainable params for stgcn: {}'.format(sum(p.numel() for p in model.parameters() if p.requires_grad)))
+    st_gcn_norot_checkpoint_path = "/home/ksw38/RVL/color_syncnet/Wav2Lip/checkpoints_st_gcn_norot/checkpoint_step000050000.pth"
+    load_checkpoint(st_gcn_norot_checkpoint_path, model=model, optimizer=st_gcn_optimizer, use_cuda=use_cuda)
     model.eval()
+
+    model_rot = st.LandmarkSTGCNConformerWithOrientation(
+        num_nodes=V,
+        A=A,                # [K, V, V] adjacency
+        d_model=128,
+        post_linear_hidden=128,  # hidden size before conformer
+        conformer_layers=4,
+        conformer_heads=4,
+        conformer_ff=256,
+        conformer_conv_kernel=31
+    )
+    model_rot.to(device)
+    print('total trainable params for stgcn with rotation: {}'.format(sum(p.numel() for p in model_rot.parameters() if p.requires_grad)))
+    model_rot.eval()
 
     # print("Loading SyncNet Model")
     # checkpoint_path = "/home/ksw38/RVL/color_syncnet/Wav2Lip/lipsync_expert.pth"
@@ -258,30 +323,39 @@ if __name__ == "__main__":
     audio_model = audio_only().to(device)
     optimizer = optim.Adam([p for p in audio_model.parameters() if p.requires_grad],
                             lr=hparams.syncnet_lr, weight_decay=1e-5)
-    # load_model.load_checkpoint(checkpoint_path, syncnet, optimizer, False, use_cuda)
+    # lm.load_checkpoint(checkpoint_path, syncnet, optimizer, False, use_cuda)
     
-    audio_checkpoint_path = "/home/ksw38/RVL/color_syncnet/Wav2Lip/landmarks_checkpoints_gru2/checkpoint_step001800000.pth"
-    load_model.load_partial_model(checkpoint_path=audio_checkpoint_path, device=device, startswith='audio')
+    # audio_checkpoint_path = "/home/ksw38/RVL/color_syncnet/Wav2Lip/landmarks_checkpoints_gru2/checkpoint_step001800000.pth"
+    # lm.load_partial_model(checkpoint_path=audio_checkpoint_path, device=device, startswith='audio')
+    audio_checkpoint_path = "/home/ksw38/RVL/color_syncnet/Wav2Lip/checkpoints_audio_norot/checkpoint_step000050000.pth"
+    load_checkpoint(audio_checkpoint_path, model=audio_model, optimizer=optimizer, use_cuda=use_cuda)
     audio_model.eval()
     
-
+    sim_vals = []
     ## Loop ##
     with torch.no_grad():
         # prog_bar = tqdm(enumerate(test_data_loader))
         prog_bar = enumerate(test_data_loader)
         for step, (x, x_rot, mel, y) in prog_bar:
-            print(f"Step {step}")
-            print(x.shape, x_rot.shape, mel.shape, y)
+            # print(f"Step {step}")
+            # print(x.shape, x_rot.shape, mel.shape, y)
             x = x.permute(0, 2, 1, 3)
 
             lmk_feat = model(x)
             v = lmk_feat.mean(dim=1)
             a = audio_model(mel)
 
-            print(v.shape, a.shape)
+            # print(v.shape, a.shape)
             sim = F.cosine_similarity(a, v)
-            print(sim)
+            # print(sim)
+            sim_vals.append(sim)
+
+            x_rot = x_rot.permute(0, 2, 1)
+            rot_feat = model_rot(x, x_rot)
+            # print(rot_feat.shape)
 
 
             if data_limit is not None and step > data_limit:
                 break
+
+        print(sim_vals)

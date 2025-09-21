@@ -15,3 +15,4 @@ from .lmks_only3 import lmks_only3
 from .audio_color import audio_color
 from .st_gcn import LandmarkSTGCNConformer
 from .st_gcn import build_adjacency
+from .st_gcn import LandmarkSTGCNConformerWithOrientation
