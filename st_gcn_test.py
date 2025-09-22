@@ -263,8 +263,8 @@ if __name__ == "__main__":
     first_point = test_dataset[0]
     (x, x_rot, mel, y) = first_point
     first_lmks = x[0].T
-    # edges = knn_edges(first_lmks)
-    edges = facial_edges()
+    edges = knn_edges(first_lmks)
+    # edges = facial_edges()
     num_lmks = first_lmks.shape[0]
     # edges = list(FACEMESH_TESSELATION)
     # print(edges)
@@ -298,7 +298,8 @@ if __name__ == "__main__":
                             lr=hparams.syncnet_lr, weight_decay=1e-5)
     print('total trainable params for stgcn: {}'.format(sum(p.numel() for p in model.parameters() if p.requires_grad)))
     st_gcn_norot_checkpoint_path = "/home/ksw38/RVL/color_syncnet/Wav2Lip/checkpoints_st_gcn_norot/checkpoint_step000050000.pth"
-    load_checkpoint(st_gcn_norot_checkpoint_path, model=model, optimizer=st_gcn_optimizer, use_cuda=use_cuda)
+    # st_gcn_norot_checkpoint_path = "/home/ksw38/RVL/color_syncnet/Wav2Lip/checkpoints_audio_norot/checkpoint_step000250000.pth"
+    model = load_checkpoint(st_gcn_norot_checkpoint_path, model=model, optimizer=st_gcn_optimizer, use_cuda=use_cuda)
     model.eval()
 
     model_rot = st.LandmarkSTGCNConformerWithOrientation(
@@ -328,7 +329,7 @@ if __name__ == "__main__":
     # audio_checkpoint_path = "/home/ksw38/RVL/color_syncnet/Wav2Lip/landmarks_checkpoints_gru2/checkpoint_step001800000.pth"
     # lm.load_partial_model(checkpoint_path=audio_checkpoint_path, device=device, startswith='audio')
     audio_checkpoint_path = "/home/ksw38/RVL/color_syncnet/Wav2Lip/checkpoints_audio_norot/checkpoint_step000050000.pth"
-    load_checkpoint(audio_checkpoint_path, model=audio_model, optimizer=optimizer, use_cuda=use_cuda)
+    audio_model = load_checkpoint(audio_checkpoint_path, model=audio_model, optimizer=optimizer, use_cuda=use_cuda)
     audio_model.eval()
     
     sim_vals = []
