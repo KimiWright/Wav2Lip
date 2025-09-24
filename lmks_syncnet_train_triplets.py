@@ -23,9 +23,9 @@ from collections import defaultdict
 from os import path
 
 import re
-# from models.lmks_only import lmks_only
-# from models.audio_only import audio_only
-# from models import SyncNet_landmarks_gru2 as SyncNet
+from models.lmks_only import lmks_only
+from models.audio_only import audio_only
+from models import SyncNet_landmarks_gru2 as SyncNet
 
 
 
@@ -34,17 +34,19 @@ parser = argparse.ArgumentParser(description='Code to train the expert lip-sync 
 parser.add_argument("--data_root", help="Root folder of the preprocessed landmarks for LRS2 dataset", default='/home/ksw38/groups/grp_landmarks/nobackup/archive/landmarks/main/')
 parser.add_argument('--video_root', help='Root folder of the videos of the LRS2 dataset', default='/home/ksw38/groups/grp_lip/nobackup/autodelete/datasets/fslgroup/grp_lip/compute/datasets/LRS2/preprocessedRetinaface/lrs2/lrs2_video_seg24s/mvlrs_v1/main/')
 
+parser.add_argument('--checkpoint_dir', help='Save checkpoints to this directory', default='triplets_checkpoints', type=str)
+
 # from models import SyncNet_landmarks_gru3 as SyncNet
 # from models.audio_only3 import audio_only3 as audio_only
 # from models.lmks_only3 import lmks_only3 as lmks_only
 # print("GRU 3")
 # parser.add_argument('--checkpoint_dir', help='Save checkpoints to this directory', default='checkpoints_gru3', type=str) ## Adjust this line when switching models ##
 
-from models.lmks_only_attn import lmks_only_attn as lmks_only
-from models.audio_only_attn import audio_only_attn as audio_only
-from models import SyncNet_landmarks_attn as SyncNet
-print("ATTN")
-parser.add_argument('--checkpoint_dir', help='Save checkpoints to this directory', default='attn_checkpoints', type=str)
+# from models.lmks_only_attn import lmks_only_attn as lmks_only
+# from models.audio_only_attn import audio_only_attn as audio_only
+# from models import SyncNet_landmarks_attn as SyncNet
+# print("ATTN")
+# parser.add_argument('--checkpoint_dir', help='Save checkpoints to this directory', default='attn_checkpoints', type=str)
 
 parser.add_argument('--checkpoint_path', help='Resumed from this checkpoint', default=None, type=str)
 args = parser.parse_args()
@@ -52,7 +54,7 @@ args = parser.parse_args()
 
 global_step = 0
 global_epoch = 0
-use_cuda = False#torch.cuda.is_available()
+use_cuda = torch.cuda.is_available()
 print('use_cuda: {}'.format(use_cuda))
 
 syncnet_T = 5
@@ -347,8 +349,10 @@ if __name__ == "__main__":
     checkpoint_dir = args.checkpoint_dir
 
     if checkpoint_path is None:
-        checkpoint_path = os.listdir(checkpoint_dir)[-1]
-        checkpoint_path = os.path.join(checkpoint_dir, checkpoint_path)
+        checkpoints = os.listdir(checkpoint_dir)
+        if len(checkpoints) > 0:
+            checkpoint_path = checkpoints[-1]
+            checkpoint_path = os.path.join(checkpoint_dir, checkpoint_path)
     print("Loading checkpoint from:", checkpoint_path)
 
     batch_size = hparams.syncnet_batch_size
@@ -361,9 +365,12 @@ if __name__ == "__main__":
         num_workers=num_workers, drop_last=True)
 
     
-
-    face_model = load_partial_model(checkpoint_path, device=device, startswith='face')
-    audio_model = load_partial_model(checkpoint_path, device=device, startswith='audio')
+    if checkpoint_path is not None:
+        face_model = load_partial_model(checkpoint_path, device=device, startswith='face')
+        audio_model = load_partial_model(checkpoint_path, device=device, startswith='audio')
+    else:
+        audio_model = audio_only().to(device)
+        face_model = lmks_only().to(device)
 
     optimizer = optim.Adam(list(audio_model.parameters()) + list(face_model.parameters()),
                     lr=hparams.syncnet_lr, weight_decay=1e-5)
