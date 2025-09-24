@@ -28,8 +28,8 @@ syncnet_T = 5
 device = torch.device("cuda" if use_cuda else "cpu")
 
 norot_knn_check = ""# "checkpoint_step000330000.pth"
-norot_check = "checkpoint_step000440000.pth" # "checkpoint_step000250000.pth"
-rot_check = "checkpoint_step000410000.pth" # "checkpoint_step000240000.pth"
+norot_check = ""# "checkpoint_step000440000.pth" # "checkpoint_step000250000.pth"
+rot_check = "" #"checkpoint_step000410000.pth" # "checkpoint_step000240000.pth"
 ## ST GCN
 st_gcn_norot_checkpoint_knn = "/home/ksw38/RVL/color_syncnet/Wav2Lip/checkpoints_st_gcn_norot/" + norot_knn_check
 st_gcn_norot_checkpoint = "/home/ksw38/RVL/color_syncnet/Wav2Lip/checkpoints_st_gcn_norot_facial/" + norot_check
@@ -45,7 +45,6 @@ babble_mel = run_stats.generate_babble_mel()
 silent_mel = run_stats.generate_mel_for_frames(syncnet_T, silence=True)
 white_noise_mel = run_stats.generate_mel_for_frames(syncnet_T, silence=False)
 comp_mels = [silent_mel, white_noise_mel, babble_mel]
-
 
 def get_lmk_feat_norot(test_data_loader, st_gcn_model, device='cpu'):
     y_truth = []
@@ -161,12 +160,27 @@ def eval_and_plot(st_gcn_checkpoint, audio_checkpoint, A, V, model_name, use_cud
     for i, losses in enumerate(all_losses):
         name = model_name+'_'+comp_names[i]
         auc_score, precision, recall, thresholds = plot_PR_curve(name, y_truth, losses)
-        print(f"AUC: {auc_score}\nPrecision: {precision}\nRecall{recall}\nThresholds{thresholds}")
+        # print(f"AUC: {auc_score}\nPrecision: {precision}\nRecall{recall}\nThresholds{thresholds}")
+        best_acc_threshold, best_acc = st.best_accuracy(y_truth, losses, thresholds)
+        print(f"AUC: {auc_score}")
+        print("Best Accuracy threshold:", best_acc_threshold)
+        print("Best Accuracy:", best_acc)
+        best_f1_threshold, best_f1 = st.best_f1_score(y_truth, losses, thresholds)
+        print("Best F1 threshold:", best_f1_threshold)
+        print("Best F1:", best_f1)
 
     for i, losses in enumerate(all_losses):
         name = model_name+'_'+comp_names[i]+'_neg'
         auc_score, precision, recall, thresholds = plot_PR_curve(name, y_truth, -losses)
-        print(f"AUC: {auc_score}\nPrecision: {precision}\nRecall{recall}\nThresholds{thresholds}")
+        # print(f"AUC: {auc_score}\nPrecision: {precision}\nRecall{recall}\nThresholds{thresholds}")
+        best_acc_threshold, best_acc = st.best_accuracy(y_truth, losses, thresholds)
+        print(f"AUC: {auc_score}")
+        print("Best Accuracy threshold:", best_acc_threshold)
+        print("Best Accuracy:", best_acc)
+        best_f1_threshold, best_f1 = st.best_f1_score(y_truth, losses, thresholds)
+        print("Best F1 threshold:", best_f1_threshold)
+        print("Best F1:", best_f1)
+
 
 if __name__ == "__main__":
     batch_size = 1

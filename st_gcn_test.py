@@ -1,35 +1,28 @@
-import models.st_gcn as st
-# import run_statistics as run_stats
-from models.st_gcn import LandmarkSTGCNConformer, LandmarkSTGCNConformerWithOrientation
-
-from os.path import dirname, join, basename, isfile
-from tqdm import tqdm
-
-from models import audio_color as SyncNet
+from models.st_gcn import LandmarkSTGCNConformer, LandmarkSTGCNConformerWithOrientation, build_adjacency
 from models.audio_only import audio_only
-import load_model as lm
 import landmarks_audio as audio
+from hparams import hparams, get_image_list
 
 import torch
 from torch import nn
 from torch import optim
 import torch.backends.cudnn as cudnn
 from torch.utils import data as data_utils
-import numpy as np
-import math
 from torch.optim.lr_scheduler import LambdaLR
 import torch.nn.functional as F
 
-from glob import glob
-
+import numpy as np
+import math
 import os, random, cv2, argparse
-from hparams import hparams, get_image_list
-
-from collections import defaultdict
+from os.path import dirname, join, basename, isfile
 from os import path
-
+from glob import glob
+from tqdm import tqdm
+from collections import defaultdict
 import re
 from mediapipe.python.solutions.face_mesh_connections import FACEMESH_TESSELATION 
+from sklearn.metrics import f1_score
+from sklearn.metrics import accuracy_score
 
 ## Variables ##
 
@@ -295,6 +288,34 @@ def facial_edges():
 
     return edges
 
+## Miscellanous ##
+
+def best_accuracy(y_test, y_scores, thresholds):
+    accuracies = []
+    for thr in thresholds:
+        preds = (y_scores >= thr).astype(int)
+        acc = accuracy_score(y_test, preds)
+        accuracies.append(acc)
+
+    best_acc_idx = max(range(len(accuracies)), key=lambda i: accuracies[i])
+    best_acc_threshold = thresholds[best_acc_idx]
+    best_acc = accuracies[best_acc_idx]
+
+    
+    return best_acc_threshold, best_acc
+
+def best_f1_score(y_test, y_scores, thresholds):
+    f1s = []
+    for thr in thresholds:
+        preds = (y_scores >= thr).astype(int)
+        f1s.append(f1_score(y_test, preds))
+
+    best_f1_idx = max(range(len(f1s)), key=lambda i: f1s[i])
+    best_f1_threshold = thresholds[best_f1_idx]
+    best_f1 = f1s[best_f1_idx]
+
+    return best_f1_threshold, best_f1
+
 if __name__ == "__main__":
     data_limit = 4
     batch_size = 1 # hparams.syncnet_batch_size
@@ -323,7 +344,7 @@ if __name__ == "__main__":
 
     print(num_lmks)
 
-    A = st.build_adjacency(num_lmks, edges)
+    A = build_adjacency(num_lmks, edges)
     V = num_lmks
     C = 2 # x,y maybe updata to 5 include roll pitch yaw? but those are frame-wise, so maybe I can include it somewhere else?
     K = 1 # 1 partion, chosen arbitarily 
@@ -334,7 +355,7 @@ if __name__ == "__main__":
 
     ## Init model
     print("Loading LandmarkSTGCNConformer Model")
-    model = st.LandmarkSTGCNConformer(
+    model = LandmarkSTGCNConformer(
         num_nodes=V,
         A=A,
         d_model=128,
@@ -353,7 +374,7 @@ if __name__ == "__main__":
     model = load_checkpoint(st_gcn_norot_checkpoint_path, model=model, optimizer=st_gcn_optimizer, use_cuda=use_cuda)
     model.eval()
 
-    model_rot = st.LandmarkSTGCNConformerWithOrientation(
+    model_rot = LandmarkSTGCNConformerWithOrientation(
         num_nodes=V,
         A=A,                # [K, V, V] adjacency
         d_model=128,
