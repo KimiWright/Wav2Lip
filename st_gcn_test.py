@@ -1,5 +1,6 @@
 import models.st_gcn as st
 # import run_statistics as run_stats
+from models.st_gcn import LandmarkSTGCNConformer, LandmarkSTGCNConformerWithOrientation
 
 from os.path import dirname, join, basename, isfile
 from tqdm import tqdm
@@ -200,6 +201,56 @@ def load_checkpoint(path, model, optimizer, reset_optimizer=False, use_cuda=Fals
     global_epoch = checkpoint["global_epoch"]
 
     return model
+
+def get_checkpoint(checkpoint):
+    if os.path.isdir(checkpoint):
+        checkpoint_path = os.listdir(checkpoint)[-1]
+        checkpoint_path = os.path.join(checkpoint, checkpoint_path)
+    else:
+        checkpoint_path = checkpoint
+    return checkpoint_path
+
+def load_from_checkpoint_or_dir(checkpoint, model, optimizer, reset_optimizer=False, use_cuda=False):
+    checkpoint_path = get_checkpoint(checkpoint)
+    load_checkpoint(checkpoint_path, model, optimizer=optimizer, reset_optimizer=reset_optimizer, use_cuda=use_cuda)
+    return model
+
+def load_stgcn_and_audio_models(checkpoint, audio_checkpoint, A, V, use_cuda = False, rotation = False):
+    print(f"Loading LandmarkSTGCNConformer Model from checkpoint {checkpoint}")
+    device = torch.device("cuda" if use_cuda else "cpu")
+    model_args = dict(
+            num_nodes=V,
+            A=A,                          # [K, V, V] adjacency
+            d_model=128,
+            post_linear_hidden=128,       # hidden size before conformer
+            conformer_layers=4,
+            conformer_heads=4,
+            conformer_ff=256,
+            conformer_conv_kernel=31
+        )
+    
+    if rotation:
+        model = LandmarkSTGCNConformerWithOrientation(**model_args)
+    else:
+        model = LandmarkSTGCNConformer(**model_args)
+    model.to(device)
+
+    optimizer = optim.Adam([p for p in model.parameters() if p.requires_grad],
+                            lr=hparams.syncnet_lr, weight_decay=1e-5)
+    print('total trainable params for stgcn: {}'.format(sum(p.numel() for p in model.parameters() if p.requires_grad)))
+    model = load_from_checkpoint_or_dir(checkpoint, model=model, optimizer=optimizer, use_cuda=use_cuda)
+    model.eval()
+
+    print(f"\t and audio model from {audio_checkpoint}")
+    audio_model = audio_only().to(device)
+    audio_optimizer = optim.Adam([p for p in audio_model.parameters() if p.requires_grad],
+                                lr=hparams.syncnet_lr, weight_decay=1e-5)
+    audio_model = load_from_checkpoint_or_dir(audio_checkpoint, model=audio_model, optimizer=audio_optimizer, use_cuda=use_cuda)
+    audio_model.eval()
+
+    print('total trainable params for stgcn: {}'.format(sum(p.numel() for p in model.parameters() if p.requires_grad)))
+    print('total trainable params for audio: {}'.format(sum(p.numel() for p in audio_model.parameters() if p.requires_grad)))
+    return model, audio_model
 
 ## Edges ##
 

@@ -435,7 +435,8 @@ class LandmarkSTGCNConformerWithOrientation(nn.Module):
 # ---------------------------
 # Helper to build adjacency
 # ---------------------------
-def build_adjacency(num_nodes: int, edges: list[tuple[int, int]], num_partitions: int = 1) -> torch.Tensor:
+from typing import List, Tuple
+def build_adjacency(num_nodes: int, edges: List[Tuple[int, int]], num_partitions: int = 1) -> torch.Tensor:
     """
     Simple helper to construct an adjacency tensor A with K partitions.
     Here we put the same adjacency into each partition by default.

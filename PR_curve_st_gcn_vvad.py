@@ -143,7 +143,7 @@ def plot_PR_curve(name, y_test, y_scores):
     plt.legend()
     plt.savefig(fig_path)
     print(f"Figure saved at {fig_path}")
-    return(auc_score)
+    return(auc_score, precision, recall, thresholds)
 
 def eval_and_plot(st_gcn_checkpoint, audio_checkpoint, A, V, model_name, use_cuda=use_cuda, rotation=False):
     if rotation:
@@ -160,13 +160,13 @@ def eval_and_plot(st_gcn_checkpoint, audio_checkpoint, A, V, model_name, use_cud
 
     for i, losses in enumerate(all_losses):
         name = model_name+'_'+comp_names[i]
-        auc_score = plot_PR_curve(name, y_truth, losses)
-        print(f"AUC: {auc_score}\n")
+        auc_score, precision, recall, thresholds = plot_PR_curve(name, y_truth, losses)
+        print(f"AUC: {auc_score}\nPrecision: {precision}\nRecall{recall}\nThresholds{thresholds}")
 
     for i, losses in enumerate(all_losses):
         name = model_name+'_'+comp_names[i]+'_neg'
-        auc_score = plot_PR_curve(name, y_truth, -losses)
-        print(f"AUC: {auc_score}\n")
+        auc_score, precision, recall, thresholds = plot_PR_curve(name, y_truth, -losses)
+        print(f"AUC: {auc_score}\nPrecision: {precision}\nRecall{recall}\nThresholds{thresholds}")
 
 if __name__ == "__main__":
     batch_size = 1

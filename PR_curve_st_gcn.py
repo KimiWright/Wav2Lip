@@ -95,7 +95,7 @@ def load_stgcn_and_audio_models(checkpoint, audio_checkpoint, A, V, use_cuda = F
     model = load_from_checkpoint_or_dir(checkpoint, model=model, optimizer=optimizer, use_cuda=use_cuda)
     model.eval()
 
-    print(f"\t and audio model from {audio_norot_checkpoint}")
+    print(f"\t and audio model from {audio_checkpoint}")
     audio_model = audio_only().to(device)
     audio_optimizer = optim.Adam([p for p in audio_model.parameters() if p.requires_grad],
                                 lr=hparams.syncnet_lr, weight_decay=1e-5)
