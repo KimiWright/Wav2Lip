@@ -21,8 +21,8 @@ from tqdm import tqdm
 from collections import defaultdict
 import re
 from mediapipe.python.solutions.face_mesh_connections import FACEMESH_TESSELATION 
-from sklearn.metrics import f1_score
-from sklearn.metrics import accuracy_score
+# from sklearn.metrics import f1_score
+# from sklearn.metrics import accuracy_score
 
 ## Variables ##
 
@@ -290,31 +290,31 @@ def facial_edges():
 
 ## Miscellanous ##
 
-def best_accuracy(y_test, y_scores, thresholds):
-    accuracies = []
-    for thr in thresholds:
-        preds = (y_scores >= thr).astype(int)
-        acc = accuracy_score(y_test, preds)
-        accuracies.append(acc)
+# def best_accuracy(y_test, y_scores, thresholds):
+#     accuracies = []
+#     for thr in thresholds:
+#         preds = (y_scores >= thr).astype(int)
+#         acc = accuracy_score(y_test, preds)
+#         accuracies.append(acc)
 
-    best_acc_idx = max(range(len(accuracies)), key=lambda i: accuracies[i])
-    best_acc_threshold = thresholds[best_acc_idx]
-    best_acc = accuracies[best_acc_idx]
+#     best_acc_idx = max(range(len(accuracies)), key=lambda i: accuracies[i])
+#     best_acc_threshold = thresholds[best_acc_idx]
+#     best_acc = accuracies[best_acc_idx]
 
     
-    return best_acc_threshold, best_acc
+#     return best_acc_threshold, best_acc
 
-def best_f1_score(y_test, y_scores, thresholds):
-    f1s = []
-    for thr in thresholds:
-        preds = (y_scores >= thr).astype(int)
-        f1s.append(f1_score(y_test, preds))
+# def best_f1_score(y_test, y_scores, thresholds):
+#     f1s = []
+#     for thr in thresholds:
+#         preds = (y_scores >= thr).astype(int)
+#         f1s.append(f1_score(y_test, preds))
 
-    best_f1_idx = max(range(len(f1s)), key=lambda i: f1s[i])
-    best_f1_threshold = thresholds[best_f1_idx]
-    best_f1 = f1s[best_f1_idx]
+#     best_f1_idx = max(range(len(f1s)), key=lambda i: f1s[i])
+#     best_f1_threshold = thresholds[best_f1_idx]
+#     best_f1 = f1s[best_f1_idx]
 
-    return best_f1_threshold, best_f1
+#     return best_f1_threshold, best_f1
 
 if __name__ == "__main__":
     data_limit = 4
