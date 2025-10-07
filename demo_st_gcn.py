@@ -7,6 +7,7 @@ import torch
 import torch.nn.functional as F
 import st_gcn_test as st
 from models import build_adjacency
+import make_mel_embedding as mme
 
 # ==================== LOAD PARAMS ====================
 parser = argparse.ArgumentParser(description = "SyncNet")
@@ -16,7 +17,7 @@ parser.add_argument('--reference', type=str, default="demo", help='')
 parser.add_argument('--checkpoint_st_gcn', type=str, default="checkpoints_st_gcn_norot")
 parser.add_argument('--checkpoint_audio', type=str, default="checkpoints_audio_norot")
 parser.add_argument('--comparison_embedding', type=str, default="kimi/babble_embedding.npy")
-parser.add_argument('--videofile', type=str, default="kimi/00001.mp4", help='')
+parser.add_argument('--videofile', type=str, default="kimi/kimi_test.mp4", help='')
 
 opt = parser.parse_args()
 
@@ -78,12 +79,54 @@ num_lmks = first_lmks.shape[0]
 A = build_adjacency(num_lmks, edges)
 V = num_lmks
 
-st_gcn_model_norot, audio_model_norot = st.load_stgcn_and_audio_models(checkpoint_st_gcn, checkpoint_st_gcn, A, V, use_cuda=use_cuda, rotation=False)
+st_gcn_model_norot, audio_model_norot = st.load_stgcn_and_audio_models(checkpoint_st_gcn, checkpoint_audio, A, V, use_cuda=use_cuda, rotation=False)
+
+# ================= MAKE COMP EMB ===========================
+
+comp_noise = "independent_scripts/babble_noise.wav"
+comp_mel = mme.generate_mel_from_path(comp_noise).unsqueeze(0).to(device)
+# print(comp_mel.shape)
+# babble_mel = mme.generate_babble_mel()
+# print(babble_mel.shape)
+audio_model_norot = audio_model_norot.eval().to(device)
+comp_emb = audio_model_norot(comp_mel)
 
 # ============= EVALUATE MODEL AND WRITE VIDEO ===============
-vidWriter = cv2.VideoWriter(os.path.join(opt.tmp_dir,opt.reference,'video_sync_lmks.mp4'), cv2.VideoWriter_fourcc(*'mp4v'), 25, (frames[0].shape[1],frames[0].shape[0]))
-vidWriterTrimmed = cv2.VideoWriter(os.path.join(opt.tmp_dir,opt.reference,'video_sync_trimmed_lmks.mp4'), cv2.VideoWriter_fourcc(*'mp4v'), 25, (frames[0].shape[1],frames[0].shape[0]))
-threshold = 0
-chunk_len = 1
+vidName_root = "video_sync_lmks_norm"
+vidNameTrimmed = vidName_root + "_trimmed.mp4"
+vidName = vidName_root + ".mp4"
+vidWriter = cv2.VideoWriter(os.path.join(opt.tmp_dir,opt.reference,vidName), cv2.VideoWriter_fourcc(*'mp4v'), 25, (frames[0].shape[1],frames[0].shape[0]))
+vidWriterTrimmed = cv2.VideoWriter(os.path.join(opt.tmp_dir,opt.reference,vidNameTrimmed), cv2.VideoWriter_fourcc(*'mp4v'), 25, (frames[0].shape[1],frames[0].shape[0]))
+threshold = 0.580
+chunk_len = 5
 mid_chunk = round(chunk_len/2)
-print(os.path.join(opt.tmp_dir,opt.reference,'video_sync_lmks.mp4'))
+print(os.path.join(opt.tmp_dir,opt.reference,vidName))
+
+
+st_gcn_model_norot.eval().to(device)
+vals = []
+frame_idx_vals = []
+with torch.no_grad():
+    for i in range(num_frames-chunk_len+1):
+        image = frames[i+mid_chunk]
+        input = x[i:i+chunk_len].unsqueeze(0).permute(0, 2, 1, 3).to(device).to(torch.float32)
+        face_emb = st_gcn_model_norot(input).to(device).mean(dim=1)
+        sim = F.cosine_similarity(comp_emb.to(device), face_emb)
+        vals.append(sim.item())
+        frame_idx_vals.append(i+mid_chunk)
+
+        cv2.putText(image, '%.2f'%(sim-threshold), (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
+        if sim>threshold:
+            vidWriterTrimmed.write(image)
+        vidWriter.write(image)
+vidWriter.release()
+vidWriterTrimmed.release()
+
+import matplotlib.pyplot as plt
+plt.plot(frame_idx_vals, vals, marker='o')
+title="Cosine Similarity values for Lmks Syncnet"
+plt.title(title)
+plt.xlabel("Frame Number")
+plt.ylabel("Cosine Similarity")
+plt.grid(True)
+plt.savefig("kimi/demo_norm.png")
