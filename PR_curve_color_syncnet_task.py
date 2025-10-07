@@ -11,7 +11,7 @@ from hparams import hparams
 import torch.optim as optim
 from torch.utils import data as data_utils
 
-fig_path = "PR_curve_color_syncnet.png"
+fig_path = "PR_curve_color_syncnet_personally_trained.png"
 eval_step_max = None
 checkpoint_path = train.args.checkpoint_path
 

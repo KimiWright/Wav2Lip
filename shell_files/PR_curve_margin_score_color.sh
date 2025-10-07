@@ -17,4 +17,5 @@ export OMP_NUM_THREADS=$SLURM_CPUS_ON_NODE
 
 # LOAD MODULES, INSERT CODE, AND RUN YOUR PROGRAMS HERE
 mamba activate color_syncnet
-python PR_curve_margin_score_color.py --data_root lrs2_preprocessed/ --checkpoint_dir None --checkpoint_path /home/ksw38/RVL/color_syncnet/Wav2Lip/lipsync_expert.pth
+# python PR_curve_margin_score_color.py --data_root lrs2_preprocessed/ --checkpoint_dir None --checkpoint_path /home/ksw38/RVL/color_syncnet/Wav2Lip/lipsync_expert.pth
+python PR_curve_margin_score_color.py --data_root lrs2_preprocessed/ --checkpoint_dir None --checkpoint_path /home/ksw38/RVL/color_syncnet/Wav2Lip/checkpoints/checkpoint_step000510000.pth

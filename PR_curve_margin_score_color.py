@@ -16,7 +16,7 @@ from hparams import hparams
 # ----------------------
 # Config
 # ----------------------
-fig_path        = "PR_curve_margin_color.png"
+fig_path        = "PR_curve_margin_color_personally_trained.png"
 eval_step_max   = None          # e.g., 1000 to cap eval examples
 check_in_steps  = 100
 max_shift       = 15            # frames to search left/right for alignment
