@@ -37,8 +37,8 @@ ID_LEN = 5 #The number of digits in the id in the file name
 video_root = '/home/ksw38/groups/grp_lip/nobackup/autodelete/datasets/fslgroup/grp_lip/compute/datasets/LRS2/preprocessedRetinaface/lrs2/lrs2_video_seg24s/mvlrs_v1/main/'
 data_root = '/home/ksw38/groups/grp_landmarks/nobackup/archive/landmarks_mp/main/'
 
-audio_model_checkpoint_dir = "checkpoints_mediapipe"
-st_gcn_checkpoint_dir = "checkpoints_st_gcn_mediapipe"
+audio_model_checkpoint_dir = "ckpt_folder/checkpoints_mediapipe_audio"
+st_gcn_checkpoint_dir = "ckpt_folder/checkpoints_mediapipe"
 global_step = 0
 global_epoch = 0
 use_cuda = torch.cuda.is_available()
@@ -94,7 +94,6 @@ class Dataset(object):
             else:
                 self.order_idx += 1
                 idx = self.order_idx
-            print(idx)
 
             # find the path to the video at index idx
             vidname = self.all_videos[idx]
@@ -108,6 +107,9 @@ class Dataset(object):
             # landmarks file with the 5 digit id, but not the lmks, roll, pitch, yaw endings
             npy_head = join(args.data_root, vidname_folder, vidname_file)
             npy_path = npy_head + '.npy'
+
+            if not os.path.exists(npy_path):
+                continue
 
             # retrive the data from the npy file
             npy_data = np.load(npy_path)
@@ -153,6 +155,9 @@ class Dataset(object):
 
             x= torch.FloatTensor(window_npy)
             mel = torch.FloatTensor(mel.T).unsqueeze(0)
+
+            if x is None or mel is None:
+                continue
 
             return x, mel, y
 
@@ -340,9 +345,6 @@ def load_stgcn_and_audio_models(checkpoint, audio_checkpoint, A, V, use_cuda = F
     return model, audio_model
 
 if __name__=="__main__":
-    print("Hello")
-    npy_path = "/home/ksw38/groups/grp_landmarks/nobackup/archive/landmarks_mp/main/5535415699068794046/00001.npy"
-    x = torch.randn(2, 3, 20, 468, 1)
 
     # use_cuda = torch.cuda.is_available()
     use_cuda = False
@@ -352,7 +354,7 @@ if __name__=="__main__":
     ## Data set-up
 
     data_limit = 2
-    batch_size = 1 # hparams.syncnet_batch_size
+    batch_size = hparams.syncnet_batch_size
     num_workers = 1 #8
     test_dataset = Dataset('val') #shuffle = False for debugging purposes
     train_dataset = Dataset('train')
@@ -390,27 +392,27 @@ if __name__=="__main__":
     audio_optimizer = optim.Adam([p for p in audio_model.parameters() if p.requires_grad],
                             lr=hparams.syncnet_lr, weight_decay=1e-5)
     
-    # print("Beginning Training")
-    # train(device, st_gcn_model, audio_model, train_data_loader, test_data_loader, st_gcn_optimizer, audio_optimizer,
-    #       st_gcn_checkpoint_dir, audio_model_checkpoint_dir, checkpoint_interval=hparams.syncnet_checkpoint_interval,
-    #       nepochs=hparams.nepochs)
+    print("Beginning Training")
+    train(device, st_gcn_model, audio_model, train_data_loader, test_data_loader, st_gcn_optimizer, audio_optimizer,
+          st_gcn_checkpoint_dir, audio_model_checkpoint_dir, checkpoint_interval=hparams.syncnet_checkpoint_interval,
+          nepochs=hparams.nepochs)
     
-    with torch.no_grad():
-        # prog_bar = tqdm(enumerate(test_data_loader))
-        prog_bar = enumerate(test_data_loader)
-        for step, item in prog_bar:
+    # with torch.no_grad():
+    #     # prog_bar = tqdm(enumerate(test_data_loader))
+    #     prog_bar = enumerate(test_data_loader)
+    #     for step, item in prog_bar:
 
-            x, mel, y = item
-            x = x.permute(0, 3, 1, 2)
-            x = x[:, :2, :, :] # Strip away z, modify model to accept it for ablation
-            print(x.shape, mel.shape, y)
+    #         x, mel, y = item
+    #         x = x.permute(0, 3, 1, 2)
+    #         x = x[:, :2, :, :] # Strip away z, modify model to accept it for ablation
+    #         print(x.shape, mel.shape, y)
 
-            st_gcn_model.eval()
-            v = st_gcn_model(x)
+    #         st_gcn_model.eval()
+    #         v = st_gcn_model(x)
 
-            audio_model.eval()
-            a = audio_model(mel)
-            print(v.shape, a.shape)
+    #         audio_model.eval()
+    #         a = audio_model(mel)
+    #         print(v.shape, a.shape)
 
-            if data_limit is not None and step > data_limit:
-                break
+    #         if data_limit is not None and step > data_limit:
+    #             break
