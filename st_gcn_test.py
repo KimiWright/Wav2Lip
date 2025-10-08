@@ -411,7 +411,7 @@ if __name__ == "__main__":
         prog_bar = enumerate(test_data_loader)
         for step, (x, x_rot, mel, y) in prog_bar:
             # print(f"Step {step}")
-            # print(x.shape, x_rot.shape, mel.shape, y)
+            print(x.shape, x_rot.shape, mel.shape, y)
             x = x.permute(0, 2, 1, 3)
 
             lmk_feat = model(x)
