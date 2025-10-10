@@ -31,6 +31,7 @@ syncnet_mel_step_size = 16
 ID_LEN = 5 #The number of digits in the id in the file name
 
 video_root = '/home/ksw38/groups/grp_lip/nobackup/autodelete/datasets/fslgroup/grp_lip/compute/datasets/LRS2/preprocessedRetinaface/lrs2/lrs2_video_seg24s/mvlrs_v1/main/'
+video_root = "/fslgroup/grp_lip/datasets/lrs2/mvlrs_v1/main/"
 data_root = '/home/ksw38/groups/grp_landmarks/nobackup/archive/landmarks_preprocessed/main'
 data_root = '/home/ksw38/groups/grp_landmarks/nobackup/archive/landmarks/main'
 data_root = "/home/ksw38/groups/grp_landmarks/nobackup/archive/landmarks_norm/main"

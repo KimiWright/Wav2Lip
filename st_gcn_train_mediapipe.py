@@ -135,7 +135,7 @@ class Dataset(object):
                 # get the window of npy data from start_id to start_id + syncnet_T
             window_npy = self.get_window_npy(npy_data, chosen)
             if window_npy is None:
-                break
+                continue
 
 
             # Get the mel spectrogram from the wav file

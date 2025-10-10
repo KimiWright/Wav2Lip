@@ -1,3 +1,5 @@
+import os, random, cv2, argparse
+# os.environ["CUDA_VISIBLE_DEVICES"] = ""
 import st_gcn_test as st
 from os.path import dirname, join, basename, isfile
 from tqdm import tqdm
@@ -28,8 +30,13 @@ from os import path
 
 import re
 
-audio_model_checkpoint_dir = "checkpoints_audio_norot_facial"
-st_gcn_checkpoint_dir = "checkpoints_st_gcn_norot_facial"
+facial = False
+if facial:
+    audio_model_checkpoint_dir = "checkpoints_audio_norot_facial"
+    st_gcn_checkpoint_dir = "checkpoints_st_gcn_norot_facial"
+else:
+    audio_model_checkpoint_dir = "checkpoints_audio_norot_facial"
+    st_gcn_checkpoint_dir = "checkpoints_st_gcn_norot_facial"
 global_step = 0
 global_epoch = 0
 use_cuda = torch.cuda.is_available()
@@ -58,7 +65,7 @@ def cosine_loss(a, v, y):
     return loss
 
 def save_checkpoint(model, optimizer, step, checkpoint_dir, epoch):
-
+    
     checkpoint_path = join(
         checkpoint_dir, "checkpoint_step{:09d}.pth".format(global_step))
     optimizer_state = optimizer.state_dict() if hparams.save_optimizer_state else None
@@ -106,7 +113,7 @@ def train(device, st_gcn_model, audio_model, train_data_loader, test_data_loader
           st_gcn_checkpoint_dir=None, audio_checkpoint_dir=None, checkpoint_interval=None, nepochs=None):
     global global_step, global_epoch
     resumed_step = global_step
-    
+
     while global_epoch < nepochs:
         running_loss = 0.
         prog_bar = tqdm(enumerate(train_data_loader))
@@ -168,19 +175,24 @@ if __name__ == "__main__":
         num_workers=num_workers)
 
     device = torch.device("cuda" if use_cuda else "cpu")
+    # device = 'cpu'
 
     # Model
     audio_model = audio_only().to(device)
     audio_optimizer = optim.Adam([p for p in audio_model.parameters() if p.requires_grad],
                             lr=hparams.syncnet_lr, weight_decay=1e-5)
-    ## FIXME: Loading code will go here ##
     
     first_point = test_dataset[0]
     (x, x_rot, mel, y) = first_point
     first_lmks = x[0].T
-    # edges = st.knn_edges(first_lmks)
-    print("Using Facial Edges")
-    edges = st.facial_edges()
+    
+    if facial:
+        print("Using Facial Edges")
+        edges = st.facial_edges()
+    else:
+        print("Using KNN Edges")
+        edges = st.knn_edges(first_lmks)
+
     num_lmks = first_lmks.shape[0]
     A = build_adjacency(num_lmks, edges)
     V = num_lmks
@@ -201,7 +213,10 @@ if __name__ == "__main__":
     st_gcn_optimizer = optim.Adam([p for p in st_gcn_model.parameters() if p.requires_grad],
                             lr=hparams.syncnet_lr, weight_decay=1e-5)
     
-    ## FIXME: Loading code will go here ##
+    # Loading code
+    st_gcn_model, audio_model = st.load_stgcn_and_audio_models(st_gcn_checkpoint_dir, audio_model_checkpoint_dir, A, V, use_cuda=use_cuda, rotation=False)
+    global_epoch = st.global_epoch
+    global_step = st.global_step
 
     # Training
     print("Beginning Training")
