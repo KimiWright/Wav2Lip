@@ -113,12 +113,12 @@ for i, (rel_dir, bases) in enumerate(onlyA.items()):
     print("  Examples:", bases[:5])
 
 
-# video_root = '/home/ksw38/groups/grp_lip/nobackup/autodelete/datasets/fslgroup/grp_lip/compute/datasets/LRS2/preprocessedRetinaface/lrs2/lrs2_video_seg24s/mvlrs_v1/main/'
+video_root = '/home/ksw38/groups/grp_lip/nobackup/autodelete/datasets/fslgroup/grp_lip/compute/datasets/LRS2/preprocessedRetinaface/lrs2/lrs2_video_seg24s/mvlrs_v1/main/'
 
-# all_videos = get_image_list(video_root, 'val')
-# print(len(all_videos))
-# all_videos = get_image_list(video_root, 'train')
-# print(len(all_videos))
+all_videos = get_image_list(video_root, 'val')
+print(len(all_videos))
+all_videos = get_image_list(video_root, 'train')
+print(len(all_videos))
 
 data_root = '/home/ksw38/groups/grp_landmarks/nobackup/archive/landmarks_mp/main/'
 count = count_videos(data_root)
@@ -140,9 +140,9 @@ print(count)
 # count = count_videos(data_root)
 # print(count)
 
-# data_root = "/fslgroup/grp_lip/datasets/lrs2/mvlrs_v1/main/"
-# count = count_videos(data_root)
-# print(count)
+data_root = "/fslgroup/grp_lip/datasets/lrs2/mvlrs_v1/main/"
+count = count_videos(data_root)
+print(count)
 
 
 # import torch

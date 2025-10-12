@@ -49,7 +49,7 @@ parser = argparse.ArgumentParser(description='Code to train the expert lip-sync 
 parser.add_argument('--video_root', help='Root folder of the videos of the LRS2 dataset', default=video_root)
 parser.add_argument("--data_root", help="Root folder of the preprocessed landmarks for LRS2 dataset", default=data_root)
 parser.add_argument("--st_gcn_checkpoint_dir", help="Checkpoints for ST GCN", default=st_gcn_checkpoint_dir)
-parser.add_argument("--audio_checkpoint_dir", help="Checkpoints for Audio", default=st_gcn_checkpoint_dir)
+parser.add_argument("--audio_checkpoint_dir", help="Checkpoints for Audio", default=audio_model_checkpoint_dir)
 args = parser.parse_args()
 
 class Dataset(object):
@@ -337,6 +337,7 @@ def load_stgcn_and_audio_models(checkpoint, audio_checkpoint, A, V, use_cuda = F
     audio_model = audio_only().to(device)
     audio_optimizer = optim.Adam([p for p in audio_model.parameters() if p.requires_grad],
                                 lr=hparams.syncnet_lr, weight_decay=1e-5)
+    print(audio_checkpoint)
     audio_model = load_from_checkpoint_or_dir(audio_checkpoint, model=audio_model, optimizer=audio_optimizer, use_cuda=use_cuda)
     audio_model.eval()
 

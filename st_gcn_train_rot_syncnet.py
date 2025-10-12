@@ -28,7 +28,7 @@ from os import path
 
 import re
 
-facial = False
+facial = True
 if facial:
     audio_model_checkpoint_dir = "checkpoints_audio_rot_facial"
     st_gcn_checkpoint_dir = "checkpoints_st_gcn_rot_facial"
@@ -179,6 +179,7 @@ if __name__ == "__main__":
         print("Using Facial Edges")
         edges = st.facial_edges()
     else:
+        print("Using KNN Edges")
         edges = st.knn_edges(first_lmks)
     num_lmks = first_lmks.shape[0]
     A = build_adjacency(num_lmks, edges)
@@ -201,7 +202,7 @@ if __name__ == "__main__":
                             lr=hparams.syncnet_lr, weight_decay=1e-5)
     
     # Loading code
-    st_gcn_model, audio_model = st.load_stgcn_and_audio_models(st_gcn_checkpoint_dir, audio_model_checkpoint_dir, A, V, use_cuda=use_cuda, rotation=False)
+    st_gcn_model, audio_model = st.load_stgcn_and_audio_models(st_gcn_checkpoint_dir, audio_model_checkpoint_dir, A, V, use_cuda=use_cuda, rotation=True)
     global_epoch = st.global_epoch
     global_step = st.global_step
 

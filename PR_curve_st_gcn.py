@@ -19,12 +19,12 @@ from models import build_adjacency
 ### Variables ###
 
 eval_step_max = None
-# use_cuda = False
+use_cuda = False
 use_cuda = torch.cuda.is_available()
 device = torch.device("cuda" if use_cuda else "cpu")
 
 norot_knn_check = "checkpoint_step000330000.pth"
-norot_check = "checkpoint_step000250000.pth"
+norot_check = "" # "checkpoint_step000250000.pth"
 rot_check = "checkpoint_step000240000.pth"
 ## ST GCN
 st_gcn_norot_checkpoint_knn = "/home/ksw38/RVL/color_syncnet/Wav2Lip/checkpoints_st_gcn_norot/" + norot_knn_check
@@ -200,15 +200,15 @@ if __name__ == "__main__":
 
     ### Init models ###
     st_gcn_model_norot, audio_model_norot = load_stgcn_and_audio_models(st_gcn_norot_checkpoint, audio_norot_checkpoint, A, V, use_cuda=use_cuda, rotation=False)
-    st_gcn_model_norot_knn, audio_model_norot_knn = load_stgcn_and_audio_models(st_gcn_norot_checkpoint_knn, audio_norot_checkpoint_knn, A_knn, V, use_cuda=use_cuda, rotation=False)
-    st_gcn_model_rot, audio_model_rot = load_stgcn_and_audio_models(st_gcn_rot_checkpoint, audio_rot_checkpoint, A, V, use_cuda=use_cuda, rotation=True)
+    # st_gcn_model_norot_knn, audio_model_norot_knn = load_stgcn_and_audio_models(st_gcn_norot_checkpoint_knn, audio_norot_checkpoint_knn, A_knn, V, use_cuda=use_cuda, rotation=False)
+    # st_gcn_model_rot, audio_model_rot = load_stgcn_and_audio_models(st_gcn_rot_checkpoint, audio_rot_checkpoint, A, V, use_cuda=use_cuda, rotation=True)
 
     ### Create PR Curve
     y_truth, scores = eval_norot_model(test_data_loader, st_gcn_model_norot, audio_model_norot, device)
     plot_PR_curve("ST_GCN without Rotation", y_truth, scores)
 
-    y_truth, scores = eval_norot_model(test_data_loader, st_gcn_model_norot_knn, audio_model_norot_knn, device)
-    plot_PR_curve("ST_GCN without Rotation using Knn", y_truth, scores)
+    # y_truth, scores = eval_norot_model(test_data_loader, st_gcn_model_norot_knn, audio_model_norot_knn, device)
+    # plot_PR_curve("ST_GCN without Rotation using Knn", y_truth, scores)
 
-    y_truth, scores = eval_rot_model(test_data_loader, st_gcn_model_rot, audio_model_rot, device)
-    plot_PR_curve("ST_GCN with Rotation", y_truth, scores)
+    # y_truth, scores = eval_rot_model(test_data_loader, st_gcn_model_rot, audio_model_rot, device)
+    # plot_PR_curve("ST_GCN with Rotation", y_truth, scores)

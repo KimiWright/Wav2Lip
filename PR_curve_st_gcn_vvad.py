@@ -203,6 +203,6 @@ if __name__ == "__main__":
     V = num_lmks
 
     eval_and_plot(st_gcn_norot_checkpoint, audio_norot_checkpoint, A, V, model_name="norot_facial", use_cuda=use_cuda)
-    eval_and_plot(st_gcn_norot_checkpoint_knn, audio_norot_checkpoint_knn, A_knn, V, model_name="norot_knn", use_cuda=use_cuda)
-    eval_and_plot(st_gcn_rot_checkpoint, audio_rot_checkpoint, A, V, "rot", use_cuda=use_cuda, rotation=True)
+    # eval_and_plot(st_gcn_norot_checkpoint_knn, audio_norot_checkpoint_knn, A_knn, V, model_name="norot_knn", use_cuda=use_cuda)
+    # eval_and_plot(st_gcn_rot_checkpoint, audio_rot_checkpoint, A, V, "rot", use_cuda=use_cuda, rotation=True)
 
