@@ -92,34 +92,35 @@ def lmks_np_for_video(videoPath):
     return video_lmks_np, frames
 
 
-num_skipped_files = 0
-skipped_files = []
-for folder in folders:
-    source_folder_path = os.path.join(source_main_path, folder)
-    files = glob(os.path.join(source_folder_path, "*.mp4"))
-    for file in files:
-        print(f"\n\n{file}\n\n")
-        # Make File Paths
-        source_path = os.path.join(source_main_path, folder, file)
-        folder_path = os.path.join(out_main_path, folder)
-        os.makedirs(folder_path, exist_ok=True)
+if __name__ == "__main__":
+    num_skipped_files = 0
+    skipped_files = []
+    for folder in folders:
+        source_folder_path = os.path.join(source_main_path, folder)
+        files = glob(os.path.join(source_folder_path, "*.mp4"))
+        for file in files:
+            print(f"\n\n{file}\n\n")
+            # Make File Paths
+            source_path = os.path.join(source_main_path, folder, file)
+            folder_path = os.path.join(out_main_path, folder)
+            os.makedirs(folder_path, exist_ok=True)
 
-        file_name = os.path.splitext(os.path.basename(file))[0]
-        clearMediapipeInfo()
-        video_lmks_np, frames = lmks_np_for_video(file)
-        if video_lmks_np is None:
-            num_skipped_files += 1
-            skipped_files.append(file)
-            continue
+            file_name = os.path.splitext(os.path.basename(file))[0]
+            clearMediapipeInfo()
+            video_lmks_np, frames = lmks_np_for_video(file)
+            if video_lmks_np is None:
+                num_skipped_files += 1
+                skipped_files.append(file)
+                continue
 
 
-        out_path_lmks = os.path.join(out_main_path, folder, file_name)
-        np.save(out_path_lmks, video_lmks_np)
+            out_path_lmks = os.path.join(out_main_path, folder, file_name)
+            np.save(out_path_lmks, video_lmks_np)
 
-print(f"\n{num_skipped_files} were skipped")
-print(skipped_files)  
+    print(f"\n{num_skipped_files} were skipped")
+    print(skipped_files)  
 
-save_path = "mediapipe_lmks.jpg"
-idx = 0
-draw_landmarks(video_lmks_np[idx], frames[idx], save_path)
-print(f"Example image saved at {save_path}")
+    save_path = "mediapipe_lmks.jpg"
+    idx = 0
+    draw_landmarks(video_lmks_np[idx], frames[idx], save_path)
+    print(f"Example image saved at {save_path}")

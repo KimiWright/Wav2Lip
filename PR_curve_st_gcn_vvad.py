@@ -4,6 +4,8 @@ from sklearn.datasets import make_classification
 from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import precision_recall_curve, auc
+from sklearn.metrics import f1_score
+from sklearn.metrics import accuracy_score
 import torch.nn.functional as F
 import torch
 import torch.optim as optim
@@ -30,21 +32,52 @@ device = torch.device("cuda" if use_cuda else "cpu")
 norot_knn_check = ""# "checkpoint_step000330000.pth"
 norot_check = ""# "checkpoint_step000440000.pth" # "checkpoint_step000250000.pth"
 rot_check = "" #"checkpoint_step000410000.pth" # "checkpoint_step000240000.pth"
+rot_knn_check = ""
 ## ST GCN
 st_gcn_norot_checkpoint_knn = "/home/ksw38/RVL/color_syncnet/Wav2Lip/checkpoints_st_gcn_norot/" + norot_knn_check
 st_gcn_norot_checkpoint = "/home/ksw38/RVL/color_syncnet/Wav2Lip/checkpoints_st_gcn_norot_facial/" + norot_check
 st_gcn_rot_checkpoint = "/home/ksw38/RVL/color_syncnet/Wav2Lip/checkpoints_st_gcn_rot_facial/" + rot_check
+st_gcn_rot_checkpoint_knn = "/home/ksw38/RVL/color_syncnet/Wav2Lip/checkpoints_st_gcn_rot/" + rot_knn_check
 
 ## Audio
 audio_norot_checkpoint_knn = "/home/ksw38/RVL/color_syncnet/Wav2Lip/checkpoints_audio_norot/" + norot_knn_check
 audio_norot_checkpoint = "/home/ksw38/RVL/color_syncnet/Wav2Lip/checkpoints_audio_norot_facial/" + norot_check
 audio_rot_checkpoint = "/home/ksw38/RVL/color_syncnet/Wav2Lip/checkpoints_audio_rot_facial/" + rot_check
+audio_rot_checkpoint_knn = "/home/ksw38/RVL/color_syncnet/Wav2Lip/checkpoints_audio_rot/" + rot_knn_check
 
 comp_names = ["still_face", "silence", "white_noise", "babble_noise"]
 babble_mel = run_stats.generate_babble_mel()
 silent_mel = run_stats.generate_mel_for_frames(syncnet_T, silence=True)
 white_noise_mel = run_stats.generate_mel_for_frames(syncnet_T, silence=False)
 comp_mels = [silent_mel, white_noise_mel, babble_mel]
+
+## Miscellanous ##
+
+def best_accuracy(y_test, y_scores, thresholds):
+    accuracies = []
+    for thr in thresholds:
+        preds = (y_scores >= thr).astype(int)
+        acc = accuracy_score(y_test, preds)
+        accuracies.append(acc)
+
+    best_acc_idx = max(range(len(accuracies)), key=lambda i: accuracies[i])
+    best_acc_threshold = thresholds[best_acc_idx]
+    best_acc = accuracies[best_acc_idx]
+
+    
+    return best_acc_threshold, best_acc
+
+def best_f1_score(y_test, y_scores, thresholds):
+    f1s = []
+    for thr in thresholds:
+        preds = (y_scores >= thr).astype(int)
+        f1s.append(f1_score(y_test, preds))
+
+    best_f1_idx = max(range(len(f1s)), key=lambda i: f1s[i])
+    best_f1_threshold = thresholds[best_f1_idx]
+    best_f1 = f1s[best_f1_idx]
+
+    return best_f1_threshold, best_f1
 
 def get_lmk_feat_norot(test_data_loader, st_gcn_model, device='cpu'):
     y_truth = []
@@ -161,11 +194,11 @@ def eval_and_plot(st_gcn_checkpoint, audio_checkpoint, A, V, model_name, use_cud
         name = model_name+'_'+comp_names[i]
         auc_score, precision, recall, thresholds = plot_PR_curve(name, y_truth, losses)
         # print(f"AUC: {auc_score}\nPrecision: {precision}\nRecall{recall}\nThresholds{thresholds}")
-        best_acc_threshold, best_acc = st.best_accuracy(y_truth, losses, thresholds)
+        best_acc_threshold, best_acc = best_accuracy(y_truth, losses, thresholds)
         print(f"AUC: {auc_score}")
         print("Best Accuracy threshold:", best_acc_threshold)
         print("Best Accuracy:", best_acc)
-        best_f1_threshold, best_f1 = st.best_f1_score(y_truth, losses, thresholds)
+        best_f1_threshold, best_f1 = best_f1_score(y_truth, losses, thresholds)
         print("Best F1 threshold:", best_f1_threshold)
         print("Best F1:", best_f1)
 
@@ -173,11 +206,11 @@ def eval_and_plot(st_gcn_checkpoint, audio_checkpoint, A, V, model_name, use_cud
         name = model_name+'_'+comp_names[i]+'_neg'
         auc_score, precision, recall, thresholds = plot_PR_curve(name, y_truth, -losses)
         # print(f"AUC: {auc_score}\nPrecision: {precision}\nRecall{recall}\nThresholds{thresholds}")
-        best_acc_threshold, best_acc = st.best_accuracy(y_truth, losses, thresholds)
+        best_acc_threshold, best_acc = best_accuracy(y_truth, losses, thresholds)
         print(f"AUC: {auc_score}")
         print("Best Accuracy threshold:", best_acc_threshold)
         print("Best Accuracy:", best_acc)
-        best_f1_threshold, best_f1 = st.best_f1_score(y_truth, losses, thresholds)
+        best_f1_threshold, best_f1 = best_f1_score(y_truth, losses, thresholds)
         print("Best F1 threshold:", best_f1_threshold)
         print("Best F1:", best_f1)
 
@@ -203,6 +236,7 @@ if __name__ == "__main__":
     V = num_lmks
 
     eval_and_plot(st_gcn_norot_checkpoint, audio_norot_checkpoint, A, V, model_name="norot_facial", use_cuda=use_cuda)
-    # eval_and_plot(st_gcn_norot_checkpoint_knn, audio_norot_checkpoint_knn, A_knn, V, model_name="norot_knn", use_cuda=use_cuda)
-    # eval_and_plot(st_gcn_rot_checkpoint, audio_rot_checkpoint, A, V, "rot", use_cuda=use_cuda, rotation=True)
+    eval_and_plot(st_gcn_norot_checkpoint_knn, audio_norot_checkpoint_knn, A_knn, V, model_name="norot_knn", use_cuda=use_cuda)
+    eval_and_plot(st_gcn_rot_checkpoint, audio_rot_checkpoint, A, V, "rot_facial", use_cuda=use_cuda, rotation=True)
+    eval_and_plot(st_gcn_rot_checkpoint_knn, audio_rot_checkpoint_knn, A_knn, V, "rot_knn", use_cuda=use_cuda, rotation=True)
 
