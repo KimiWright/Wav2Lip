@@ -16,6 +16,7 @@ import csv
 
 from hparams import hparams
 import st_gcn_train_mediapipe as st
+import PR_curve_st_gcn_vvad as vvad 
 
 from models import audio_only
 from models import LandmarkSTGCNConformer
@@ -74,7 +75,7 @@ class Dataset_Frames(object):
         self.processed_data = []
         for datum in self.data:
             x_full, y = datum
-            y = torch.Tensor(int(y))
+            y = torch.IntTensor([int(y)])
             if x_full is None:
                 raise ValueError("x_video_full is None")
             x = get_window_npy(x_full, syncnet_T=frames, start_id=0)
@@ -87,6 +88,7 @@ class Dataset_Frames(object):
         return self.processed_data[idx]
 
 def get_lmk_feat(dataloader, st_gcn_model, device='cpu', strip_z=True):
+    st_gcn_model.to(device)
     y_truth = []
     v_vals = []
     v_still_vals = []
@@ -97,6 +99,7 @@ def get_lmk_feat(dataloader, st_gcn_model, device='cpu', strip_z=True):
             x = x.permute(0, 3, 1, 2)
             if strip_z:
                 x = x[:, :2, :, :]
+            x = x.to(device)
 
             lmk_feat = st_gcn_model(x)
             v = lmk_feat.mean(dim=1)
@@ -104,7 +107,8 @@ def get_lmk_feat(dataloader, st_gcn_model, device='cpu', strip_z=True):
 
             temporal_dim = 2
             num_frames = x.shape[temporal_dim]
-            x_still = np.repeat(x[:, :, 0:1, :], repeats=num_frames, axis=temporal_dim)
+            x_still = torch.FloatTensor(np.repeat(x[:, :, 0:1, :].cpu().numpy(), repeats=num_frames, axis=temporal_dim))
+            x_still = x_still.to(device)
 
             still_feat = st_gcn_model(x_still)
             v_still = still_feat.mean(dim=1)
@@ -113,17 +117,29 @@ def get_lmk_feat(dataloader, st_gcn_model, device='cpu', strip_z=True):
             y_truth.extend(y.view(-1).detach().cpu().tolist())
     return y_truth, v_vals, v_still_vals
 
+def get_results(name, y_truth, losses):
+    auc_score, precision, recall, thresholds = vvad.plot_PR_curve(name, y_truth, losses)
+    best_acc_threshold, best_acc = vvad.best_accuracy(y_truth, losses, thresholds)
+    print(f"AUC: {auc_score}")
+    print("Best Accuracy threshold:", best_acc_threshold)
+    print("Best Accuracy:", best_acc)
+    best_f1_threshold, best_f1 = vvad.best_f1_score(y_truth, losses, thresholds)
+    print("Best F1 threshold:", best_f1_threshold)
+    print("Best F1:", best_f1)
 
 
 if __name__ == "__main__":
     data_limit = None
     use_cuda = torch.cuda.is_available()
-    data_limit = 10
-    use_cuda = False
+    # data_limit = 10
+    # use_cuda = False
     device = torch.device("cuda" if use_cuda else "cpu")
 
     batch_size = 1 # hparams.syncnet_batch_size
     num_workers = 1
+    comp_mels = vvad.comp_mels
+    comp_names = vvad.comp_names
+    model_name = "mediapipe"
 
     test_dataset = Dataset_Frames('test', data_point_limit=data_limit)
     test_data_loader = data_utils.DataLoader(
@@ -137,4 +153,19 @@ if __name__ == "__main__":
 
     st_gcn_model, audio_model = st.load_stgcn_and_audio_models(st_gcn_checkpoint, audio_checkpoint, A, V, use_cuda)
 
-    get_lmk_feat(test_data_loader, st_gcn_model, device=device)
+    y_truth, v_vals, v_still_vals = get_lmk_feat(test_data_loader, st_gcn_model, device=device)
+
+    all_losses = []
+    all_losses.append(vvad.eval_still_face(v_vals, v_still_vals))
+
+    for comp_mel in comp_mels:
+        all_losses.append(vvad.eval_mel(v_vals, audio_model, comp_mel, device))
+
+    for i, losses in enumerate(all_losses):
+        name = model_name+'_'+comp_names[i]
+        get_results(name, y_truth, losses)
+
+    for i, losses in enumerate(all_losses):
+        name = model_name+'_'+comp_names[i]+'_neg'
+        get_results(name, y_truth, -losses)
+        

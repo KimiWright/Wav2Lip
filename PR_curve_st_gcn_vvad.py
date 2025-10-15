@@ -177,6 +177,7 @@ def plot_PR_curve(name, y_test, y_scores):
     print(f"Figure saved at {fig_path}")
     return(auc_score, precision, recall, thresholds)
 
+
 def eval_and_plot(st_gcn_checkpoint, audio_checkpoint, A, V, model_name, use_cuda=use_cuda, rotation=False):
     if rotation:
         st_gcn_model, audio_model = pr.load_stgcn_and_audio_models(st_gcn_checkpoint, audio_checkpoint, A, V, use_cuda=use_cuda, rotation=rotation)
@@ -192,6 +193,7 @@ def eval_and_plot(st_gcn_checkpoint, audio_checkpoint, A, V, model_name, use_cud
 
     for i, losses in enumerate(all_losses):
         name = model_name+'_'+comp_names[i]
+        # get_results(name, y_truth, losses)
         auc_score, precision, recall, thresholds = plot_PR_curve(name, y_truth, losses)
         # print(f"AUC: {auc_score}\nPrecision: {precision}\nRecall{recall}\nThresholds{thresholds}")
         best_acc_threshold, best_acc = best_accuracy(y_truth, losses, thresholds)
@@ -204,13 +206,14 @@ def eval_and_plot(st_gcn_checkpoint, audio_checkpoint, A, V, model_name, use_cud
 
     for i, losses in enumerate(all_losses):
         name = model_name+'_'+comp_names[i]+'_neg'
+        # get_results(name, y_truth, -losses)
         auc_score, precision, recall, thresholds = plot_PR_curve(name, y_truth, -losses)
         # print(f"AUC: {auc_score}\nPrecision: {precision}\nRecall{recall}\nThresholds{thresholds}")
-        best_acc_threshold, best_acc = best_accuracy(y_truth, losses, thresholds)
+        best_acc_threshold, best_acc = best_accuracy(y_truth, -losses, thresholds)
         print(f"AUC: {auc_score}")
         print("Best Accuracy threshold:", best_acc_threshold)
         print("Best Accuracy:", best_acc)
-        best_f1_threshold, best_f1 = best_f1_score(y_truth, losses, thresholds)
+        best_f1_threshold, best_f1 = best_f1_score(y_truth, -losses, thresholds)
         print("Best F1 threshold:", best_f1_threshold)
         print("Best F1:", best_f1)
 

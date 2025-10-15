@@ -136,7 +136,11 @@ class Dataset_Frames(object):
             x_full, x_rot_full, y = datum
             if x_full is None:
                 raise ValueError("x_video_full is None")
-            x, x_rot = get_window_npy(x_full, x_rot_full, syncnet_T=frames, start_id=0)
+            window = get_window_npy(x_full, x_rot_full, syncnet_T=frames, start_id=0)
+            if window is None:
+                print("Missiing Window")
+                continue
+            x, x_rot = window
             if x is not None:
                 self.processed_data.append((x, x_rot, y))
         
