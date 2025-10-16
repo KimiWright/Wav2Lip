@@ -132,17 +132,19 @@ class Dataset_Frames(object):
         else:
             self.data = data
         self.processed_data = []
+        missing_window_num = 0
         for datum in self.data:
             x_full, x_rot_full, y = datum
             if x_full is None:
                 raise ValueError("x_video_full is None")
             window = get_window_npy(x_full, x_rot_full, syncnet_T=frames, start_id=0)
             if window is None:
-                print("Missiing Window")
+                missing_window_num += 1
                 continue
             x, x_rot = window
             if x is not None:
                 self.processed_data.append((x, x_rot, y))
+        print(f"Missing {missing_window_num} windows")
         
     def __len__(self):
         return len(self.processed_data)

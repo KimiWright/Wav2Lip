@@ -89,12 +89,12 @@ if __name__ == "__main__":
     data_limit = 20
     batch_size = hparams.syncnet_batch_size
     syncnet_T = 5
-    facial = False
+    facial = True
     if facial:
         st_gcn_checkpoint_dir = "/home/ksw38/RVL/color_syncnet/Wav2Lip/checkpoints_st_gcn_rot_facial/"
         vvad_checkpoint_dir = "/home/ksw38/RVL/color_syncnet/Wav2Lip/ckpt_folder/checkpoints_vvad_rot_facial_st_gcn"
     else:
-        st_gcn_checkpoint_dir = "/home/ksw38/RVL/color_syncnet/Wav2Lip/checkpoints_st_gcn_norot/"
+        st_gcn_checkpoint_dir = "/home/ksw38/RVL/color_syncnet/Wav2Lip/checkpoints_st_gcn_rot/"
         vvad_checkpoint_dir = "/home/ksw38/RVL/color_syncnet/Wav2Lip/ckpt_folder/checkpoints_vvad_rot_st_gcn"
 
     use_cuda = False

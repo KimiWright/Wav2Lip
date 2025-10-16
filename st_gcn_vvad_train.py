@@ -92,7 +92,7 @@ if __name__ == "__main__":
     data_limit = None
     batch_size = hparams.syncnet_batch_size
     syncnet_T = 5
-    facial = False
+    facial = True
     if facial:
         st_gcn_checkpoint_dir = "/home/ksw38/RVL/color_syncnet/Wav2Lip/checkpoints_st_gcn_norot_facial/"
         vvad_checkpoint_dir = "/home/ksw38/RVL/color_syncnet/Wav2Lip/ckpt_folder/checkpoints_vvad_norot_facial_st_gcn"
@@ -108,24 +108,26 @@ if __name__ == "__main__":
     # facial_edges = st.facial_edges()
     # A = build_adjacency(V, facial_edges)
     
-
+    
     test_dataset = vvad.Dataset_Frames("test", frames=syncnet_T, data_point_limit=data_limit)
-
     test_data_loader = data_utils.DataLoader(
         test_dataset, batch_size=batch_size,
         num_workers=1, shuffle=True)
+    print("Loaded Test Dataset")
+    print(len(test_dataset))
     
     train_dataset = vvad.Dataset_Frames("train", frames=syncnet_T, data_point_limit=data_limit)
-
     train_data_loader = data_utils.DataLoader(
         train_dataset, batch_size=batch_size,
-        num_workers=1, shuffle=True)
+        num_workers=1, shuffle=True) 
+    print("Loaded Train Dataset")
+    print(len(train_dataset))
     
     if facial:
-        print("Using Facial Edges")
+        print("== Using Facial Edges ==")
         edges = st.facial_edges()
     else:
-        print("Using Knn Edges")
+        print("== Using Knn Edges ==")
         first_point = test_dataset[0]
         (x, x_rot, y) = first_point
         first_lmks = x[0].T
