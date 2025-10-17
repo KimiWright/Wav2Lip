@@ -3,6 +3,28 @@ import os
 import re
 from collections import defaultdict
 
+import pandas as pd
+
+print("CSV numbers")
+def num_rows_csv(csv_file):
+    df = pd.read_csv(csv_file)
+    num_rows = len(df)
+    print(num_rows)
+
+# My csv (too short)
+num_rows_csv("/home/ksw38/groups/grp_landmarks/nobackup/autodelete/LRS2/preprocessedRetinaface/labels/lmks_lrs2_train-val_transcript_lengths_seg24s.csv")
+# Shad's csv (correct)
+num_rows_csv("/home/ksw38/groups/grp_lip/nobackup/archive/datasets/LRS2/preprocessedRetinaface/labels/lrs2_train_transcript_lengths_seg24s.csv")
+
+# lmks_path = "/home/ksw38/groups/grp_landmarks/nobackup/autodelete/LRS2/preprocessedRetinaface/labels/lmk_train-val_transcript_lengths_seg24s.csv"
+# short_path = "/home/ksw38/groups/grp_landmarks/nobackup/autodelete/LRS2/preprocessedRetinaface/labels/lrs2_train-val_transcript_lengths_seg24s_0to100.csv"
+
+# num_rows_csv(lmks_path)
+# num_rows_csv(short_path)
+ORIGINAL_PATH_TEST =  "/home/ksw38/groups/grp_lip/nobackup/archive/datasets/LRS2/preprocessedRetinaface/labels/lrs2_test_transcript_lengths_seg24s.csv" #"/home/ksw38/groups/grp_lip/nobackup/archive/datasets/LRS2/preprocessedRetinaface/labels/lrs2_test_transcript_lengths_seg24s.2.0.csv"
+ORIGINAL_PATH_TRAIN_VAL = "/home/ksw38/groups/grp_lip/nobackup/archive/datasets/LRS2/preprocessedRetinaface/labels/lrs2_train_transcript_lengths_seg24s.csv"
+num_rows_csv(ORIGINAL_PATH_TEST)
+num_rows_csv(ORIGINAL_PATH_TRAIN_VAL)
 
 folderA = '/home/ksw38/groups/grp_landmarks/nobackup/archive/landmarks_mp/main/'
 folderB = "/home/ksw38/groups/grp_landmarks/nobackup/archive/landmarks_norm/main"
@@ -103,16 +125,16 @@ onlyA, onlyB, incomplete = compare(folderA, folderB)
 
 # print("\nIncomplete sets in A:", len(incomplete))
 
-total_missing = sum(len(b) for b in onlyA.values())
-print("Total missing in A:", total_missing)
+# total_missing = sum(len(b) for b in onlyA.values())
+# print("Total missing in A:", total_missing)
 
-for i, (rel_dir, bases) in enumerate(onlyA.items()):
-    if i >= 5:
-        break
-    print(f"[{rel_dir}] ({len(bases)} missing)")
-    print("  Examples:", bases[:5])
+# for i, (rel_dir, bases) in enumerate(onlyA.items()):
+#     if i >= 5:
+#         break
+#     print(f"[{rel_dir}] ({len(bases)} missing)")
+#     print("  Examples:", bases[:5])
 
-
+print("Get Image List")
 video_root = '/home/ksw38/groups/grp_lip/nobackup/autodelete/datasets/fslgroup/grp_lip/compute/datasets/LRS2/preprocessedRetinaface/lrs2/lrs2_video_seg24s/mvlrs_v1/main/'
 
 all_videos = get_image_list(video_root, 'val')
@@ -120,6 +142,7 @@ print(len(all_videos))
 all_videos = get_image_list(video_root, 'train')
 print(len(all_videos))
 
+print("Mp")
 data_root = '/home/ksw38/groups/grp_landmarks/nobackup/archive/landmarks_mp/main/'
 count = count_videos(data_root)
 print(count)
@@ -132,6 +155,7 @@ print(count)
 # count = count_videos(data_root)
 # print(count)
 
+print("norm")
 data_root = "/home/ksw38/groups/grp_landmarks/nobackup/archive/landmarks_norm/main"
 count = count_videos(data_root)
 print(count)
@@ -140,7 +164,14 @@ print(count)
 # count = count_videos(data_root)
 # print(count)
 
+print("/fslgroup/grp_lip/datasets/lrs2/mvlrs_v1/main/")
 data_root = "/fslgroup/grp_lip/datasets/lrs2/mvlrs_v1/main/"
+count = count_videos(data_root)
+print(count)
+
+data_root = "groups/grp_lip/nobackup/autodelete/datasets/fslgroup/grp_lip/compute/datasets/LRS2/preprocessedRetinaface/lrs2/lr2_video_seg24s/mlrs_v1/main"
+data_root = "/home/ksw38/groups/grp_lip/nobackup/autodelete/datasets/fslgroup/grp_lip/compute/datasets/LRS2/preprocessedRetinaface/lrs2/lrs2_video_seg24s/mvlrs_v1/main"
+print(data_root)
 count = count_videos(data_root)
 print(count)
 

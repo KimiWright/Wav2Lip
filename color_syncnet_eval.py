@@ -11,9 +11,37 @@ import torch.nn.functional as F
 
 from models import SyncNet_color as SyncNet
 from hparams import hparams
-import color_syncnet_train as color_syncnet_train
+# import color_syncnet_train as color_syncnet_train
 from lmks_audio_eval import cropped_mel, accuracy
 import landmarks_audio as audio
+
+use_cuda = torch.cuda.is_available()
+use_cuda = False
+
+def _load(checkpoint_path, use_cuda=use_cuda): ## Modification, added use_cuda
+    if use_cuda:
+        checkpoint = torch.load(checkpoint_path)
+    else:
+        checkpoint = torch.load(checkpoint_path,
+                                map_location=lambda storage, loc: storage)
+    return checkpoint
+
+def load_checkpoint(path, model, optimizer, reset_optimizer=False, use_cuda=use_cuda): ## Modification, added use_cuda
+    global global_step
+    global global_epoch
+
+    print("Load checkpoint from: {}".format(path))
+    checkpoint = _load(path)
+    model.load_state_dict(checkpoint["state_dict"])
+    if not reset_optimizer:
+        optimizer_state = checkpoint["optimizer"]
+        if optimizer_state is not None:
+            print("Load optimizer state from {}".format(path))
+            optimizer.load_state_dict(checkpoint["optimizer"])
+    global_step = checkpoint["global_step"]
+    global_epoch = checkpoint["global_epoch"]
+
+    return model
 
 
 def best_accuracy(losses, true_y, flip=False, thresholds=np.arange(0.0, 1.2, 0.1)):
@@ -40,7 +68,7 @@ checkpoint_path = "/home/ksw38/RVL/color_syncnet/Wav2Lip/checkpoints/checkpoint_
 checkpoint_path = "/home/ksw38/RVL/color_syncnet/Wav2Lip/lipsync_expert.pth"
 
 
-device = "cpu"  # torch.device("cuda" if torch.cuda.is_available() else "cpu")
+device = torch.device("cuda" if use_cuda else "cpu")
 syncnet_T = 5
 start_frame_num = 0
 
@@ -50,7 +78,7 @@ print('total trainable params {}'.format(sum(p.numel() for p in model.parameters
 
 optimizer = optim.Adam([p for p in model.parameters() if p.requires_grad],
                     lr=hparams.syncnet_lr)
-color_syncnet_train.load_checkpoint(checkpoint_path, model, optimizer, reset_optimizer=False)
+load_checkpoint(checkpoint_path, model, optimizer, reset_optimizer=False)
 model.eval()
 
 ##############################
@@ -117,260 +145,260 @@ def computeDist(feat1, feat2, vshift=15):
 #########################################
 # Load the dataset and evaluate
 #########################################
+if __name__ == "__main__":
+    with h5py.File(source_main_path, 'r') as f:
+        # Get frames from the h5 file
+        x_test = f['x_test']
+        x_train = f['x_train']
+        # Get the ground truth labels
+        y_test = f['y_test']
+        y_train = f['y_train']
 
-with h5py.File(source_main_path, 'r') as f:
-    # Get frames from the h5 file
-    x_test = f['x_test']
-    x_train = f['x_train']
-    # Get the ground truth labels
-    y_test = f['y_test']
-    y_train = f['y_train']
+        silent_losses = []
+        white_noise_losses = []
+        babble_losses = []
+        silent_fconfms = []
+        white_noise_fconfms = []
+        babble_fconfms = []
+        ys = []
+        for i, frames in enumerate(x_test):
+            frames = frames[start_frame_num:start_frame_num+syncnet_T] ## Full Video
+            y = torch.FloatTensor([y_test[i]]).to(device).unsqueeze(0)  # Convert to tensor and add batch dimension
+            ys.append(y_test[i])
 
-    silent_losses = []
-    white_noise_losses = []
-    babble_losses = []
-    silent_fconfms = []
-    white_noise_fconfms = []
-    babble_fconfms = []
-    ys = []
-    for i, frames in enumerate(x_test):
-        frames = frames[start_frame_num:start_frame_num+syncnet_T] ## Full Video
-        y = torch.FloatTensor([y_test[i]]).to(device).unsqueeze(0)  # Convert to tensor and add batch dimension
-        ys.append(y_test[i])
+            x = np.concatenate(frames, axis=2)/255
+            x = x.transpose(2, 0, 1)
+            x = x[:, x.shape[1]//2:]
+            x = torch.FloatTensor(x)
+            x = x.unsqueeze(0)  # Add batch dimension
+            x = x.to(device)
+            silent_a, silent_v = model(silent_mel, x)
+            # silent_loss = color_syncnet_train.cosine_loss(silent_a, silent_v, y)
+            # silent_loss = color_syncnet_train.cosine_loss(silent_a, silent_v, torch.ones((1, 1)).to(device))
+            silent_loss = F.cosine_similarity(silent_a, silent_v)
+            silent_losses.append(silent_loss.item())
+            silent_fconfm = computeDist(silent_a, silent_v, vshift=15)
+            silent_fconfms.append(silent_fconfm.item())
 
-        x = np.concatenate(frames, axis=2)/255
-        x = x.transpose(2, 0, 1)
-        x = x[:, x.shape[1]//2:]
-        x = torch.FloatTensor(x)
-        x = x.unsqueeze(0)  # Add batch dimension
-        x = x.to(device)
-        silent_a, silent_v = model(silent_mel, x)
-        # silent_loss = color_syncnet_train.cosine_loss(silent_a, silent_v, y)
-        # silent_loss = color_syncnet_train.cosine_loss(silent_a, silent_v, torch.ones((1, 1)).to(device))
-        silent_loss = F.cosine_similarity(silent_a, silent_v)
-        silent_losses.append(silent_loss.item())
-        silent_fconfm = computeDist(silent_a, silent_v, vshift=15)
-        silent_fconfms.append(silent_fconfm.item())
+            white_noise_a, white_noise_v = model(white_noise_mel, x)
+            # white_noise_loss = color_syncnet_train.cosine_loss(white_noise_a, white_noise_v, y)
+            # white_noise_loss = color_syncnet_train.cosine_loss(white_noise_a, white_noise_v, torch.ones((1, 1)).to(device))
+            white_noise_loss = F.cosine_similarity(white_noise_a, white_noise_v)
+            white_noise_losses.append(white_noise_loss.item())
+            white_noise_fconfm = computeDist(white_noise_a, white_noise_v, vshift=15)
+            white_noise_fconfms.append(white_noise_fconfm.item())
 
-        white_noise_a, white_noise_v = model(white_noise_mel, x)
-        # white_noise_loss = color_syncnet_train.cosine_loss(white_noise_a, white_noise_v, y)
-        # white_noise_loss = color_syncnet_train.cosine_loss(white_noise_a, white_noise_v, torch.ones((1, 1)).to(device))
-        white_noise_loss = F.cosine_similarity(white_noise_a, white_noise_v)
-        white_noise_losses.append(white_noise_loss.item())
-        white_noise_fconfm = computeDist(white_noise_a, white_noise_v, vshift=15)
-        white_noise_fconfms.append(white_noise_fconfm.item())
+            babble_a, babble_v = model(babble_mel, x)
+            # babble_loss = color_syncnet_train.cosine_loss(babble_a, babble_v, y)
+            # babble_loss = color_syncnet_train.cosine_loss(babble_a, babble_v, torch.ones((1, 1)).to(device))
+            babble_loss = F.cosine_similarity(babble_a, babble_v)
+            babble_losses.append(babble_loss.item())
+            babble_fconfm = computeDist(babble_a, babble_v, vshift=15)
+            babble_fconfms.append(babble_fconfm.item())
 
-        babble_a, babble_v = model(babble_mel, x)
-        # babble_loss = color_syncnet_train.cosine_loss(babble_a, babble_v, y)
-        # babble_loss = color_syncnet_train.cosine_loss(babble_a, babble_v, torch.ones((1, 1)).to(device))
-        babble_loss = F.cosine_similarity(babble_a, babble_v)
-        babble_losses.append(babble_loss.item())
-        babble_fconfm = computeDist(babble_a, babble_v, vshift=15)
-        babble_fconfms.append(babble_fconfm.item())
+        print("Test threshold on the test set")
+        print("Silent losses:")
+        best_accuracy(silent_losses, ys)
+        best_accuracy(silent_losses, ys, flip=True)
 
-    print("Test threshold on the test set")
-    print("Silent losses:")
-    best_accuracy(silent_losses, ys)
-    best_accuracy(silent_losses, ys, flip=True)
+        print("White noise losses:")
+        best_accuracy(white_noise_losses, ys)
+        best_accuracy(white_noise_losses, ys, flip=True)
 
-    print("White noise losses:")
-    best_accuracy(white_noise_losses, ys)
-    best_accuracy(white_noise_losses, ys, flip=True)
+        print("Babble losses:")
+        best_accuracy(babble_losses, ys)
+        best_accuracy(babble_losses, ys, flip=True)
 
-    print("Babble losses:")
-    best_accuracy(babble_losses, ys)
-    best_accuracy(babble_losses, ys, flip=True)
+        print("Silent fconfms:")
+        best_accuracy(silent_fconfms, ys)
+        best_accuracy(silent_fconfms, ys, flip=True)
 
-    print("Silent fconfms:")
-    best_accuracy(silent_fconfms, ys)
-    best_accuracy(silent_fconfms, ys, flip=True)
+        print("White noise fconfms:")
+        best_accuracy(white_noise_fconfms, ys)
+        best_accuracy(white_noise_fconfms, ys, flip=True)
 
-    print("White noise fconfms:")
-    best_accuracy(white_noise_fconfms, ys)
-    best_accuracy(white_noise_fconfms, ys, flip=True)
+        print("Babble fconfms:")
+        best_accuracy(babble_fconfms, ys)
+        best_accuracy(babble_fconfms, ys, flip=True)
 
-    print("Babble fconfms:")
-    best_accuracy(babble_fconfms, ys)
-    best_accuracy(babble_fconfms, ys, flip=True)
+        silent_losses_train = []
+        white_noise_losses_train = []
+        babble_losses_train = []
+        silent_fconfms_train = []
+        white_noise_fconfms_train = []
+        babble_fconfms_train = []
+        ys_train = []
+        for i, frames in enumerate(x_train):
+            frames = frames[start_frame_num:start_frame_num+syncnet_T] ## Full Video
+            y = torch.FloatTensor([y_train[i]]).to(device).unsqueeze(0)  # Convert to tensor and add batch dimension
+            ys_train.append(y_train[i])
 
-    silent_losses_train = []
-    white_noise_losses_train = []
-    babble_losses_train = []
-    silent_fconfms_train = []
-    white_noise_fconfms_train = []
-    babble_fconfms_train = []
-    ys_train = []
-    for i, frames in enumerate(x_train):
-        frames = frames[start_frame_num:start_frame_num+syncnet_T] ## Full Video
-        y = torch.FloatTensor([y_train[i]]).to(device).unsqueeze(0)  # Convert to tensor and add batch dimension
-        ys_train.append(y_train[i])
+            x = np.concatenate(frames, axis=2)/255
+            x = x.transpose(2, 0, 1)
+            x = x[:, x.shape[1]//2:]
+            x = torch.FloatTensor(x)
+            x = x.unsqueeze(0)  # Add batch dimension
+            x = x.to(device)
 
-        x = np.concatenate(frames, axis=2)/255
-        x = x.transpose(2, 0, 1)
-        x = x[:, x.shape[1]//2:]
-        x = torch.FloatTensor(x)
-        x = x.unsqueeze(0)  # Add batch dimension
-        x = x.to(device)
+            silent_a, silent_v = model(silent_mel, x)
+            # silent_loss = color_syncnet_train.cosine_loss(silent_a, silent_v, y)
+            # silent_loss = color_syncnet_train.cosine_loss(silent_a, silent_v, torch.ones((1, 1)).to(device))
+            silent_loss = F.cosine_similarity(silent_a, silent_v)
+            silent_losses_train.append(silent_loss.item())
+            silent_fconfm = computeDist(silent_a, silent_v, vshift=15)
+            silent_fconfms_train.append(silent_fconfm.item())
 
-        silent_a, silent_v = model(silent_mel, x)
-        # silent_loss = color_syncnet_train.cosine_loss(silent_a, silent_v, y)
-        # silent_loss = color_syncnet_train.cosine_loss(silent_a, silent_v, torch.ones((1, 1)).to(device))
-        silent_loss = F.cosine_similarity(silent_a, silent_v)
-        silent_losses_train.append(silent_loss.item())
-        silent_fconfm = computeDist(silent_a, silent_v, vshift=15)
-        silent_fconfms_train.append(silent_fconfm.item())
+            white_noise_a, white_noise_v = model(white_noise_mel, x)
+            # white_noise_loss = color_syncnet_train.cosine_loss(white_noise_a, white_noise_v, y)
+            # white_noise_loss = color_syncnet_train.cosine_loss(white_noise_a, white_noise_v, torch.ones((1, 1)).to(device))
+            white_noise_loss = F.cosine_similarity(white_noise_a, white_noise_v)
+            white_noise_losses_train.append(white_noise_loss.item())
+            white_noise_fconfm = computeDist(white_noise_a, white_noise_v, vshift=15)
+            white_noise_fconfms_train.append(white_noise_fconfm.item())
 
-        white_noise_a, white_noise_v = model(white_noise_mel, x)
-        # white_noise_loss = color_syncnet_train.cosine_loss(white_noise_a, white_noise_v, y)
-        # white_noise_loss = color_syncnet_train.cosine_loss(white_noise_a, white_noise_v, torch.ones((1, 1)).to(device))
-        white_noise_loss = F.cosine_similarity(white_noise_a, white_noise_v)
-        white_noise_losses_train.append(white_noise_loss.item())
-        white_noise_fconfm = computeDist(white_noise_a, white_noise_v, vshift=15)
-        white_noise_fconfms_train.append(white_noise_fconfm.item())
+            babble_a, babble_v = model(babble_mel, x)
+            # babble_loss = color_syncnet_train.cosine_loss(babble_a, babble_v, y)
+            # babble_loss = color_syncnet_train.cosine_loss(babble_a, babble_v, torch.ones((1, 1)).to(device))
+            babble_loss = F.cosine_similarity(babble_a, babble_v)
+            babble_losses_train.append(babble_loss.item())
+            babble_fconfm = computeDist(babble_a, babble_v, vshift=15)
+            babble_fconfms_train.append(babble_fconfm.item())
 
-        babble_a, babble_v = model(babble_mel, x)
-        # babble_loss = color_syncnet_train.cosine_loss(babble_a, babble_v, y)
-        # babble_loss = color_syncnet_train.cosine_loss(babble_a, babble_v, torch.ones((1, 1)).to(device))
-        babble_loss = F.cosine_similarity(babble_a, babble_v)
-        babble_losses_train.append(babble_loss.item())
-        babble_fconfm = computeDist(babble_a, babble_v, vshift=15)
-        babble_fconfms_train.append(babble_fconfm.item())
+        print()
+        print("Training thresholds on the training set")
+        print("Silent losses:")
+        _, sil_thresh = best_accuracy(silent_losses_train, ys_train)
 
-    print()
-    print("Training thresholds on the training set")
-    print("Silent losses:")
-    _, sil_thresh = best_accuracy(silent_losses_train, ys_train)
+        print("White noise losses:")
+        _, wn_thresh = best_accuracy(white_noise_losses_train, ys_train)
 
-    print("White noise losses:")
-    _, wn_thresh = best_accuracy(white_noise_losses_train, ys_train)
+        print("Babble losses:")
+        _, ba_thresh = best_accuracy(babble_losses_train, ys_train)
 
-    print("Babble losses:")
-    _, ba_thresh = best_accuracy(babble_losses_train, ys_train)
+        print()
+        print("These should match the training losses, if they don't there are errors in this code")
+        sil_results = [0.0 if loss < sil_thresh else 1.0 for loss in silent_losses_train]
+        wn_results = [0.0 if loss < wn_thresh else 1.0 for loss in white_noise_losses_train]
+        ba_results = [0.0 if loss < ba_thresh else 1.0 for loss in babble_losses_train]
+        sil_acc = accuracy(ys_train, sil_results)
+        wn_acc = accuracy(ys_train, wn_results)
+        ba_acc = accuracy(ys_train, ba_results)
+        print(f"Silent accuracy: {sil_acc}")
+        print(f"White noise accuracy: {wn_acc}")
+        print(f"Babble accuracy: {ba_acc}")
+        print()
+        ## Train threshold on the test set
+        print("Training thresholds on the test set")
+        sil_results = [0.0 if loss < sil_thresh else 1.0 for loss in silent_losses]
+        wn_results = [0.0 if loss < wn_thresh else 1.0 for loss in white_noise_losses]
+        ba_results = [0.0 if loss < ba_thresh else 1.0 for loss in babble_losses]
+        sil_acc = accuracy(ys, sil_results)
+        wn_acc = accuracy(ys, wn_results)
+        ba_acc = accuracy(ys, ba_results)
+        print(f"Silent accuracy: {sil_acc}")
+        print(f"White noise accuracy: {wn_acc}")
+        print(f"Babble accuracy: {ba_acc}")
 
-    print()
-    print("These should match the training losses, if they don't there are errors in this code")
-    sil_results = [0.0 if loss < sil_thresh else 1.0 for loss in silent_losses_train]
-    wn_results = [0.0 if loss < wn_thresh else 1.0 for loss in white_noise_losses_train]
-    ba_results = [0.0 if loss < ba_thresh else 1.0 for loss in babble_losses_train]
-    sil_acc = accuracy(ys_train, sil_results)
-    wn_acc = accuracy(ys_train, wn_results)
-    ba_acc = accuracy(ys_train, ba_results)
-    print(f"Silent accuracy: {sil_acc}")
-    print(f"White noise accuracy: {wn_acc}")
-    print(f"Babble accuracy: {ba_acc}")
-    print()
-    ## Train threshold on the test set
-    print("Training thresholds on the test set")
-    sil_results = [0.0 if loss < sil_thresh else 1.0 for loss in silent_losses]
-    wn_results = [0.0 if loss < wn_thresh else 1.0 for loss in white_noise_losses]
-    ba_results = [0.0 if loss < ba_thresh else 1.0 for loss in babble_losses]
-    sil_acc = accuracy(ys, sil_results)
-    wn_acc = accuracy(ys, wn_results)
-    ba_acc = accuracy(ys, ba_results)
-    print(f"Silent accuracy: {sil_acc}")
-    print(f"White noise accuracy: {wn_acc}")
-    print(f"Babble accuracy: {ba_acc}")
+        print()
+        print("####################\nFlip\n####################")
+        print()
+        print("Training thresholds on the training set")
+        print("Silent losses:")
+        _, sil_thresh = best_accuracy(silent_losses_train, ys_train, flip=True)
 
-    print()
-    print("####################\nFlip\n####################")
-    print()
-    print("Training thresholds on the training set")
-    print("Silent losses:")
-    _, sil_thresh = best_accuracy(silent_losses_train, ys_train, flip=True)
+        print("White noise losses:")
+        _, wn_thresh = best_accuracy(white_noise_losses_train, ys_train, flip=True)
 
-    print("White noise losses:")
-    _, wn_thresh = best_accuracy(white_noise_losses_train, ys_train, flip=True)
+        print("Babble losses:")
+        _, ba_thresh = best_accuracy(babble_losses_train, ys_train, flip=True)
 
-    print("Babble losses:")
-    _, ba_thresh = best_accuracy(babble_losses_train, ys_train, flip=True)
-
-    print()
-    print("These should match the training losses, if they don't there are errors in this code")
-    sil_results = [1.0 if loss < sil_thresh else 0.0 for loss in silent_losses_train]
-    wn_results = [1.0 if loss < wn_thresh else 0.0 for loss in white_noise_losses_train]
-    ba_results = [1.0 if loss < ba_thresh else 0.0 for loss in babble_losses_train]
-    sil_acc = accuracy(ys_train, sil_results)
-    wn_acc = accuracy(ys_train, wn_results)
-    ba_acc = accuracy(ys_train, ba_results)
-    print(f"Silent accuracy: {sil_acc}")
-    print(f"White noise accuracy: {wn_acc}")
-    print(f"Babble accuracy: {ba_acc}")
-    print()
-    ## Train threshold on the test set
-    print("Training thresholds on the test set")
-    sil_results = [1.0 if loss < sil_thresh else 0.0 for loss in silent_losses]
-    wn_results = [1.0 if loss < wn_thresh else 0.0 for loss in white_noise_losses]
-    ba_results = [1.0 if loss < ba_thresh else 0.0 for loss in babble_losses]
-    sil_acc = accuracy(ys, sil_results)
-    wn_acc = accuracy(ys, wn_results)
-    ba_acc = accuracy(ys, ba_results)
-    print(f"Silent accuracy: {sil_acc}")
-    print(f"White noise accuracy: {wn_acc}")
-    print(f"Babble accuracy: {ba_acc}")
+        print()
+        print("These should match the training losses, if they don't there are errors in this code")
+        sil_results = [1.0 if loss < sil_thresh else 0.0 for loss in silent_losses_train]
+        wn_results = [1.0 if loss < wn_thresh else 0.0 for loss in white_noise_losses_train]
+        ba_results = [1.0 if loss < ba_thresh else 0.0 for loss in babble_losses_train]
+        sil_acc = accuracy(ys_train, sil_results)
+        wn_acc = accuracy(ys_train, wn_results)
+        ba_acc = accuracy(ys_train, ba_results)
+        print(f"Silent accuracy: {sil_acc}")
+        print(f"White noise accuracy: {wn_acc}")
+        print(f"Babble accuracy: {ba_acc}")
+        print()
+        ## Train threshold on the test set
+        print("Training thresholds on the test set")
+        sil_results = [1.0 if loss < sil_thresh else 0.0 for loss in silent_losses]
+        wn_results = [1.0 if loss < wn_thresh else 0.0 for loss in white_noise_losses]
+        ba_results = [1.0 if loss < ba_thresh else 0.0 for loss in babble_losses]
+        sil_acc = accuracy(ys, sil_results)
+        wn_acc = accuracy(ys, wn_results)
+        ba_acc = accuracy(ys, ba_results)
+        print(f"Silent accuracy: {sil_acc}")
+        print(f"White noise accuracy: {wn_acc}")
+        print(f"Babble accuracy: {ba_acc}")
 
 
-    print()
-    print("\tFconfms")
-    print("Silent fconfms:")
-    _, sil_thresh_fconfm = best_accuracy(silent_fconfms_train, ys_train)
+        print()
+        print("\tFconfms")
+        print("Silent fconfms:")
+        _, sil_thresh_fconfm = best_accuracy(silent_fconfms_train, ys_train)
 
-    print("White noise fconfms:")
-    _, wn_thresh_fconfm = best_accuracy(white_noise_fconfms_train, ys_train)
+        print("White noise fconfms:")
+        _, wn_thresh_fconfm = best_accuracy(white_noise_fconfms_train, ys_train)
 
-    print("Babble fconfms:")
-    _, ba_thresh_fconfm = best_accuracy(babble_fconfms_train, ys_train)
+        print("Babble fconfms:")
+        _, ba_thresh_fconfm = best_accuracy(babble_fconfms_train, ys_train)
 
-    print()
-    print("These should match the training fconfms, if they don't there are errors in this code")
-    sil_results = [0.0 if fconfm < sil_thresh_fconfm else 1.0 for fconfm in silent_fconfms_train]
-    wn_results = [0.0 if fconfm < wn_thresh_fconfm else 1.0 for fconfm in white_noise_fconfms_train]
-    ba_results = [0.0 if fconfm < ba_thresh_fconfm else 1.0 for fconfm in babble_fconfms_train]
-    sil_acc = accuracy(ys_train, sil_results)
-    wn_acc = accuracy(ys_train, wn_results)
-    ba_acc = accuracy(ys_train, ba_results)
-    print(f"Silent accuracy: {sil_acc}")
-    print(f"White noise accuracy: {wn_acc}")
-    print(f"Babble accuracy: {ba_acc}")
-    print()
-    ## Train threshold on the test set
-    print("Training thresholds on the test set")
-    sil_results = [0.0 if fconfm < sil_thresh_fconfm else 1.0 for fconfm in silent_fconfms]
-    wn_results = [0.0 if fconfm < wn_thresh_fconfm else 1.0 for fconfm in white_noise_fconfms]
-    ba_results = [0.0 if fconfm < ba_thresh_fconfm else 1.0 for fconfm in babble_fconfms]
-    sil_acc = accuracy(ys, sil_results)
-    wn_acc = accuracy(ys, wn_results)
-    ba_acc = accuracy(ys, ba_results)
-    print(f"Silent accuracy: {sil_acc}")
-    print(f"White noise accuracy: {wn_acc}")
-    print(f"Babble accuracy: {ba_acc}")
-    print()
-    print("\tFlip")
-    print("Training thresholds on the training set")
-    print("Silent fconfms:")
-    _, sil_thresh_fconfm = best_accuracy(silent_fconfms_train, ys_train, flip=True) 
-    print("White noise fconfms:")
-    _, wn_thresh_fconfm = best_accuracy(white_noise_fconfms_train, ys_train, flip=True)
-    print("Babble fconfms:")
-    _, ba_thresh_fconfm = best_accuracy(babble_fconfms_train, ys_train, flip=True)
-    print()
-    print("These should match the training fconfms, if they don't there are errors in this code")
-    sil_results = [1.0 if fconfm < sil_thresh_fconfm else 0.0 for fconfm in silent_fconfms_train]
-    wn_results = [1.0 if fconfm < wn_thresh_fconfm else 0.0 for fconfm in white_noise_fconfms_train]
-    ba_results = [1.0 if fconfm < ba_thresh_fconfm else 0.0 for fconfm in babble_fconfms_train]
-    sil_acc = accuracy(ys_train, sil_results)
-    wn_acc = accuracy(ys_train, wn_results)
-    ba_acc = accuracy(ys_train, ba_results)
-    print(f"Silent accuracy: {sil_acc}")
-    print(f"White noise accuracy: {wn_acc}")
-    print(f"Babble accuracy: {ba_acc}")
-    ## Train threshold on the test set
-    print("Training thresholds on the test set")
-    sil_results = [1.0 if fconfm < sil_thresh_fconfm else 0.0 for fconfm in silent_fconfms]
-    wn_results = [1.0 if fconfm < wn_thresh_fconfm else 0.0 for fconfm in white_noise_fconfms]
-    ba_results = [1.0 if fconfm < ba_thresh_fconfm else 0.0 for fconfm in babble_fconfms]
-    sil_acc = accuracy(ys, sil_results)
-    wn_acc = accuracy(ys, wn_results)
-    ba_acc = accuracy(ys, ba_results)
-    print(f"Silent accuracy: {sil_acc}")
-    print(f"White noise accuracy: {wn_acc}")
-    print(f"Babble accuracy: {ba_acc}")
+        print()
+        print("These should match the training fconfms, if they don't there are errors in this code")
+        sil_results = [0.0 if fconfm < sil_thresh_fconfm else 1.0 for fconfm in silent_fconfms_train]
+        wn_results = [0.0 if fconfm < wn_thresh_fconfm else 1.0 for fconfm in white_noise_fconfms_train]
+        ba_results = [0.0 if fconfm < ba_thresh_fconfm else 1.0 for fconfm in babble_fconfms_train]
+        sil_acc = accuracy(ys_train, sil_results)
+        wn_acc = accuracy(ys_train, wn_results)
+        ba_acc = accuracy(ys_train, ba_results)
+        print(f"Silent accuracy: {sil_acc}")
+        print(f"White noise accuracy: {wn_acc}")
+        print(f"Babble accuracy: {ba_acc}")
+        print()
+        ## Train threshold on the test set
+        print("Training thresholds on the test set")
+        sil_results = [0.0 if fconfm < sil_thresh_fconfm else 1.0 for fconfm in silent_fconfms]
+        wn_results = [0.0 if fconfm < wn_thresh_fconfm else 1.0 for fconfm in white_noise_fconfms]
+        ba_results = [0.0 if fconfm < ba_thresh_fconfm else 1.0 for fconfm in babble_fconfms]
+        sil_acc = accuracy(ys, sil_results)
+        wn_acc = accuracy(ys, wn_results)
+        ba_acc = accuracy(ys, ba_results)
+        print(f"Silent accuracy: {sil_acc}")
+        print(f"White noise accuracy: {wn_acc}")
+        print(f"Babble accuracy: {ba_acc}")
+        print()
+        print("\tFlip")
+        print("Training thresholds on the training set")
+        print("Silent fconfms:")
+        _, sil_thresh_fconfm = best_accuracy(silent_fconfms_train, ys_train, flip=True) 
+        print("White noise fconfms:")
+        _, wn_thresh_fconfm = best_accuracy(white_noise_fconfms_train, ys_train, flip=True)
+        print("Babble fconfms:")
+        _, ba_thresh_fconfm = best_accuracy(babble_fconfms_train, ys_train, flip=True)
+        print()
+        print("These should match the training fconfms, if they don't there are errors in this code")
+        sil_results = [1.0 if fconfm < sil_thresh_fconfm else 0.0 for fconfm in silent_fconfms_train]
+        wn_results = [1.0 if fconfm < wn_thresh_fconfm else 0.0 for fconfm in white_noise_fconfms_train]
+        ba_results = [1.0 if fconfm < ba_thresh_fconfm else 0.0 for fconfm in babble_fconfms_train]
+        sil_acc = accuracy(ys_train, sil_results)
+        wn_acc = accuracy(ys_train, wn_results)
+        ba_acc = accuracy(ys_train, ba_results)
+        print(f"Silent accuracy: {sil_acc}")
+        print(f"White noise accuracy: {wn_acc}")
+        print(f"Babble accuracy: {ba_acc}")
+        ## Train threshold on the test set
+        print("Training thresholds on the test set")
+        sil_results = [1.0 if fconfm < sil_thresh_fconfm else 0.0 for fconfm in silent_fconfms]
+        wn_results = [1.0 if fconfm < wn_thresh_fconfm else 0.0 for fconfm in white_noise_fconfms]
+        ba_results = [1.0 if fconfm < ba_thresh_fconfm else 0.0 for fconfm in babble_fconfms]
+        sil_acc = accuracy(ys, sil_results)
+        wn_acc = accuracy(ys, wn_results)
+        ba_acc = accuracy(ys, ba_results)
+        print(f"Silent accuracy: {sil_acc}")
+        print(f"White noise accuracy: {wn_acc}")
+        print(f"Babble accuracy: {ba_acc}")
