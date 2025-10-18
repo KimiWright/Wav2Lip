@@ -12,9 +12,21 @@ def num_rows_csv(csv_file):
     print(num_rows)
 
 # My csv (too short)
-num_rows_csv("/home/ksw38/groups/grp_landmarks/nobackup/autodelete/LRS2/preprocessedRetinaface/labels/lmks_lrs2_train-val_transcript_lengths_seg24s.csv")
+# num_rows_csv("/home/ksw38/groups/grp_landmarks/nobackup/autodelete/LRS2/preprocessedRetinaface/labels/lmks_lrs2_train-val_transcript_lengths_seg24s.csv")
 # Shad's csv (correct)
 num_rows_csv("/home/ksw38/groups/grp_lip/nobackup/archive/datasets/LRS2/preprocessedRetinaface/labels/lrs2_train_transcript_lengths_seg24s.csv")
+
+num_rows_csv("/home/ksw38/groups/grp_lip/nobackup/archive/datasets/LRS2/preprocessedRetinaface/labels/lrs2_train_transcript_lengths_seg24s.csv")
+num_rows_csv("/home/ksw38/groups/grp_lip/nobackup/archive/datasets/LRS2/preprocessedRetinaface/labels/lrs2_train_transcript_lengths_seg24s_0to100.csv")
+
+# Unfiltered
+print("unfiltered")
+num_rows_csv("/home/ksw38/groups/grp_landmarks/nobackup/autodelete/labels/lrs2_train_transcript_lengths_seg24s.csv")
+num_rows_csv("/home/ksw38/groups/grp_lip/nobackup/archive/datasets/LRS2/preprocessedRetinaface/labels/lrs2_test_transcript_lengths_seg24s.csv")
+print("filtered")
+num_rows_csv("/home/ksw38/groups/grp_landmarks/nobackup/autodelete/LRS2/preprocessedRetinaface/labels/lrs2_train_transcript_lengths_seg24s.csv")
+num_rows_csv("/home/ksw38/groups/grp_landmarks/nobackup/autodelete/LRS2/preprocessedRetinaface/labels/lrs2_test_transcript_lengths_seg24s.csv")
+
 
 # lmks_path = "/home/ksw38/groups/grp_landmarks/nobackup/autodelete/LRS2/preprocessedRetinaface/labels/lmk_train-val_transcript_lengths_seg24s.csv"
 # short_path = "/home/ksw38/groups/grp_landmarks/nobackup/autodelete/LRS2/preprocessedRetinaface/labels/lrs2_train-val_transcript_lengths_seg24s_0to100.csv"

@@ -3,6 +3,7 @@ from glob import glob
 import numpy as np
 from pathlib import Path
 import cv2
+# os.environ["CUDA_VISIBLE_DEVICES"] = ""
 from facetools import genMediapipeInfo,norm_lmks, clearMediapipeInfo
 
 def norm(lmks):
@@ -22,7 +23,7 @@ def norm(lmks):
 source_main_path = "/fslgroup/grp_lip/datasets/lrs2/mvlrs_v1/main/"
 out_main_path = "/home/ksw38/groups/grp_landmarks/nobackup/archive/landmarks_norm/main"
 source_main_path = "/fslgroup/grp_lip/datasets/lrs2/mvlrs_v1/pretrain"
-out_main_path = "/home/ksw38/groups/grp_landmarks/nobackup/archive/landmarks_norm/pretrain"
+out_main_path = "/home/ksw38/groups/grp_landmarks/nobackup/archive/landmarks_norm/pretrain_partial"
 folders = [f for f in os.listdir(source_main_path) if os.path.isdir(os.path.join(source_main_path, f))]
 # folders = folders[2424:len(folders)]
 
@@ -42,6 +43,9 @@ for folder in folders:
         out_path_yaw = os.path.join(out_main_path, folder, file_name + "_yaw")
         out_path_pitch = os.path.join(out_main_path, folder, file_name + "_pitch")
         out_path_roll = os.path.join(out_main_path, folder, file_name + "_roll")
+
+        if all(Path(p).exists() for p in [out_path_lmks, out_path_yaw, out_path_pitch, out_path_roll]):
+            continue
 
         # Get the landmarks (Shad's code)
         videoPath = file
