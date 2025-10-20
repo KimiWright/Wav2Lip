@@ -172,6 +172,14 @@ data_root = "/home/ksw38/groups/grp_landmarks/nobackup/archive/landmarks_norm/ma
 count = count_videos(data_root)
 print(count)
 
+data_root = "/home/ksw38/groups/grp_landmarks/nobackup/archive/landmarks_norm/pretrain"
+count = count_videos(data_root)
+print(count)
+
+data_root = "/home/ksw38/groups/grp_landmarks/nobackup/archive/landmarks_norm/pretrain_partial"
+count = count_videos(data_root)
+print(count)
+
 # data_root = '/home/ksw38/groups/grp_lip/nobackup/autodelete/datasets/fslgroup/grp_lip/compute/datasets/LRS2/preprocessedRetinaface/lrs2/lrs2_video_seg24s/mvlrs_v1/main/'
 # count = count_videos(data_root)
 # print(count)
@@ -183,6 +191,21 @@ print(count)
 
 data_root = "groups/grp_lip/nobackup/autodelete/datasets/fslgroup/grp_lip/compute/datasets/LRS2/preprocessedRetinaface/lrs2/lr2_video_seg24s/mlrs_v1/main"
 data_root = "/home/ksw38/groups/grp_lip/nobackup/autodelete/datasets/fslgroup/grp_lip/compute/datasets/LRS2/preprocessedRetinaface/lrs2/lrs2_video_seg24s/mvlrs_v1/main"
+print(data_root)
+count = count_videos(data_root)
+print(count)
+
+data_root = "/fslgroup/grp_lip/datasets/lrs2/mvlrs_v1/pretrain"
+print(data_root)
+count = count_videos(data_root)
+print(count)
+
+data_root = "/home/ksw38/groups/grp_landmarks/nobackup/archive/landmarks_norm/pretrain"
+print(data_root)
+count = count_videos(data_root)
+print(count)
+
+data_root = "/home/ksw38/groups/grp_landmarks/nobackup/archive/landmarks_norm/pretrain_partial"
 print(data_root)
 count = count_videos(data_root)
 print(count)

@@ -65,7 +65,7 @@ out_main_path = "/home/ksw38/groups/grp_landmarks/nobackup/autodelete/landmarks_
 
 checkpoint_dir = "/home/ksw38/RVL/color_syncnet/Wav2Lip/checkpoints"
 checkpoint_path = "/home/ksw38/RVL/color_syncnet/Wav2Lip/checkpoints/checkpoint_step000510000.pth"
-checkpoint_path = "/home/ksw38/RVL/color_syncnet/Wav2Lip/lipsync_expert.pth"
+# checkpoint_path = "/home/ksw38/RVL/color_syncnet/Wav2Lip/lipsync_expert.pth"
 
 
 device = torch.device("cuda" if use_cuda else "cpu")
