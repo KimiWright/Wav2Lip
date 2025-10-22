@@ -96,7 +96,7 @@ def plot_PR_curve(name, y_test, y_scores, save_csv=True):
     auc_score = auc(recall, precision)
 
     plt.figure(figsize=(8, 6))
-    plt.plot(recall, precision, label=f'Precision-Recall Curve (AUC = {auc_score:.2f})')
+    plt.plot(recall, precision, label=f'Precision-Recall Curve (AUC = {auc_score:.2f})', drawstyle="steps-post")
     plt.xlabel('Recall')
     plt.ylabel('Precision')
     plt.title(fig_title)

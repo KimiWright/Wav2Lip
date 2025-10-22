@@ -23,7 +23,7 @@ def norm(lmks):
 source_main_path = "/fslgroup/grp_lip/datasets/lrs2/mvlrs_v1/main/"
 out_main_path = "/home/ksw38/groups/grp_landmarks/nobackup/archive/landmarks_norm/main"
 source_main_path = "/fslgroup/grp_lip/datasets/lrs2/mvlrs_v1/pretrain"
-out_main_path = "/home/ksw38/groups/grp_landmarks/nobackup/archive/landmarks_norm/pretrain_partial"
+out_main_path = "/home/ksw38/groups/grp_landmarks/nobackup/autodelete/pretrain_partial"
 folders = [f for f in os.listdir(source_main_path) if os.path.isdir(os.path.join(source_main_path, f))]
 # folders = folders[2424:len(folders)]
 

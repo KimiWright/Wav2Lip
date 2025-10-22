@@ -24,8 +24,12 @@ print("unfiltered")
 num_rows_csv("/home/ksw38/groups/grp_landmarks/nobackup/autodelete/labels/lrs2_train_transcript_lengths_seg24s.csv")
 num_rows_csv("/home/ksw38/groups/grp_lip/nobackup/archive/datasets/LRS2/preprocessedRetinaface/labels/lrs2_test_transcript_lengths_seg24s.csv")
 print("filtered")
-num_rows_csv("/home/ksw38/groups/grp_landmarks/nobackup/autodelete/LRS2/preprocessedRetinaface/labels/lrs2_train_transcript_lengths_seg24s.csv")
-num_rows_csv("/home/ksw38/groups/grp_landmarks/nobackup/autodelete/LRS2/preprocessedRetinaface/labels/lrs2_test_transcript_lengths_seg24s.csv")
+# num_rows_csv("/home/ksw38/groups/grp_landmarks/nobackup/autodelete/LRS2/preprocessedRetinaface/labels/lrs2_train_transcript_lengths_seg24s.csv")
+# num_rows_csv("/home/ksw38/groups/grp_landmarks/nobackup/autodelete/LRS2/preprocessedRetinaface/labels/lrs2_test_transcript_lengths_seg24s.csv")
+
+# num_rows_csv("/home/ksw38/groups/grp_landmarks/nobackup/autodelete/labels/trial_lrs2_train_transcript_lengths_seg24.csv")
+num_rows_csv("/home/ksw38/groups/grp_landmarks/nobackup/autodelete/LRS2/preprocessedRetinaface/labels/lmks_lrs2_train_transcript_lengths_seg24.csv")
+num_rows_csv("/home/ksw38/groups/grp_landmarks/nobackup/autodelete/LRS2/preprocessedRetinaface/labels/lrs2_train_transcript_lengths_seg24.csv")
 
 
 # lmks_path = "/home/ksw38/groups/grp_landmarks/nobackup/autodelete/LRS2/preprocessedRetinaface/labels/lmk_train-val_transcript_lengths_seg24s.csv"
@@ -206,10 +210,15 @@ count = count_videos(data_root)
 print(count)
 
 data_root = "/home/ksw38/groups/grp_landmarks/nobackup/archive/landmarks_norm/pretrain_partial"
+data_root = "/home/ksw38/groups/grp_landmarks/nobackup/autodelete/pretrain_partial"
 print(data_root)
 count = count_videos(data_root)
 print(count)
 
+data_root = "/home/ksw38/groups/grp_landmarks/nobackup/archive/landmarks_norm/pretrain_2"
+print(data_root)
+count = count_videos(data_root)
+print(count)
 
 # import torch
 

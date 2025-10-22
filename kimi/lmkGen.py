@@ -39,7 +39,7 @@ def parse_args():
     p.add_argument(
         "--out",
         type=Path,
-        default=Path("/home/ksw38/groups/grp_landmarks/nobackup/archive/landmarks_norm/pretrain"),
+        default=Path("/home/ksw38/groups/grp_landmarks/nobackup/autodelete/pretrain_2"),
         help="Output root directory."
     )
     p.add_argument(
