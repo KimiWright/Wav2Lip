@@ -11,6 +11,8 @@ def num_rows_csv(csv_file):
     num_rows = len(df)
     print(num_rows)
 
+num_rows_csv("/home/ksw38/groups/grp_landmarks/nobackup/autodelete/LRS2/preprocessedRetinaface/labels/lmks_lrs2_train_transcript_lengths_seg24s_0to100.csv")
+num_rows_csv("/home/ksw38/groups/grp_landmarks/nobackup/autodelete/LRS2/preprocessedRetinaface/labels/lrs2_train_transcript_lengths_seg24s_0to100.csv")
 # My csv (too short)
 # num_rows_csv("/home/ksw38/groups/grp_landmarks/nobackup/autodelete/LRS2/preprocessedRetinaface/labels/lmks_lrs2_train-val_transcript_lengths_seg24s.csv")
 # Shad's csv (correct)
@@ -193,6 +195,12 @@ data_root = "/fslgroup/grp_lip/datasets/lrs2/mvlrs_v1/main/"
 count = count_videos(data_root)
 print(count)
 
+data_root = "/home/ksw38/groups/grp_landmarks/nobackup/autodelete/landmarks_norm/main"
+print(data_root)
+count = count_videos(data_root)
+print(count)
+
+
 data_root = "groups/grp_lip/nobackup/autodelete/datasets/fslgroup/grp_lip/compute/datasets/LRS2/preprocessedRetinaface/lrs2/lr2_video_seg24s/mlrs_v1/main"
 data_root = "/home/ksw38/groups/grp_lip/nobackup/autodelete/datasets/fslgroup/grp_lip/compute/datasets/LRS2/preprocessedRetinaface/lrs2/lrs2_video_seg24s/mvlrs_v1/main"
 print(data_root)
@@ -211,6 +219,13 @@ print(count)
 
 data_root = "/home/ksw38/groups/grp_landmarks/nobackup/archive/landmarks_norm/pretrain_partial"
 data_root = "/home/ksw38/groups/grp_landmarks/nobackup/autodelete/pretrain_partial"
+print(data_root)
+count = count_videos(data_root)
+print(count)
+
+data_root = "/home/ksw38/groups/grp_landmarks/nobackup/archive/landmarks_norm/pretrain_2"
+data_root = "/home/ksw38/groups/grp_landmarks/nobackup/autodelete/pretrain_2"
+data_root = "/home/ksw38/groups/grp_landmarks/nobackup/autodelete/landmarks_norm/pretrain_2"
 print(data_root)
 count = count_videos(data_root)
 print(count)
