@@ -11,6 +11,7 @@ import torch
 import torch.optim as optim
 from torch.utils import data as data_utils
 import numpy as np
+import pandas as pd
 
 from hparams import hparams
 import st_gcn_test as st
@@ -175,6 +176,17 @@ def plot_PR_curve(name, y_test, y_scores):
     plt.legend()
     plt.savefig(fig_path)
     print(f"Figure saved at {fig_path}")
+
+    csv_path = os.path.splitext(fig_path)[0] + "_PR_data.csv"
+    df = pd.DataFrame({
+        "precision": precision,
+        "recall": recall,
+        # thresholds is 1 shorter than precision/recall
+        "threshold": list(thresholds) + [None]
+    })
+    df.to_csv(csv_path, index=False)
+    print(f"Precision-Recall data saved to {csv_path}")
+
     return(auc_score, precision, recall, thresholds)
 
 

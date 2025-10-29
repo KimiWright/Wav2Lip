@@ -10,6 +10,8 @@ from models import SyncNet_color as SyncNet
 from hparams import hparams
 import torch.optim as optim
 from torch.utils import data as data_utils
+import os
+import pandas as pd
 
 fig_path = "PR_curve_color_syncnet_personally_trained.png"
 eval_step_max = None
@@ -104,3 +106,13 @@ plt.ylabel('Precision')
 plt.title('Precision-Recall Curve')
 plt.legend()
 plt.savefig(fig_path)
+
+csv_path = os.path.splitext(fig_path)[0] + "_PR_data.csv"
+df = pd.DataFrame({
+    "precision": precision,
+    "recall": recall,
+    # thresholds is 1 shorter than precision/recall
+    "threshold": list(thresholds) + [None]
+})
+df.to_csv(csv_path, index=False)
+print(f"Precision-Recall data saved to {csv_path}")

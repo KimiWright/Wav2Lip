@@ -9,11 +9,13 @@ import torch.optim as optim
 from torch.utils import data as data_utils
 from hparams import hparams
 import landmarks_syncnet_train_gru2 as train
+import os
+import pandas as pd
 
 ### Set Variables ###
 eval_step_max = None
 model_types = ["gru3", "gru2", "attn", "triplets"]
-model_type = model_types[-1]
+model_type = "gru2"
 
 if model_type == "gru3":
     from models import SyncNet_landmarks_gru3 as SyncNet
@@ -105,3 +107,13 @@ plt.ylabel('Precision')
 plt.title(fig_title)
 plt.legend()
 plt.savefig(fig_path)
+
+csv_path = os.path.splitext(fig_path)[0] + "_PR_data.csv"
+df = pd.DataFrame({
+    "precision": precision,
+    "recall": recall,
+    # thresholds is 1 shorter than precision/recall
+    "threshold": list(thresholds) + [None]
+})
+df.to_csv(csv_path, index=False)
+print(f"Precision-Recall data saved to {csv_path}")

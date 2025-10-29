@@ -1,5 +1,6 @@
 import os
 import matplotlib.pyplot as plt
+import pandas as pd
 from sklearn.datasets import make_classification
 from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LogisticRegression
@@ -72,6 +73,16 @@ def plot_PR_curve(fig_path, fig_title, y_test, y_scores):
     plt.savefig(fig_path)
 
     print(f"Saved PR Curve at {fig_path}")
+
+    csv_path = os.path.splitext(fig_path)[0] + "_PR_data.csv"
+    df = pd.DataFrame({
+        "precision": precision,
+        "recall": recall,
+        # thresholds is 1 shorter than precision/recall
+        "threshold": list(thresholds) + [None]
+    })
+    df.to_csv(csv_path, index=False)
+    print(f"Precision-Recall data saved to {csv_path}")
     
 if __name__ == "__main__":
     use_cuda = torch.cuda.is_available()
