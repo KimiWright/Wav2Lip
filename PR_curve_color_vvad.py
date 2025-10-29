@@ -15,8 +15,8 @@ import os
 source_main_path = "/home/ksw38/.cache/kagglehub/datasets/adrianlubitz/vvadlrs3/versions/4/faceImages_small.h5"
 use_cuda = False
 data_limit = 10
-use_cuda = torch.cuda.is_available()
-data_limit = None
+# use_cuda = torch.cuda.is_available()
+# data_limit = None
 
 
 device = "cuda" if use_cuda else "cpu"
@@ -92,30 +92,32 @@ def fig_path_and_title(name, folder="VVAD_PR_Curves/color"):
 
 def plot_PR_curve(name, y_test, y_scores, save_csv=True):
     fig_path, fig_title = fig_path_and_title(name)
+    print("curve")
     precision, recall, thresholds = precision_recall_curve(y_test, y_scores)
-    auc_score = auc(recall, precision)
+    print(len(precision), len(recall), len(thresholds))
+    # auc_score = auc(recall, precision)
 
-    plt.figure(figsize=(8, 6))
-    plt.plot(recall, precision, label=f'Precision-Recall Curve (AUC = {auc_score:.2f})', drawstyle="steps-post")
-    plt.xlabel('Recall')
-    plt.ylabel('Precision')
-    plt.title(fig_title)
-    plt.legend()
-    plt.savefig(fig_path)
-    print(f"Figure saved at {fig_path}")
+    # plt.figure(figsize=(8, 6))
+    # plt.plot(recall, precision, label=f'Precision-Recall Curve (AUC = {auc_score:.2f})', drawstyle="steps-post")
+    # plt.xlabel('Recall')
+    # plt.ylabel('Precision')
+    # plt.title(fig_title)
+    # plt.legend()
+    # plt.savefig(fig_path)
+    # print(f"Figure saved at {fig_path}")
 
-    if save_csv:
-        csv_path = os.path.splitext(fig_path)[0] + "_PR_data.csv"
-        df = pd.DataFrame({
-            "precision": precision,
-            "recall": recall,
-            # thresholds is 1 shorter than precision/recall
-            "threshold": list(thresholds) + [None]
-        })
-        df.to_csv(csv_path, index=False)
-        print(f"Precision-Recall data saved to {csv_path}")
+    # if save_csv:
+    #     csv_path = os.path.splitext(fig_path)[0] + "_PR_data.csv"
+    #     df = pd.DataFrame({
+    #         "precision": precision,
+    #         "recall": recall,
+    #         # thresholds is 1 shorter than precision/recall
+    #         "threshold": list(thresholds) + [None]
+    #     })
+    #     df.to_csv(csv_path, index=False)
+    #     print(f"Precision-Recall data saved to {csv_path}")
     
-    return(auc_score, precision, recall, thresholds)
+    # return(auc_score, precision, recall, thresholds)
 
 
 if __name__ == "__main__":
@@ -131,10 +133,13 @@ if __name__ == "__main__":
 
         for i in range(num_comp):
             name = "color"+"_"+comp_names[i]
+            print(name)
+            print(len(losses[i]))
+            print(len(fconfms[i]))
             plot_PR_curve(name + "_cosine", y_vals, losses[i])
             plot_PR_curve(name + "_fconfm", y_vals, fconfms[i])
 
-        for i in range(num_comp):
-            name = "color"+"_"+comp_names[i]+"_neg"
-            plot_PR_curve(name + "_cosine", y_vals, -np.array(losses[i]))
-            plot_PR_curve(name + "_fconfm", y_vals, -np.array(fconfms[i]))
+        # for i in range(num_comp):
+        #     name = "color"+"_"+comp_names[i]+"_neg"
+        #     plot_PR_curve(name + "_cosine", y_vals, -np.array(losses[i]))
+        #     plot_PR_curve(name + "_fconfm", y_vals, -np.array(fconfms[i]))
