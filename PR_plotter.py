@@ -34,7 +34,24 @@ csv_files_fconfm_neg = [
 ]
 
 syncnet_csv_files = [
-    "PR_curve_color_syncnet_personally_trained_PR_data.csv"
+    "PR_curve_color_syncnet_personally_trained_PR_data.csv",
+    "PR_curve_lmks_attn_PR_data.csv",
+    "PR_curve_lmks_gru2_PR_data.csv",
+    "PR_curve_lmks_ST_GCN with Rotation_2_PR_data.csv"
+]
+
+gru_syncnet_csv_files = [
+    "PR_curve_lmks_attn_PR_data.csv",
+    "PR_curve_lmks_gru2_PR_data.csv",
+    "PR_curve_lmks_triplets_PR_data.csv"
+]
+
+my_models_syncnet_csv_files = [
+    "PR_curve_lmks_ST_GCN with Rotation_2_PR_data.csv",
+    "PR_curve_lmks_ST_GCN with Rotation using Knn_2_PR_data.csv",
+    "PR_curve_lmks_ST_GCN without Rotation_2_PR_data.csv",
+    "PR_curve_lmks_ST_GCN without Rotation using Knn_2_PR_data.csv",
+    "Syncnet_task_PR_Curves\PR_curve_lmks_mediapipe_PR_data.csv"
 ]
 
 rot_knn_reg_csv_files = [
@@ -164,6 +181,10 @@ def get_auc(csv_files, names=None):
 if __name__ == "__main__":
     not_talking = ["Babble Noise", "Silence", "Still Face", "White Noise"]
     vvad_trained_models = ["Facial-OA", "Facial-Base", "KNN-OA", "KNN-Base", "MediaPipe"]
+    syncnet_names = ["images", "GRU-Attention", "GRU", "OA-Facial"]
+
+    plot_multiple_PR_curves(my_models_syncnet_csv_files, title=None, names=vvad_trained_models, save_path=r"Multi_PR_Curves\my_models_syncnet.png")
+    plot_multiple_PR_curves(syncnet_csv_files, title=None, names=syncnet_names, save_path=r"Multi_PR_Curves\all_models_syncnet.png")
 
     # plot_multiple_PR_curves(mediapipe_reg_csv_files, title=None, names=not_talking, save_path=r"Multi_PR_Curves\mediapipe.png")
     # plot_multiple_PR_curves(vvad_trained, title=None, names=vvad_trained_models, save_path=r"Multi_PR_Curves\vvad_trained.png")
