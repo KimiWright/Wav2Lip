@@ -15,21 +15,21 @@ import pandas as pd
 ### Set Variables ###
 eval_step_max = None
 model_types = ["gru3", "gru2", "attn", "triplets"]
-model_type = "gru2"
+model_type = "triplets"
 
 if model_type == "gru3":
     from models import SyncNet_landmarks_gru3 as SyncNet
     checkpoint_dir = "checkpoints_gru3"
     checkpoint_path = None
-if model_type == "gru2":
+elif model_type == "gru2":
     from models import SyncNet_landmarks_gru2 as SyncNet
     checkpoint_dir = 'landmarks_checkpoints_gru2'
     checkpoint_path = None
-if model_type == "attn":
+elif model_type == "attn":
     from models import SyncNet_landmarks_attn as SyncNet
     checkpoint_dir = 'attn_checkpoints'
     checkpoint_path = None
-if model_type == "triplets":
+elif model_type == "triplets":
     from models import SyncNet_landmarks_gru2 as SyncNet
     checkpoint_dir = "triplets_checkpoints"
     checkpoint_path = None
@@ -39,6 +39,7 @@ else:
 fig_path = f"PR_curve_lmks_{model_type}.png"
 fig_title = f"Precision-Recall for {model_type} on determining if audio and video are synced"
 use_cuda = torch.cuda.is_available()
+# use_cuda = False
 device = torch.device("cuda" if use_cuda else "cpu")
 
 ### Eval Loop ###

@@ -24,9 +24,9 @@ use_cuda = False
 use_cuda = torch.cuda.is_available()
 device = torch.device("cuda" if use_cuda else "cpu")
 
-norot_knn_check = "checkpoint_step000330000.pth"
+norot_knn_check = "" #"checkpoint_step000330000.pth"
 norot_check = "" # "checkpoint_step000250000.pth"
-rot_check = "checkpoint_step000240000.pth"
+rot_check = "" #"checkpoint_step000240000.pth"
 rot_knn_check = ""
 ## ST GCN
 st_gcn_norot_checkpoint_knn = "/home/ksw38/RVL/color_syncnet/Wav2Lip/checkpoints_st_gcn_norot/" + norot_knn_check
@@ -55,7 +55,7 @@ def load_from_checkpoint_or_dir(checkpoint, model, optimizer, reset_optimizer=Fa
     return model
 
 def fig_path_and_title(model_type):
-    fig_path = f"PR_curve_lmks_{model_type}.png"
+    fig_path = f"PR_curve_lmks_{model_type}_2.png"
     fig_title = f"Precision-Recall for {model_type} on determining if audio and video are synced"
     return fig_path, fig_title
 
@@ -200,8 +200,9 @@ if __name__ == "__main__":
     test_data_loader = data_utils.DataLoader(
         test_dataset, batch_size=batch_size,
         num_workers=8)
-
+    print("loaded test dataset")
     first_point = test_dataset[0]
+    print("loaded first point")
     (x, x_rot, mel, y) = first_point
     first_lmks = x[0].T
     knn_edges = st.knn_edges(first_lmks)

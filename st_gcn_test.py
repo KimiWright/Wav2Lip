@@ -35,6 +35,7 @@ video_root = "/fslgroup/grp_lip/datasets/lrs2/mvlrs_v1/main/"
 data_root = '/home/ksw38/groups/grp_landmarks/nobackup/archive/landmarks_preprocessed/main'
 data_root = '/home/ksw38/groups/grp_landmarks/nobackup/archive/landmarks/main'
 data_root = "/home/ksw38/groups/grp_landmarks/nobackup/archive/landmarks_norm/main"
+data_root = "/home/ksw38/groups/grp_landmarks/nobackup/autodelete/landmarks_norm/main"
 
 parser = argparse.ArgumentParser(description='Code to train the expert lip-sync discriminator')
 parser.add_argument('--video_root', help='Root folder of the videos of the LRS2 dataset', default=video_root)
@@ -96,6 +97,7 @@ class Dataset(object):
             for ending in endings:
                 npy_file = npy_head + ending
                 if not isfile(npy_file):
+                    # print("Not file")
                     continue
                 npy_files.append(npy_file)
 
