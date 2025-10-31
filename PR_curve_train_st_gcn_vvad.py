@@ -3,7 +3,7 @@ import vvad_st_gcn_model_functions as st
 import st_gcn_vvad as vvad
 from hparams import hparams
 
-from sklearn.metrics import precision_recall_curve, auc
+from sklearn.metrics import precision_recall_curve, auc, accuracy_score
 from torch.utils import data as data_utils
 import matplotlib.pyplot as plt
 from torch import optim
@@ -11,6 +11,18 @@ import numpy as np
 import pandas as pd
 import os
 
+def best_accuracy(y_test, y_scores, thresholds):
+    accuracies = []
+    for thr in thresholds:
+        preds = (y_scores >= thr).astype(int)
+        acc = accuracy_score(y_test, preds)
+        accuracies.append(acc)
+
+    best_acc_idx = max(range(len(accuracies)), key=lambda i: accuracies[i])
+    best_acc_threshold = thresholds[best_acc_idx]
+    best_acc = accuracies[best_acc_idx]
+
+    return best_acc_threshold, best_acc
 
 def load_vvad_model(checkpoint_dir, A, V, use_cuda=False, rotation=True):
     model_args = dict(
@@ -34,6 +46,7 @@ def load_vvad_model(checkpoint_dir, A, V, use_cuda=False, rotation=True):
                             lr=hparams.syncnet_lr, weight_decay=1e-5)
     
     vvad_model = st.load_from_checkpoint_or_dir(checkpoint_dir, vvad_model, vvad_optimizer, use_cuda=use_cuda)
+    print('total trainable params for stgcn: {}'.format(sum(p.numel() for p in vvad_model.parameters() if p.requires_grad)))
     return vvad_model
 
 def get_logits(test_data_loader, vvad_model, rotation, device="cpu"):
@@ -95,8 +108,10 @@ def plots_from_checkpoint(name, test_data_loader, vvad_checkpoint_dir, A, V, use
     vvad_model = vvad_model.eval().to(device)
 
     y_vals, all_logits = get_logits(test_data_loader, vvad_model, rotation, device)
-    plot_PR_curve(name, y_vals, all_logits)
-    plot_PR_curve(name+" Reversed", y_vals, all_logits)
+    auc_score, precision, recall, thresholds = plot_PR_curve(name, y_vals, all_logits)
+    # auc_score, precision, recall, thresholds = plot_PR_curve(name+" Reversed", y_vals, all_logits)
+    best_accuracy_threshold, best_acc = best_accuracy(y_vals, all_logits, thresholds)
+    print(best_acc)
 
 if __name__ == "__main__":
     data_limit = None
