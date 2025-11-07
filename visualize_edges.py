@@ -76,6 +76,11 @@ if __name__ == "__main__":
     landmarks = x[0]
     print(landmarks.shape)
 
+    
+    no_edges = []
+    save_path = "Figures_edges/No_Edges.png"
+    draw_landmarks_with_edges(landmarks, no_edges, save_path)
+
     # save_path = "Figures_edges/Facial_Edges.png"
     # draw_landmarks_with_edges(landmarks, facial_edges, save_path)
 
@@ -93,4 +98,4 @@ if __name__ == "__main__":
     landmarks = landmarks[:2]
     print(landmarks.shape)
 
-    draw_landmarks_with_edges(landmarks, mediapipe_edges, save_path)
+    # draw_landmarks_with_edges(landmarks, mediapipe_edges, save_path)
