@@ -8,7 +8,7 @@ from scipy.io import wavfile
 # ------------------------------------------------------------------
 # 2. Load waveform
 # ------------------------------------------------------------------
-audio_path = r"C:\Users\Kimi\Documents\RVL\MultiAVSR\datamodule\babble_noise.wav"   # path to your recording
+audio_path = r'/home/ksw38/groups/grp_lip/nobackup/archive/datasets/speech-commands/_background_noise_/babble_noise.wav'   # path to your recording
 
 sr, wav = wavfile.read(audio_path)
 
@@ -46,10 +46,9 @@ im = plt.imshow(
     aspect="auto",
     interpolation="nearest"
 )
-plt.title("Mel spectrogram of 'lemon'")
 plt.xlabel("Time frames")
 plt.ylabel("Mel bin")
 plt.colorbar(im, label="dB")
 plt.tight_layout()
-plt.savefig("mel_spectrogram_lemon.png", dpi=300)
+plt.savefig("mel_spectrogram_babble_noise.png", dpi=300)
 plt.show()

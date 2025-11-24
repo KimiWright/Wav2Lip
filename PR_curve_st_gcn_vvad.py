@@ -233,7 +233,8 @@ def eval_and_plot(st_gcn_checkpoint, audio_checkpoint, A, V, model_name, use_cud
 if __name__ == "__main__":
     batch_size = 1
     data_limit = None
-    test_dataset = vvad.Dataset_Frames("test", frames=syncnet_T, data_point_limit=data_limit)
+    frames = 10
+    test_dataset = vvad.Dataset_Frames("test", frames=frames, data_point_limit=data_limit)
     print(len(test_dataset))
     test_data_loader = data_utils.DataLoader(
         test_dataset, batch_size=batch_size,
@@ -250,8 +251,8 @@ if __name__ == "__main__":
     A_knn = build_adjacency(num_lmks, knn_edges)
     V = num_lmks
 
-    eval_and_plot(st_gcn_norot_checkpoint, audio_norot_checkpoint, A, V, model_name="norot_facial", use_cuda=use_cuda)
-    eval_and_plot(st_gcn_norot_checkpoint_knn, audio_norot_checkpoint_knn, A_knn, V, model_name="norot_knn", use_cuda=use_cuda)
-    eval_and_plot(st_gcn_rot_checkpoint, audio_rot_checkpoint, A, V, "rot_facial", use_cuda=use_cuda, rotation=True)
-    eval_and_plot(st_gcn_rot_checkpoint_knn, audio_rot_checkpoint_knn, A_knn, V, "rot_knn", use_cuda=use_cuda, rotation=True)
+    eval_and_plot(st_gcn_norot_checkpoint, audio_norot_checkpoint, A, V, model_name=f"norot_facial_{frames}", use_cuda=use_cuda)
+    eval_and_plot(st_gcn_norot_checkpoint_knn, audio_norot_checkpoint_knn, A_knn, V, model_name=f"norot_knn_{frames}", use_cuda=use_cuda)
+    eval_and_plot(st_gcn_rot_checkpoint, audio_rot_checkpoint, A, V, f"rot_facial_{frames}", use_cuda=use_cuda, rotation=True)
+    eval_and_plot(st_gcn_rot_checkpoint_knn, audio_rot_checkpoint_knn, A_knn, V, f"rot_knn_{frames}", use_cuda=use_cuda, rotation=True)
 
