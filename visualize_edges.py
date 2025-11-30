@@ -9,6 +9,8 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
 import numpy as np
+import h5py
+import torch
 
 def draw_landmarks_with_edges(landmarks, edges, save_path=None, show=True):
     """
@@ -78,8 +80,8 @@ if __name__ == "__main__":
 
     
     no_edges = []
-    save_path = "Figures_edges/No_Edges.png"
-    draw_landmarks_with_edges(landmarks, no_edges, save_path)
+    # save_path = "Figures_edges/No_Edges.png"
+    # draw_landmarks_with_edges(landmarks, no_edges, save_path)
 
     # save_path = "Figures_edges/Facial_Edges.png"
     # draw_landmarks_with_edges(landmarks, facial_edges, save_path)
@@ -99,3 +101,25 @@ if __name__ == "__main__":
     print(landmarks.shape)
 
     # draw_landmarks_with_edges(landmarks, mediapipe_edges, save_path)
+
+    save_path = "Figures_edges/Mediapipe_No_Edges.png"
+
+    # draw_landmarks_with_edges(landmarks, no_edges, save_path)
+
+    source_main_path = "/home/ksw38/.cache/kagglehub/datasets/adrianlubitz/vvadlrs3/versions/4/faceFeatures.h5"
+
+    with h5py.File(source_main_path, 'r') as f:
+        # Get frames from the h5 file
+        x_test = f['x_test']
+        x_train = f['x_train']
+        # Get the ground truth labels
+        y_test = f['y_test']
+        y_train = f['y_train']
+
+        frame = torch.Tensor(x_test[0][0].T)
+
+    print(frame.shape)
+
+    save_path = "Figures_edges/dlib.png"
+
+    draw_landmarks_with_edges(frame, no_edges, save_path)
